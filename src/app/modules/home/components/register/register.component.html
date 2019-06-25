@@ -1,0 +1,41 @@
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-auto">
+      <mat-card>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col">
+              <h4>Register</h4>
+              <hr>
+              <form [formGroup]="registerFormGroup" (ngSubmit)="onSubmit()">
+                <div class="registration-form-container">
+                  <mat-form-field appearance="outline">
+                    <mat-label>User Name</mat-label>
+                    <input type="email" matInput formControlName="UserName">
+                    <mat-error *ngIf="submitted && f.UserName.invalid">{{ getErrorMessage('UserName') }}</mat-error>
+                  </mat-form-field>
+  
+                  <mat-form-field appearance="outline">
+                    <mat-label>Password</mat-label>
+                    <input type="password" matInput formControlName="Password">
+                    <mat-error *ngIf="submitted && f.Password.invalid">{{ getErrorMessage('Password') }}</mat-error>
+                  </mat-form-field>
+  
+                  <mat-form-field appearance="outline">
+                    <mat-label>Repeat Password</mat-label>
+                    <input type="password" matInput formControlName="RepeatPassword">
+                    <mat-error *ngIf="submitted && f.RepeatPassword.invalid">{{ getErrorMessage('RepeatPassword') }}</mat-error>
+                  </mat-form-field>
+
+                  <div class="form-group">
+                    <button type="submit" class="float-right" [disabled]="loading" mat-flat-button color="primary">Register</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+</div>

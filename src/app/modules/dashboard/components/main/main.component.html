@@ -1,0 +1,86 @@
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-9">
+      <mat-accordion class="example-headers-align" [multi]="true">
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Unread
+            </mat-panel-title>
+            <mat-panel-description>
+              <!-- Type your name and age
+            <mat-icon>account_circle</mat-icon> -->
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-form-field>
+            <input matInput placeholder="First name">
+          </mat-form-field>
+
+          <mat-form-field>
+            <input matInput type="number" min="1" placeholder="Age">
+          </mat-form-field>
+
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Starred
+            </mat-panel-title>
+            <mat-panel-description>
+              <!-- Type the country name
+            <mat-icon>map</mat-icon> -->
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-form-field>
+            <input matInput placeholder="Country">
+          </mat-form-field>
+
+        </mat-expansion-panel>
+
+        <mat-expansion-panel [expanded]="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Recent
+            </mat-panel-title>
+            <mat-panel-description>
+              <!-- Inform the date you wish to travel
+            <mat-icon>date_range</mat-icon> -->
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <mat-list>
+            <h3 mat-subheader>Folders</h3>
+            <mat-list-item *ngFor="let data of (repoData$ | async)">
+              <div *ngIf="data.type === 'File'; then fileIconTemplate else folderIconTemplate"></div>
+              <h4 mat-line>{{ data.name }}</h4>
+              <p mat-line>{{ data.creationDate | date }}</p>
+            </mat-list-item>
+
+          </mat-list>
+
+        </mat-expansion-panel>
+
+      </mat-accordion>
+    </div>
+    <div class="col-3">
+      <mat-card>
+        <button mat-button color="primary">Create new file</button>
+        <button mat-button>Upload files</button>
+        <button mat-button>Upload folder</button>
+        <button mat-button>New shared folder</button>
+      </mat-card>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #folderIconTemplate>
+  <mat-icon mat-list-icon>folder</mat-icon>
+</ng-template>
+
+<ng-template #fileIconTemplate>
+  <mat-icon mat-list-icon>insert_drive_file</mat-icon>
+</ng-template>

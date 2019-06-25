@@ -1,0 +1,38 @@
+<div class="container-fluid mt-4">
+  <div class="row justify-content-center">
+    <div class="col-lg-auto col-md-auto col-sm-auto col-auto">
+      <mat-card>
+        <h4>Login</h4>
+        <hr>
+        <!-- <div class="container-fluid">
+          <div class="row">
+            <div class="col">
+             
+              
+            </div>
+          </div>
+        </div> -->
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="login-form-container">
+            <mat-form-field appearance="outline">
+              <mat-label>User Name</mat-label>
+              <input type="email" matInput formControlName="UserName">
+              <mat-error *ngIf="submitted && f.UserName.invalid">{{ getErrorMessage('UserName') }}</mat-error>
+            </mat-form-field>
+        
+            <mat-form-field appearance="outline">
+              <mat-label>Password</mat-label>
+              <input type="password" matInput formControlName="Password">
+              <mat-error *ngIf="submitted && f.Password.invalid">{{ getErrorMessage('Password') }}</mat-error>
+            </mat-form-field>
+        
+            <div class="form-group">
+              <button type="submit" class="float-right" mat-flat-button color="primary">Login</button>
+            </div>
+          </div>
+        
+        </form>
+      </mat-card>
+    </div>
+  </div>
+</div>
