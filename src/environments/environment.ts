@@ -5,7 +5,6 @@
 export const environment = {
   production: false,
   hmr: false,
-  //repo: 'https://glacial-badlands-82458.herokuapp.com'
   repo: 'http://localhost:3500'
 };
 
