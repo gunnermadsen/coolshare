@@ -4,7 +4,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.get('/*', (request, response) => {
-    response.sendFile(path.join(__dirname + '/dist/coolshare/index.html'));
+    response.sendFile(path.join(__dirname + '/dist/CoolShare/index.html'));
 });
 
 app.listen(PORT, () => {
