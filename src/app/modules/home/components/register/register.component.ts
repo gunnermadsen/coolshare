@@ -12,6 +12,8 @@ import { RegisterUserRequested } from 'src/app/core/authentication/store/actions
 export class RegisterComponent implements OnInit {
   public registerFormGroup: FormGroup;
   public register: boolean = false;
+  public loading: boolean = false;
+  public submitted: boolean = false;
 
   public get f() {
     return this.registerFormGroup.value;

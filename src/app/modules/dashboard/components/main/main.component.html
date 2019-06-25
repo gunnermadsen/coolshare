@@ -53,11 +53,11 @@
 
           <mat-list>
             <h3 mat-subheader>Folders</h3>
-            <mat-list-item *ngFor="let data of (repoData$ | async)">
+            <!-- <mat-list-item *ngFor="let data of (repoData$ | async)">
               <div *ngIf="data.type === 'File'; then fileIconTemplate else folderIconTemplate"></div>
               <h4 mat-line>{{ data.name }}</h4>
               <p mat-line>{{ data.creationDate | date }}</p>
-            </mat-list-item>
+            </mat-list-item> -->
 
           </mat-list>
 
