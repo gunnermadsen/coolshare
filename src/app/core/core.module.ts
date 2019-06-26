@@ -17,7 +17,6 @@ import { AuthenticationEffects } from './authentication/store/effects/authentica
         CommonModule,
         ReactiveFormsModule,
         HttpClientModule,
-        MaterialModule,
         ToastrModule.forRoot(),
         StoreModule.forFeature('auth', authenticationReducer),
         EffectsModule.forFeature([AuthenticationEffects])

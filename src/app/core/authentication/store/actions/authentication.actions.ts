@@ -41,13 +41,13 @@ export class RegistrationUnsuccessful implements Action {
 export class AuthenticateUserRequested implements Action {
     readonly type = AuthenticationActionTypes.AuthenticateUserRequested;
 
-    constructor(public payload: { user: any }) { }
+    constructor(public payload: { account: any }) { }
 }
 
 export class AuthenticateUserSuccessful implements Action {
     readonly type = AuthenticationActionTypes.AuthenticateUserSuccessful;
 
-    constructor(public payload: any) { }
+    constructor(public payload: { account: any }) { }
 }
 
 export class AuthenticateUserUnsuccessful implements Action {

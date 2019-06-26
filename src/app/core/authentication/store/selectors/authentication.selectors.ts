@@ -15,3 +15,11 @@ export const selectUser = createSelector(
         return authData.user;
     }
 )
+
+
+export const selectAuthState = createSelector(
+    selectAuthenticationState,
+    account => {
+        return account.isLoggedIn;
+    }
+)

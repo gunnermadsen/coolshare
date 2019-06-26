@@ -1,42 +1,45 @@
   <div class="sidenav-container">
     <mat-toolbar color="primary">
-      <!-- <div class="container-fluid"> -->
       <div class="navbar-center">
         <div class="side-nav-menu">
-          <button type="button" mat-button class="btn btn-sm px-0 menu-icon" (click)="sidenav.toggle()">
+          <button mat-button class="menu-icon" (click)="sidenav.toggle()">
             <mat-icon [inline]="true">menu</mat-icon>
           </button>
         </div>
-    
         <button mat-button type="button" class="px-0" routerLink="/dashboard/main">
-          <h4>Dropbox</h4>
+          <h4>Coolshare</h4>
         </button>
-    
-        <!-- <div class="toolbar-buttons"></div> -->
       </div>
-      <!-- </div> -->
     </mat-toolbar>
 
     <mat-sidenav-container class="mat-sidenav-container">
-      <mat-sidenav mode="side" [opened]="true" #sidenav>
+      <mat-sidenav mode="over" #sidenav>
         <mat-action-list>
           <button mat-list-item class="float-right close-btn" (click)="sidenav.close()">
             <mat-icon>close</mat-icon>
           </button>
         </mat-action-list>
-        <!-- <div style="height: 80px; background-color: grey;"></div> -->
         <mat-nav-list>
-          <h2 class="pb-1 pl-2" matSubheader>Login</h2>
-          <mat-divider class="mx-2"></mat-divider>
-          <mat-list-item class="px-3" (click)="sidenav.close()" routerLink="/dashboard/files">Files</mat-list-item>
-          <mat-list-item class="px-3" (click)="sidenav.close()" routerLink="/register">Register</mat-list-item>
+          <div *ngIf="authState; then dashboardNav; else homeNav"></div>
         </mat-nav-list>
       </mat-sidenav>
       <mat-sidenav-content>
-        <!-- <div class="container-fluid px-0"> -->
         <router-outlet></router-outlet>
-        <!-- </div> -->
       </mat-sidenav-content>
-
     </mat-sidenav-container>
   </div>
+
+
+  <ng-template #homeNav>
+    <h2 class="pb-1 pl-2" matSubheader>Account</h2>
+    <mat-divider class="mx-2"></mat-divider>
+    <mat-list-item (click)="sidenav.close()" routerLink="/register">Register</mat-list-item>
+    <mat-list-item (click)="sidenav.close()" routerLink="/login">Login</mat-list-item>
+  </ng-template>
+
+  <ng-template #dashboardNav>
+    <h2 class="pb-1 pl-2" matSubheader>Actions</h2>
+    <mat-divider class="mx-2"></mat-divider>
+    <mat-list-item (click)="sidenav.close()" routerLink="/dashboard/files">Files</mat-list-item>
+    <mat-list-item (click)="logout()">Logout</mat-list-item>
+  </ng-template>

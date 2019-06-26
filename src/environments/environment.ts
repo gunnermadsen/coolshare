@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   hmr: false,
-  repo: 'http://localhost:3500'
+  repo: 'https://portfolioapis.herokuapp.com'
 };
 
 /*

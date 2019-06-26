@@ -1,6 +1,9 @@
 <div class="container-fluid mt-3">
   <div class="row">
-    <div class="col-9">
+    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" *ngIf="isXS">
+      <ng-container *ngTemplateOutlet="actionCard"></ng-container>
+    </div>
+    <div class="col-lg-9 col-md-9 col-sm-12 col-12">
       <mat-accordion class="example-headers-align" [multi]="true">
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
@@ -65,16 +68,20 @@
 
       </mat-accordion>
     </div>
-    <div class="col-3">
-      <mat-card>
-        <button mat-button color="primary">Create new file</button>
-        <button mat-button>Upload files</button>
-        <button mat-button>Upload folder</button>
-        <button mat-button>New shared folder</button>
-      </mat-card>
+    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" *ngIf="!isXS">
+      <ng-container *ngTemplateOutlet="actionCard"></ng-container>
     </div>
   </div>
 </div>
+
+<ng-template #actionCard>
+  <mat-card>
+    <button mat-button color="primary">Create new file</button>
+    <button mat-button>Upload files</button>
+    <button mat-button>Upload folder</button>
+    <button mat-button>New shared folder</button>
+  </mat-card>
+</ng-template>
 
 
 <ng-template #folderIconTemplate>

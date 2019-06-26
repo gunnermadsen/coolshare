@@ -3,8 +3,8 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/reducers';
-import { AuthenticateUserRequested } from 'src/app/core/authentication/store/actions/authentication.actions';
+import { AppState } from '@/reducers';
+import { AuthenticateUserRequested } from '@/core/authentication/store/actions/authentication.actions';
 
 // import { AlertService } from '@/shared/services/alert.service';
 // import { AuthenticationService } from '@/shared/services/authentication.service';
@@ -47,7 +47,7 @@ export class LoginComponent implements OnInit {
       Password: this.f.Password
     }
 
-    this.store.dispatch(new AuthenticateUserRequested({ user: user }))
+    this.store.dispatch(new AuthenticateUserRequested({ account: user }))
   }
 
   public getErrorMessage(control: string): string {

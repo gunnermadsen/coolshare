@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
-import { AppState } from 'src/app/reducers';
+import { AppState } from '@/reducers';
 import { RetrieveFolderContents } from '../../store/actions/filesystem.actions';
 import { Observable } from 'rxjs';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';

@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { AppState } from 'src/app/reducers';
-import { RegisterUserRequested } from 'src/app/core/authentication/store/actions/authentication.actions';
+import { AppState } from '@/reducers';
+import { RegisterUserRequested } from '@/core/authentication/store/actions/authentication.actions';
 
 @Component({
   selector: 'app-register',

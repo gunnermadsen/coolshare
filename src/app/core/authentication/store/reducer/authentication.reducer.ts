@@ -15,7 +15,7 @@ export function authenticationReducer(state = initialAuthenticationState, action
         case AuthenticationActionTypes.AuthenticateUserSuccessful:
             return {
                 isLoggedIn: true,
-                user: action.payload.user
+                user: action.payload.account
             }
 
         case AuthenticationActionTypes.LogoutUserRequested:

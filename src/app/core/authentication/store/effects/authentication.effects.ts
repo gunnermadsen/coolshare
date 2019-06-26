@@ -3,22 +3,23 @@ import { Observable, of, defer } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { RegisterUserRequested, AuthenticationActionTypes, RegistrationUnsuccessful, AuthenticateUserRequested, AuthenticateUserUnsuccessful, AuthenticateUserSuccessful, RegistrationSuccessful, LogoutUserRequested } from '../actions/authentication.actions';
-import { exhaustMap, catchError, tap, map, switchMap } from 'rxjs/operators';
+import { exhaustMap, catchError, tap, map, switchMap, mergeMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
-import { AppState } from 'src/app/reducers';
+import { AppState } from '@/reducers';
 import { ToastrService } from 'ngx-toastr';
 import { Router } from '@angular/router';
+import { HttpAuthService } from '@/core/http/auth.http.service';
 
 
 @Injectable()
 export class AuthenticationEffects {
 
-    constructor(private actions$: Actions, private http: HttpClient, private store: Store<AppState>, private toastrService: ToastrService, private router: Router) { }
+    constructor(private actions$: Actions, private authService: HttpAuthService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router) { }
 
     @Effect() init$ = defer(() => {
-        const token = JSON.parse(localStorage.getItem("Token"));
-        if (token) {
-            return of(new AuthenticateUserSuccessful({ user: token }));
+        const account = JSON.parse(localStorage.getItem("Account"));
+        if (account && account.Token) {
+            return of(new AuthenticateUserSuccessful({ account: account }));
         }
         else {
             return of(new LogoutUserRequested());
@@ -28,8 +29,8 @@ export class AuthenticationEffects {
     @Effect() 
     registerUserRequested$ = this.actions$.pipe(
         ofType<RegisterUserRequested>(AuthenticationActionTypes.RegisterUserRequested),
-        exhaustMap((action: any) => {
-            return this.http.post<any>('/api/register', action.payload.user)
+        mergeMap((action: any) => {
+            return this.authService.register(action.payload.user)
         }),
         switchMap((result) => [
             this.store.dispatch(new RegistrationSuccessful(result))
@@ -42,19 +43,19 @@ export class AuthenticationEffects {
     @Effect() 
     authenticateUserRequested$ = this.actions$.pipe(
         ofType<AuthenticateUserRequested>(AuthenticationActionTypes.AuthenticateUserRequested),
-        exhaustMap((action: any) => {
-            return this.http.post<any>('/api/login', action.payload.user)
+        mergeMap((action: any) => {
+            return this.authService.login(action.payload.account)
         }),
-        switchMap((action) => [
-            this.store.dispatch(new AuthenticateUserSuccessful(action.payload.token))
-        ]),
+        map((payload) => {
+            return new AuthenticateUserSuccessful({ account: payload.account });
+        }),
         catchError((err: any) => {
             return of(this.store.dispatch(new AuthenticateUserUnsuccessful({ error: err })))
         })
     );
 
     @Effect({ dispatch: false }) 
-    registrationUnsuccessful$: Observable<Action> = this.actions$.pipe(
+    registrationUnsuccessful$ = this.actions$.pipe(
         ofType<RegistrationUnsuccessful>(AuthenticationActionTypes.RegistrationUnsuccessful),
         tap((action: any) => {
             this.toastrService.error(action.payload.error);
@@ -62,7 +63,7 @@ export class AuthenticationEffects {
     );
 
     @Effect({ dispatch: false }) 
-    registrationSuccessful$: Observable<Action> = this.actions$.pipe(
+    registrationSuccessful$ = this.actions$.pipe(
         ofType<RegistrationSuccessful>(AuthenticationActionTypes.RegistrationSuccessful),
         tap(() => {
             this.toastrService.success('Registration was successsful, you may now log in');
@@ -71,7 +72,7 @@ export class AuthenticationEffects {
     );
 
     @Effect({ dispatch: false }) 
-    authenticationUnsuccessful$: Observable<Action> = this.actions$.pipe(
+    authenticationUnsuccessful$ = this.actions$.pipe(
         ofType<AuthenticateUserUnsuccessful>(AuthenticationActionTypes.AuthenticateUserUnsuccessful),
         tap((action: any) => {
             this.toastrService.error(action.payload.error.message);
@@ -79,10 +80,10 @@ export class AuthenticationEffects {
     );
 
     @Effect({ dispatch: false }) 
-    authenticationSuccessful$: Observable<Action> = this.actions$.pipe(
+    authenticationSuccessful$ = this.actions$.pipe(
         ofType<AuthenticateUserSuccessful>(AuthenticationActionTypes.AuthenticateUserSuccessful),
-        tap((token: any) => {
-            localStorage.setItem('Token', JSON.stringify(token));
+        tap((action: any) => {
+            localStorage.setItem('Account', JSON.stringify(action.payload.account));
             this.router.navigateByUrl('/dashboard/main');
         })
     );
@@ -91,7 +92,7 @@ export class AuthenticationEffects {
     useLogout$ = this.actions$.pipe(
         ofType<LogoutUserRequested>(AuthenticationActionTypes.LogoutUserRequested),
         tap(() => {
-            localStorage.removeItem('Token');
+            localStorage.removeItem('Account');
             this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
             this.toastrService.success("You have successfully logged out");
         })

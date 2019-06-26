@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 
 @Component({
   selector: 'app-main',
@@ -7,9 +8,16 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MainComponent implements OnInit {
 
-  constructor() { }
+  public isXS: boolean = true;
+
+  constructor(private breakpointObserver: BreakpointObserver) {
+
+  }
 
   ngOnInit() {
+    this.breakpointObserver.observe(['(max-width: 350px']).subscribe((state: BreakpointState) => {
+      return state.matches ? this.isXS = true : this.isXS = false;
+    })
   }
 
 }
