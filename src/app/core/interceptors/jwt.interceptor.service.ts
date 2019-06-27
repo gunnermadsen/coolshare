@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class URLInterceptorService implements HttpInterceptor {
     intercept(req: HttpRequest<any>, next: HttpHandler) {
-        req = req.clone({ url: `${environment.repo}${req.url}`});
+        req = req.clone({ url: `${environment.repo}${req.url}`, withCredentials: true});
         
         return next.handle(req).pipe(
             map((event: HttpEvent<any>) => event)
