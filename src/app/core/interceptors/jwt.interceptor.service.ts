@@ -3,7 +3,7 @@ import {
     HttpEvent, HttpInterceptor, HttpHandler, HttpRequest
 } from '@angular/common/http';
 
-import { environment } from '../../../environments/environment';
+import { environment } from '@/../environments/environment';
 import { map } from 'rxjs/operators';
 
 @Injectable()
