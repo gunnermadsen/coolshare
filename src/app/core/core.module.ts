@@ -1,7 +1,7 @@
 import { NgModule, Optional, SkipSelf, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS }from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule }from '@angular/common/http';
 import { MaterialModule } from './material.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
@@ -19,7 +19,11 @@ import { AuthenticationEffects } from './authentication/store/effects/authentica
         HttpClientModule,
         ToastrModule.forRoot(),
         StoreModule.forFeature('auth', authenticationReducer),
-        EffectsModule.forFeature([AuthenticationEffects])
+        EffectsModule.forFeature([AuthenticationEffects]),
+        HttpClientXsrfModule.withOptions({
+            cookieName: 'XSRF-TOKEN',
+            headerName: 'x-xsrf-token'
+        }),
     ],
     exports: [
         ReactiveFormsModule,
