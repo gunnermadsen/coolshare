@@ -16,16 +16,6 @@ export class AuthenticationEffects {
 
     constructor(private actions$: Actions, private authService: HttpAuthService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router) { }
 
-    @Effect() init$ = defer(() => {
-        const account = JSON.parse(localStorage.getItem("Account"));
-        if (account && account.Token) {
-            return of(new AuthenticateUserSuccessful({ account: account }));
-        }
-        else {
-            return of(new LogoutUserRequested());
-        }
-    })
-
     @Effect() 
     registerUserRequested$ = this.actions$.pipe(
         ofType<RegisterUserRequested>(AuthenticationActionTypes.RegisterUserRequested),
@@ -97,6 +87,18 @@ export class AuthenticationEffects {
             this.toastrService.success("You have successfully logged out");
         })
     )
+
+    @Effect()
+    init$ = defer(() => {
+        const account = JSON.parse(localStorage.getItem("Account"));
+
+        if (account && account.Token) {
+            return of(new AuthenticateUserSuccessful({ account: account }));
+        }
+        else {
+            return of(new LogoutUserRequested());
+        }
+    })
 
     
 }

@@ -1,8 +1,16 @@
-<div class="container-fluid mt-3">
+<div class="container-fluid mt-3" *ngIf="isXS">
   <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" *ngIf="isXS">
+    <div class="col">
       <ng-container *ngTemplateOutlet="actionCard"></ng-container>
     </div>
+  </div>
+</div>
+
+<div class="container-fluid mt-3">
+  <div class="row">
+    <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" >
+      <ng-container *ngTemplateOutlet="actionCard"></ng-container>
+    </div> -->
     <div class="col-lg-9 col-md-9 col-sm-12 col-12">
       <mat-accordion class="example-headers-align" [multi]="true">
         <mat-expansion-panel [expanded]="true">

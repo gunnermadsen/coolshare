@@ -19,7 +19,7 @@
             <mat-icon>close</mat-icon>
           </button>
         </mat-action-list>
-        <mat-nav-list>
+        <mat-nav-list (click)="sidenav.close()">
           <div *ngIf="authState; then dashboardNav; else homeNav"></div>
         </mat-nav-list>
       </mat-sidenav>
@@ -33,13 +33,13 @@
   <ng-template #homeNav>
     <h2 class="pb-1 pl-2" matSubheader>Account</h2>
     <mat-divider class="mx-2"></mat-divider>
-    <mat-list-item (click)="sidenav.close()" routerLink="/register">Register</mat-list-item>
-    <mat-list-item (click)="sidenav.close()" routerLink="/login">Login</mat-list-item>
+    <mat-list-item routerLink="/register">Register</mat-list-item>
+    <mat-list-item routerLink="/login">Login</mat-list-item>
   </ng-template>
 
   <ng-template #dashboardNav>
     <h2 class="pb-1 pl-2" matSubheader>Actions</h2>
     <mat-divider class="mx-2"></mat-divider>
-    <mat-list-item (click)="sidenav.close()" routerLink="/dashboard/files">Files</mat-list-item>
+    <mat-list-item routerLink="/dashboard/files">Files</mat-list-item>
     <mat-list-item (click)="logout()">Logout</mat-list-item>
   </ng-template>

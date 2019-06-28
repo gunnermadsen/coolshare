@@ -1,3 +1,57 @@
-<p>
-  repository works!
-</p>
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col">
+      <div class="example-container mat-elevation-z8">
+        <!-- <div class="example-loading-shade" *ngIf="isLoadingResults || isRateLimitReached">
+          <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+          <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
+            GitHub's API rate limit has been reached. It will be reset in one minute.
+          </div>
+        </div> -->
+      
+        <div class="example-table-container">
+      
+          <table mat-table [dataSource]="repo$" class="example-table" matSort matSortActive="createdDate" matSortDisableClear
+            matSortDirection="desc">
+            <!-- Number Column -->
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Name</th>
+              <td mat-cell *matCellDef="let row">{{row.name}}</td>
+            </ng-container>
+      
+            <!-- Title Column -->
+            <ng-container matColumnDef="createdDate">
+              <th mat-header-cell *matHeaderCellDef>Date Created</th>
+              <td mat-cell *matCellDef="let row">{{row.creationDate}}</td>
+            </ng-container>
+      
+            <!-- State Column -->
+            <ng-container matColumnDef="members">
+              <th mat-header-cell *matHeaderCellDef>Members</th>
+              <td mat-cell *matCellDef="let row">{{row.absPath}}</td>
+            </ng-container>
+
+            <!-- Action Column -->
+            <ng-container matColumnDef="action">
+              <th mat-header-cell *matHeaderCellDef></th>
+              <td mat-cell *matCellDef="let row">{{row.name}}</td>
+            </ng-container>
+      
+            <!-- Created Column -->
+            <!-- <ng-container matColumnDef="created">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header disableClear>
+                Created
+              </th>
+              <td mat-cell *matCellDef="let row">{{row.created_at | date}}</td>
+            </ng-container> -->
+      
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+        <mat-paginator [length]="resultsLength" [pageSize]="30"></mat-paginator>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -18,6 +18,7 @@ export enum FileSystemActionTypes {
 
 export class RetrieveFolderContents implements Action {
     readonly type = FileSystemActionTypes.RetrieveFolderContents;
+    constructor(public payload: { folder: any }) {}
 
 }
 

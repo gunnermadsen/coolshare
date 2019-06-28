@@ -8,16 +8,22 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class URLInterceptorService implements HttpInterceptor {
-    intercept(req: HttpRequest<any>, next: HttpHandler) {
+    intercept(request: HttpRequest<any>, next: HttpHandler) {
 
         const account = JSON.parse(localStorage.getItem('Account'));
 
-        req = req.clone({ 
-            url: `${environment.repo}${req.url}`,
+        request = request.clone({ 
+            url: `${environment.repo}${request.url}`,
             withCredentials: true // (account && account.Token) ? true : false
         });
+
+        if (account && account.Token) {
+            request = request.clone({
+                headers: request.headers.set('Authorization', `Bearer ${account.Token}`)
+            })
+        }
         
-        return next.handle(req).pipe(
+        return next.handle(request).pipe(
             map((event: HttpEvent<any>) => event)
         );
     }

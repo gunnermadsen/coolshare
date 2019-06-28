@@ -10,8 +10,8 @@ export interface AppState {
 }
 
 export const reducers: ActionReducerMap<AppState> = {
-    fs: fileSystemReducer,
-    auth: authenticationReducer
+    auth: authenticationReducer,
+    fs: fileSystemReducer
 }
 
 export const metaReducers: MetaReducer<AppState>[] = !environment.production ? [storeFreeze] : [];

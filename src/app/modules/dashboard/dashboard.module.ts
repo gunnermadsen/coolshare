@@ -5,6 +5,10 @@ import { MainComponent } from './components/main/main.component';
 import { RepositoryComponent } from './components/repository/repository.component';
 import { DashboardRouter } from './dashboard.router.module';
 import { SharedModule } from '@/shared/shared.module';
+import { StoreModule } from '@ngrx/store';
+import { fileSystemReducer } from './store/reducer/dashboard.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { FileSystemEffects } from './store/effects/filesystem.effects';
 
 @NgModule({
     declarations: [
@@ -15,7 +19,9 @@ import { SharedModule } from '@/shared/shared.module';
     imports: [
         CommonModule,
         SharedModule,
-        DashboardRouter
+        DashboardRouter,
+        StoreModule.forFeature('fs', fileSystemReducer),
+        EffectsModule.forFeature([FileSystemEffects]),
     ],
     exports: [],
     providers: [],

@@ -12,7 +12,7 @@ export const userAuthenticationStatus = createSelector(
 export const selectUser = createSelector(
     selectAuthenticationState,
     authData => {
-        return authData.user;
+        return authData;
     }
 )
 

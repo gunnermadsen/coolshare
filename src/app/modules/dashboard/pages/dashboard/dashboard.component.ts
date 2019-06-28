@@ -12,12 +12,19 @@ import { getRepoData } from '../../store/selectors/dashboard.selectors';
 })
 export class DashboardComponent implements OnInit {
 
-  public repoData$: Observable<any>;
-
   constructor(private store: Store<AppState>) { }
 
   ngOnInit() {
-    this.repoData$ = this.store.pipe(select(getRepoData));
+
+    const account = JSON.parse(localStorage.getItem('Account'));
+    
+    const data = {
+      id: account.Id,
+      path: '/'
+    };
+
+    this.store.dispatch(new RetrieveFolderContents({ folder: data }));
+
   }
 
 }
