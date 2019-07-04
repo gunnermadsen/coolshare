@@ -14,24 +14,37 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { EffectsModule } from '@ngrx/effects';
 
 import { RegisterComponent } from './modules/home/components/register/register.component';
+import { SharedModule } from './shared/shared.module';
+import { UploadModule } from './modules/upload-file/upload.module';
+import { UploadDetailsComponent } from './modules/dashboard/components/upload-details/upload-details.component';
+import { FileSizePipe } from './shared/pipes/file-size.pipe';
 
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    UploadDetailsComponent,
+
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    SharedModule,
+    UploadModule,
 
     StoreModule.forRoot(reducers, { metaReducers }),
     !environment.production ? StoreDevtoolsModule.instrument() : [],
     EffectsModule.forRoot([]),
 
     CoreModule
+  ],
+  exports: [
+  ],
+  entryComponents: [
+    UploadDetailsComponent
   ],
   providers: [],
   bootstrap: [AppComponent]

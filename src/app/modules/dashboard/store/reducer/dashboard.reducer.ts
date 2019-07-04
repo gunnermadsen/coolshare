@@ -1,9 +1,7 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { FileSystemActions, FileSystemActionTypes } from '../actions/filesystem.actions';
 
-export interface FileSystemState extends EntityState<any> {
-
-}
+export interface FileSystemState extends EntityState<any> {}
 
 export const adapter: EntityAdapter<any> = createEntityAdapter<any>();
 
@@ -21,8 +19,8 @@ export function fileSystemReducer(state = initialFileSystemState, action: FileSy
         case FileSystemActionTypes.SaveRetrievedFolderContents:
             return adapter.addAll(action.payload.contents, { ...state });
 
-        // case FileSystemActionTypes.UpdateMeeting:
-        //     return adapter.updateOne(action.payload.meeting, state);
+        // case FileSystemActionTypes.UpdateRetrievedFolderContents:
+        //     return adapter.updateMany(action.payload.contents, state);
 
         // case FileSystemActionTypes.DeleteMeeting:
         //     return adapter.removeOne(action.payload.meetingId, state);

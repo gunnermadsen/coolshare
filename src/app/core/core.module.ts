@@ -2,7 +2,7 @@ import { NgModule, Optional, SkipSelf, ModuleWithProviders } from '@angular/core
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule }from '@angular/common/http';
-import { MaterialModule } from './material.module';
+import { MaterialModule } from '../shared/material.module';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { URLInterceptorService } from './interceptors/jwt.interceptor.service';
@@ -10,14 +10,13 @@ import { URLInterceptorService } from './interceptors/jwt.interceptor.service';
 import { ToastrModule } from 'ngx-toastr';
 import { authenticationReducer } from './authentication/store/reducer/authentication.reducer';
 import { AuthenticationEffects } from './authentication/store/effects/authentication.effects';
+import { AuthGuardService } from './guards/auth.guard';
+import { SharedModule } from '@/shared/shared.module';
 
 @NgModule({
     declarations: [],
     imports: [ 
         CommonModule,
-        ReactiveFormsModule,
-        HttpClientModule,
-        ToastrModule.forRoot(),
         StoreModule.forFeature('auth', authenticationReducer),
         EffectsModule.forFeature([AuthenticationEffects]),
         HttpClientXsrfModule.withOptions({
@@ -26,10 +25,9 @@ import { AuthenticationEffects } from './authentication/store/effects/authentica
         }),
     ],
     exports: [
-        ReactiveFormsModule,
-        MaterialModule
     ],
     providers: [
+        AuthGuardService,
         {
             provide: HTTP_INTERCEPTORS,
             useClass: URLInterceptorService,

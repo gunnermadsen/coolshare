@@ -1,0 +1,97 @@
+/* Structure */
+.example-container {
+  position: relative;
+  min-height: 200px;
+}
+
+.example-table-container {
+  position: relative;
+  max-height: 500px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+  table-layout: fixed;
+}
+
+th, td {
+    overflow: hidden;
+    width: auto;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.mat-column-action {
+  flex: 0 0 30px;
+}
+
+.example-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 56px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Column Widths */
+.mat-column-createdDate {
+  max-width: 64px;
+}
+
+.mat-column-name {
+  max-width: 300px;
+}
+
+.mat-column-action, .mat-column-createdDate, .mat-column-members {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+.mat-column-action {
+  width: 90px !important;
+  padding-right: 10px !important;
+}
+
+.mat-column-members {
+  width: 100px !important;
+}
+
+/* Breadcrumb styles*/
+
+.breadcrumb, ol, li {
+  background-color: none;
+}
+
+a.folder-node:hover {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+a.folder-node {
+  color: blue;
+}
+
+
+.mat-row {
+  height: 75px !important;
+  
+}
+
+.mat-row:hover {
+  cursor: pointer;
+
+  td.mat-cell.mat-column-name {
+    color: blue;
+  }
+}
+
+.mat-menu-item {
+  height: 40px;
+}

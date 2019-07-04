@@ -1,16 +1,31 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MaterialModule } from '@/core/material.module';
+import { MaterialModule } from '@/shared/material.module';
+import { ReactiveFormsModule } from '@angular/forms';
+import { ToastrModule } from 'ngx-toastr';
+import { RouterModule } from '@angular/router';
+import { HttpClientModule } from '@angular/common/http';
+import { UploadModule } from '@/modules/upload-file/upload.module';
+import { FileSizePipe } from './pipes/file-size.pipe';
 
 @NgModule({
-    declarations: [],
+    declarations: [
+        FileSizePipe
+
+    ],
     imports: [
         CommonModule,
+        ReactiveFormsModule,
+        HttpClientModule,
         MaterialModule,
+        ToastrModule.forRoot(),
+        RouterModule
         
     ],
     exports: [
-        MaterialModule
+        MaterialModule,
+        ReactiveFormsModule,
+        FileSizePipe
     ],
     providers: [],
 })

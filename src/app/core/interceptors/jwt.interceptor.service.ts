@@ -13,7 +13,7 @@ export class URLInterceptorService implements HttpInterceptor {
         const account = JSON.parse(localStorage.getItem('Account'));
 
         request = request.clone({ 
-            url: `${environment.repo}${request.url}`,
+            url: `${environment.localRepo}${request.url}`,
             withCredentials: true // (account && account.Token) ? true : false
         });
 

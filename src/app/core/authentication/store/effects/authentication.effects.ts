@@ -7,14 +7,14 @@ import { exhaustMap, catchError, tap, map, switchMap, mergeMap } from 'rxjs/oper
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '@/reducers';
 import { ToastrService } from 'ngx-toastr';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { HttpAuthService } from '@/core/http/auth.http.service';
 
 
 @Injectable()
 export class AuthenticationEffects {
 
-    constructor(private actions$: Actions, private authService: HttpAuthService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router) { }
+    constructor(private actions$: Actions, private authService: HttpAuthService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute) { }
 
     @Effect() 
     registerUserRequested$ = this.actions$.pipe(
@@ -74,7 +74,6 @@ export class AuthenticationEffects {
         ofType<AuthenticateUserSuccessful>(AuthenticationActionTypes.AuthenticateUserSuccessful),
         tap((action: any) => {
             localStorage.setItem('Account', JSON.stringify(action.payload.account));
-            this.router.navigateByUrl('/dashboard/main');
         })
     );
 
@@ -93,12 +92,12 @@ export class AuthenticationEffects {
         const account = JSON.parse(localStorage.getItem("Account"));
 
         if (account && account.Token) {
-            return of(new AuthenticateUserSuccessful({ account: account }));
+            return of(new AuthenticateUserSuccessful({ account: account }))
+        } else {
+            return <any> of(new LogoutUserRequested());
         }
-        else {
-            return of(new LogoutUserRequested());
-        }
+        
     })
 
-    
+     
 }

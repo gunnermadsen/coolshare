@@ -48,6 +48,7 @@
     "path": "^0.12.7",
     "popper.js": "^1.15.0",
     "rxjs": "^6.5.2",
+    "serialize-error": "^4.1.0",
     "style-loader": "^0.23.1",
     "tslib": "^1.9.0",
     "zone.js": "^0.9.1"

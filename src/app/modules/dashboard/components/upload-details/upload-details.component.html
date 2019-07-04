@@ -1,0 +1,77 @@
+<div class="container-fluid d-flex flex-column">
+    <div class="row">
+        <div class="col px-0">
+            <h2 mat-dialog-title>
+                Upload Details
+            </h2>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col px-0">
+            <mat-divider></mat-divider>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col px-0 file-list">
+            <!-- <div *ngIf="isFileSet; then fileList; else message"></div> -->
+            <div mat-dialog-content>
+                <mat-list #fileList>
+                    <mat-list-item *ngFor="let file of files$ | async" class="px-0">
+                        <div class="container-fluid px-0">
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="list-name">{{ file.name }}</div>
+                                </div>
+                                <div class="col-4">
+                                    {{ file.size | fileSize }}
+                                </div>
+                                <div class="col-auto ml-auto">
+                                    <div *ngIf="(completed$ | async) as status; then done; else loading"></div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col">
+                                    <upload-progress></upload-progress>
+                                </div>
+                            </div>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col-auto px-0 ml-auto mt-auto">
+            <input hidden multiple type="file" (change)="uploadFiles($event)" #uploader>
+            <button mat-flat-button color="primary" class="ml-2" (click)="uploader.click()">Add more files</button>
+            <button mat-button class="mr-2" (click)="closeDialog()">Done</button>
+        </div>
+    </div>
+</div>
+
+<ng-template #done>
+    <mat-icon color="primary">check_circle_outline</mat-icon>
+</ng-template>
+<ng-template #loading>
+    <button mat-icon-button (click)="cancelUpload()">
+        <mat-icon>close</mat-icon>
+    </button>
+</ng-template>
+
+<!-- <ng-template #fileList>
+    <div mat-dialog-content>
+        <mat-selection-list #fileList>
+            <mat-list-option [checkboxPosition]="'before'" *ngFor="let file of files; index as i; trackBy: trackByFn">
+                <div class="container-fluid px-0">
+                    <div class="row">
+                        <div class="col">
+                            {{ file.name }}
+                        </div>
+                        
+                    </div>
+                </div>
+                <upload-progress></upload-progress>
+            </mat-list-option>
+        </mat-selection-list>
+    </div>
+</ng-template> -->

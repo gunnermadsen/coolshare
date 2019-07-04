@@ -14,20 +14,16 @@ export class AuthGuardService implements CanActivate {
 
   constructor(private router: Router, private store: Store<AppState>) { }
 
-  canActivate(): Observable<boolean> {
+  canActivate(): boolean {
+
+    const account = JSON.parse(localStorage.getItem('Account'))
     
-    return this.store.pipe(
-      select(userAuthenticationStatus), 
-      take(1), 
-      tap((state) => {
-        if (!state) {
-          this.router.navigateByUrl('/login');
-          return false;
-        }
-        else {
-          return true;
-        }
-      })
-    )
+    if (account && account.Token) {
+      return true;
+    }
+    else {
+      this.router.navigateByUrl('/login');
+      return false;
+    }
   }
 }

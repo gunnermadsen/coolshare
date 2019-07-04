@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { first } from 'rxjs/operators';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { AuthenticateUserRequested } from '@/core/authentication/store/actions/authentication.actions';
+import { selectAuthState } from '@/core/authentication/store/selectors/authentication.selectors';
 
 // import { AlertService } from '@/shared/services/alert.service';
 // import { AuthenticationService } from '@/shared/services/authentication.service';
@@ -20,7 +21,7 @@ export class LoginComponent implements OnInit {
   loading: boolean = false;
   submitted: boolean = false;
   returnUrl: string;
-  constructor(private formBuilder: FormBuilder, private store: Store<AppState>) {}
+  constructor(private formBuilder: FormBuilder, private store: Store<AppState>, private router: Router) {}
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
@@ -47,7 +48,14 @@ export class LoginComponent implements OnInit {
       Password: this.f.Password
     }
 
-    this.store.dispatch(new AuthenticateUserRequested({ account: user }))
+    this.store.dispatch(new AuthenticateUserRequested({ account: user }));
+
+    this.store.pipe(select(selectAuthState)).subscribe(result => {
+      if (result) {
+        this.router.navigateByUrl('/dashboard/main');
+      }
+    });
+
   }
 
   public getErrorMessage(control: string): string {
