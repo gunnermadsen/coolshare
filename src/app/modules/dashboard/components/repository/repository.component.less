@@ -6,7 +6,7 @@
 
 .example-table-container {
   position: relative;
-  max-height: 500px;
+  max-height: 600px;
   overflow: auto;
 }
 
@@ -39,19 +39,38 @@ th, td {
   justify-content: center;
 }
 
+// .mat-checkbox {
+//   display: none;
+// }
+
+
+
 /* Column Widths */
 .mat-column-createdDate {
-  max-width: 64px;
+  width: 120px;
 }
 
+.mat-column-select {
+  width: 50px;
+  padding: 32px 17px 28px 17px !important;
+}
+
+// .mat-column-select:hover {
+//   .mat-checkbox {
+//     display: inline;
+//   }
+// }
+
+
 .mat-column-name {
-  max-width: 300px;
+  max-width: 150px;
 }
 
 .mat-column-action, .mat-column-createdDate, .mat-column-members {
   text-align: right;
   justify-content: flex-end;
 }
+
 
 .mat-column-action {
   width: 90px !important;
@@ -86,6 +105,10 @@ a.folder-node {
 
 .mat-row:hover {
   cursor: pointer;
+
+  // .mat-checkbox {
+  //   display: inline;
+  // }
 
   td.mat-cell.mat-column-name {
     color: blue;

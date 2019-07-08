@@ -41,6 +41,7 @@
     "hammerjs": "^2.0.8",
     "jquery": "^3.4.1",
     "material-design-icons": "^3.0.1",
+    "mime-types": "^2.1.24",
     "moment": "^2.24.0",
     "moment-locales-webpack-plugin": "^1.0.7",
     "ngrx-store-freeze": "^0.2.4",

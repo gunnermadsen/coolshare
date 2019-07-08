@@ -11,7 +11,11 @@ export enum FileSystemActionTypes {
     FileUploadRequested = '[File Upload] Upload File to Repo',
     UpdateRetrievedFolderContents = '[Update Folder Contents] Update Existing Contents',
     FileUploadFinished = '[File Upload] File Upload Finished',
-    CreateNewFolderRequested = '[Create Folder] Create Folder Requested'
+    CreateNewFolderRequested = '[Create Folder] Create Folder Requested',
+    DeleteItem = '[Delete Item] Delete Item From Folder',
+    DownloadItem = '[Download Item] Download Item From Folder',
+    DownloadItemCancelled = '[Download Item] Download Item Cancelled'
+
 };
 
 /**
@@ -54,6 +58,20 @@ export class FileUploadFinished implements Action {
     readonly type = FileSystemActionTypes.FileUploadFinished;
 }
 
+export class DeleteItem implements Action {
+    readonly type = FileSystemActionTypes.DeleteItem;
+    constructor(public payload: { id: string, path: string, name: string }) {}
+}
+
+export class DownloadItem implements Action {
+    readonly type = FileSystemActionTypes.DownloadItem;
+    constructor(public payload: { id: string, path: string, name: string }) {}
+}
+
+export class DownloadItemCancelled implements Action {
+    readonly type = FileSystemActionTypes.DownloadItemCancelled;
+    constructor(public payload: { id: string, path: string, name: string }) {}
+}
 
 
 /**
@@ -65,5 +83,8 @@ export type FileSystemActions
     | CreateNode
     | SaveRetrievedFolderContents
     | FileUpload
-    | CreateFolder;
+    | CreateFolder
+    | DeleteItem
+    | DownloadItem
+    | DownloadItemCancelled;
     // | UpdateRetrievedFolderContents;

@@ -7,10 +7,11 @@ import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig }
 import { startWith, switchMap, map, catchError, delay, tap, take } from 'rxjs/operators';
 import { IContents } from '@/shared/models/contents.model';
 import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
-import { FileUpload, CreateFolder, RetrieveFolderContents } from '../../store/actions/filesystem.actions';
+import { FileUpload, CreateFolder, RetrieveFolderContents, DeleteItem, DownloadItem } from '../../store/actions/filesystem.actions';
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
+import { SelectionModel } from '@angular/cdk/collections';
 
 // import * as path from 'path';
 
@@ -21,8 +22,9 @@ import { UploadDetailsComponent } from '../upload-details/upload-details.compone
 })
 export class RepositoryComponent implements OnInit {
   public dataSource: MatTableDataSource<IContents>;
-  public displayedColumns: string[] = ['name', 'createdDate', 'members', 'action'];
+  public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action'];
   public isXS: boolean = true;
+  public rowSelected: boolean = false;
   public path: string[] = [];
   private cwd: string;
   private userId: string;
@@ -32,17 +34,60 @@ export class RepositoryComponent implements OnInit {
   public fileList: FileList;
   public files: any[] = [];
 
+  public selection: SelectionModel<any>;
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    this.selection = new SelectionModel<any>(true, []);
     this.initializeTableData();
+    this.checkForSelectionChanges()
   }
 
   ngOnInit() {
-    this.breakpointObserver.observe(['(max-width: 768px']).subscribe((state: BreakpointState) => {
+    this.breakpointObserver.observe(['(max-width: 768px)']).subscribe((state: BreakpointState) => {
       return state.matches ? this.isXS = true : this.isXS = false;
     })
 
+  }
+
+  public isAllSelected() {
+    if (!this.isLoadingResults) {
+      const numSelected = this.selection.selected.length;
+      const numRows = this.dataSource.data.length;
+      return numSelected === numRows;
+    }
+  }
+
+  public checkForSelectionChanges(): void {
+    // this.rowSelected = (numSelected > 0) ? true : false;
+    // this.selection.changed.subscribe(result => {
+      if (this.selection.hasValue) {
+        this.rowSelected = true;
+      }
+      else {
+        this.rowSelected = false;
+      }
+    //})
+    
+    
+  }
+
+  public masterToggle(): void {
+    if (this.isAllSelected()) {
+      this.selection.clear()
+    } else {
+      this.dataSource.data.forEach((row: any) => {
+        return this.selection.select(row);
+      });
+    }
+    
+  }
+
+  public checkboxLabel(row?: any, ): string {
+    if (!row) {
+      return `${this.isAllSelected() ? 'select' : 'deselect'} all`
+    }
+    return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.index + 1}`
   }
 
   public initializeTableData() {
@@ -67,11 +112,13 @@ export class RepositoryComponent implements OnInit {
       })
     )
     .subscribe((data: any) => {
-      this.dataSource = new MatTableDataSource(data);
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-      this.isLoadingResults = false;
-      return;
+      if (data.length) {
+        this.isLoadingResults = false;
+
+        this.dataSource = new MatTableDataSource(data);
+        this.dataSource.paginator = this.paginator;
+        this.dataSource.sort = this.sort;
+      }
     });
   }
 
@@ -168,6 +215,21 @@ export class RepositoryComponent implements OnInit {
       this.files = null;
     }
 
+  }
+
+  public downloadItem(name: string): void {
+    if (name) {
+      this.store$.dispatch(new DownloadItem({ 
+        path: this.cwd,
+        name: name,
+        id: this.userId
+      }))
+    }
+  }
+
+
+  public deleteItem(value: any): void {
+    this.store$.dispatch(new DeleteItem({ path: this.cwd, name: value.name, id: this.userId }))
   }
   
 }
