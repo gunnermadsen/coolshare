@@ -1,13 +1,17 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError, forkJoin, combineLatest } from 'rxjs';
-import { Action } from '@ngrx/store';
+import { Observable, of, throwError, forkJoin, combineLatest, concat } from 'rxjs';
+import { Action, Store, select } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { concatMap, takeUntil, map, catchError, finalize, tap, switchMap, withLatestFrom, mergeMap, concatMapTo, concatAll } from 'rxjs/operators';
+import { concatMap, takeUntil, map, catchError, finalize, tap, switchMap, withLatestFrom, mergeMap, concatMapTo, concatAll, takeWhile, merge, zip } from 'rxjs/operators';
 import { FileSystemActionTypes, SaveRetrievedFolderContents, RetrieveFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
 import { HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
 import serializeError from 'serialize-error';
 import * as fromFileUploadActions from '../actions/upload.actions';
 import { HttpRepoService } from '@/core/http/repo.http.service';
+import { AppState } from '@/reducers';
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
+import { State } from '../../state';
+
 
 
 @Injectable()
@@ -16,91 +20,117 @@ export class UploadEffects {
     @Effect()
     public uploadFile$: Observable<Action> = this.actions$.pipe(
         ofType(fromFileUploadActions.ActionTypes.UPLOAD_REQUEST),
-        concatMap((action: any) => {
-            return this.repoService.uploadFile(action.payload).pipe(
-                takeUntil(
-                    this.actions$.pipe(
-                        ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL)
-                    )
-                ),
-             
-                map((event: HttpEvent<any>) => {
-                    return this.getActionFromHttpEvent(event);
+        mergeMap((action: any) => {          
+            
+            let total: number = 0;
+            let loaded: number = 0;
+            const files: any[] = Object.values(action.payload.files);
+
+            files.map((file: File) => total += file.size)
+
+            // subscribe to upload state changes and recalculate the amount of data loaded.
+            this.store$
+                .pipe(
+                    takeWhile(() => Math.round((100 * loaded) / total) != 100),
+                    select(fromFileUploadSelectors.selectUploadState)
+                )
+                .subscribe((state: any) => {
+                    loaded = 0;
+                    return state.files.forEach((payload: any, index: number) => {
+                        loaded += state.files[index].loaded;
+                    });
+                });
+
+            const requests$ = files.map((file: File, index: number) => {
+                return this.repoService.uploadFile(file, action.payload.path, action.payload.id, index).pipe(
+                    takeUntil(
+                        this.actions$.pipe(
+                            ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL)
+                        )
+                    ),
+                    tap((event: any) => {
+                        let progress: number = 0;
+                        if (event.loaded) {
+
+                            // calculate the total progress for all files, 
+                            // using the amount loaded divided by the sum of their sizes
+                            progress = Math.round((100 * loaded) / total);
+
+                            console.log(`Progress of file ${files[index].name}: ${progress}%`);
+
+                            this.store$.dispatch(new fromFileUploadActions.UploadProgressAction({
+                                progress: progress,
+                                index: index,
+                                httpEvent: event
+                            }));
+
+                        }
+                        return event; 
+                    }),
+                    map((event: HttpEvent<any>) => {
+                        return this.getActionFromHttpEvent(event, index, loaded, total);
+                    }),
+                    catchError((error: any) => of(this.handleError(error)))
+                )
+            })
+            return forkJoin(requests$).pipe(
+                map(() => {
+                    return action;
                 }),
-             
-                catchError((error) => of(this.handleError(error)))
+                catchError((error: any) => of(this.handleError(error)))
             )
-        })
-    
+        }),
+        map((action: any) => {
+            //return new fromFileUploadActions.UploadCompletedUpdateFolderAction({ files: action.payload.body });
+            return new RetrieveFolderContents({ folder: { id: action.payload.id, path: action.payload.path }})
+        }),
+        catchError((error: any) => of(this.handleError(error)))
     )
-
-    // @Effect()
-    // public uploadData$ = this.actions$.pipe(
-    //     ofType(fromFileUploadActions.ActionTypes.UPLOAD_REQUEST),
-        
-    //     mergeMap((action: any, index: number) => {
-    //         const files: any[] = Object.values(action.payload.files);
-
-    //         const requests$ = files.map((file: File, index: number) => {
-    //             return this.repoService.uploadFile(file, index, action.payload.path, action.payload.id).pipe(
-    //                 takeUntil(
-    //                     this.actions$.pipe(
-    //                         ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL)
-    //                     )
-    //                 ),
-    //                 map((event: HttpEvent<any>) => {
-    //                     return this.getActionFromHttpEvent(event, index);
-    //                 }),
-    
-    //                 catchError((error) => {
-    //                     return of(this.handleError(error));
-    //                 })
-    //             )
-    //         })
-
-    //         return forkJoin(requests$);
-
-    //         // return forkJoin(requests$).pipe(
-    //         //     concatAll(),
-    //         //     map((action: any) => {
-                    
-    //         //     })
-    //         // )
-    //     })
-    // )
 
     @Effect()
     public getFolderContents$: Observable<Action> = this.actions$.pipe(
-        ofType(fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED),
+        ofType(fromFileUploadActions.ActionTypes.UPLOAD_FINISHED),
         map((action) => {
             return new SaveRetrievedFolderContents({ contents: action.payload.files })
         }),
     )
 
-    constructor(private repoService: HttpRepoService, private actions$: Actions<fromFileUploadActions.Actions>) { }
+    constructor(private repoService: HttpRepoService, private actions$: Actions<fromFileUploadActions.Actions>, private store$: Store<AppState>) { }
 
-    private getActionFromHttpEvent(event: any): Action {
+    private getActionFromHttpEvent(event: any, index: number, loaded: number, total: number): Action {
+
         switch (event.type) {
             case HttpEventType.Sent: {
                 return new fromFileUploadActions.UploadStartedAction();
             }
+            
             case HttpEventType.UploadProgress: {
-                const progress = Math.round((100 * event.loaded) / event.total);
-                console.log(progress);
+
+                // the current execution context is based on one file, however we still need to calculate the total progress for all files (even just for one file). 
+                const totalProgress = Math.round((100 * loaded) / total);
+
+                console.log(`Progress of file ${index}: ${totalProgress}%`);
+
                 return new fromFileUploadActions.UploadProgressAction({
-                    progress: progress
+                    progress: totalProgress,
+                    index: index,
+                    httpEvent: event
                 });
+
             }
+
             case HttpEventType.ResponseHeader:
             case HttpEventType.Response: {
-                if (event.status === 200 && event.body) {
-                    return new fromFileUploadActions.UploadCompletedAction({ files: event.body });
-                } else {
+                if (event.status === 500) {
                     return new fromFileUploadActions.UploadFailureAction({
                         error: event.statusText
                     });
                 }
+                else if (event.status === 200) {
+                    return new fromFileUploadActions.UploadCompletedAction({ index: index });
+                }
             }
+
             default: {
                 return new fromFileUploadActions.UploadFailureAction({
                     error: `Unknown Event: ${JSON.stringify(event)}`

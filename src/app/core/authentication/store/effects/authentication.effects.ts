@@ -33,15 +33,20 @@ export class AuthenticationEffects {
     @Effect() 
     authenticateUserRequested$ = this.actions$.pipe(
         ofType<AuthenticateUserRequested>(AuthenticationActionTypes.AuthenticateUserRequested),
-        mergeMap((action: any) => {
-            return this.authService.login(action.payload.account)
+        switchMap((action: any) => {
+            return this.authService.login(action.payload.account).pipe(
+                map((payload) => {
+                    return new AuthenticateUserSuccessful({ account: payload.account });
+                }),
+                tap((user: any) => {
+                    return this.router.navigateByUrl('/dashboard/main');
+                }),
+                catchError((err: any) => {
+                    return of(this.store.dispatch(new AuthenticateUserUnsuccessful({ error: err })))
+                })
+            )
         }),
-        map((payload) => {
-            return new AuthenticateUserSuccessful({ account: payload.account });
-        }),
-        catchError((err: any) => {
-            return of(this.store.dispatch(new AuthenticateUserUnsuccessful({ error: err })))
-        })
+        
     );
 
     @Effect({ dispatch: false }) 

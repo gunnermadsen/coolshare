@@ -50,11 +50,11 @@ export class LoginComponent implements OnInit {
 
     this.store.dispatch(new AuthenticateUserRequested({ account: user }));
 
-    this.store.pipe(select(selectAuthState)).subscribe(result => {
-      if (result) {
-        this.router.navigateByUrl('/dashboard/main');
-      }
-    });
+    // this.store.pipe(select(selectAuthState)).subscribe(result => {
+    //   if (result) {
+    //     this.router.navigateByUrl('/dashboard/main');
+    //   }
+    // });
 
   }
 

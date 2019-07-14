@@ -16,22 +16,22 @@
             <!-- <div *ngIf="isFileSet; then fileList; else message"></div> -->
             <div mat-dialog-content>
                 <mat-list #fileList>
-                    <mat-list-item *ngFor="let file of files$ | async" class="px-0">
+                    <mat-list-item *ngFor="let item of (files$ | async); index as i" class="px-0">
                         <div class="container-fluid px-0">
                             <div class="row">
-                                <div class="col-6">
-                                    <div class="list-name">{{ file.name }}</div>
+                                <div class="col-6 pl-0">
+                                    <div class="list-name">{{ item.file.name }}</div>
                                 </div>
                                 <div class="col-4">
-                                    {{ file.size | fileSize }}
+                                    {{ item.file.size | fileSize }}
                                 </div>
-                                <div class="col-auto ml-auto">
-                                    <div *ngIf="(completed$ | async) as status; then done; else loading"></div>
+                                <div class="col-auto ml-auto pr-0">
+                                    <div *ngIf="item.completed; then done; else loading"></div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col">
-                                    <upload-progress></upload-progress>
+                                    <upload-progress [progress]="item.progress" [key]="i"></upload-progress> <!--  -->
                                 </div>
                             </div>
                         </div>
@@ -53,7 +53,7 @@
     <mat-icon color="primary">check_circle_outline</mat-icon>
 </ng-template>
 <ng-template #loading>
-    <button mat-icon-button (click)="cancelUpload()">
+    <button mat-icon-button class="mr-0 px-0" (click)="cancelUpload()">
         <mat-icon>close</mat-icon>
     </button>
 </ng-template>

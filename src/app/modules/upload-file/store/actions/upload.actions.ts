@@ -9,12 +9,20 @@ export enum ActionTypes {
     UPLOAD_PROGRESS = '[File Upload API] Progress',
     UPLOAD_PROGRESS_SUM = '[File Upload API] Progress Sum',
     UPLOAD_FAILURE = '[File Upload API] Failure',
-    UPLOAD_COMPLETED = '[File Upload API] Success'
+    UPLOAD_COMPLETED = '[File Upload API] Success',
+    UPLOAD_CURRENT_FILE = '[File Upload API] Switch Files',
+    UPLOAD_FINISHED = '[File Upload API] Update Folder Contents'
 }
 
 export class UploadRequestAction implements Action {
     readonly type = ActionTypes.UPLOAD_REQUEST;
     constructor(public payload: { id: string, path: string, files: any }) { }
+}
+
+export class UploadCurrentFileAction implements Action {
+    readonly type = ActionTypes.UPLOAD_CURRENT_FILE;
+
+    constructor(public payload: { currentFile: number }) {}
 }
 
 export class UploadCancelAction implements Action {
@@ -31,15 +39,13 @@ export class UploadStartedAction implements Action {
 
 export class UploadProgressAction implements Action {
     readonly type = ActionTypes.UPLOAD_PROGRESS;
-    constructor(public payload: { progress: number }) { }
+    constructor(public payload: { progress: number, index: number, httpEvent: any }) { }
 }
 
 export class UploadProgressSumAction implements Action {
     readonly type = ActionTypes.UPLOAD_PROGRESS_SUM;
     constructor(public payload: { progress: number }) { }
 }
-
-
 
 export class UploadFailureAction implements Action {
     readonly type = ActionTypes.UPLOAD_FAILURE;
@@ -48,6 +54,12 @@ export class UploadFailureAction implements Action {
 
 export class UploadCompletedAction implements Action {
     readonly type = ActionTypes.UPLOAD_COMPLETED;
+
+    constructor(public payload: { index: number }) {}
+}
+
+export class UploadCompletedUpdateFolderAction implements Action {
+    readonly type = ActionTypes.UPLOAD_FINISHED;
     constructor(public payload: { files: any }) {}
 }
 
@@ -64,4 +76,6 @@ export type Actions =
     | UploadProgressAction
     | UploadFailureAction
     | UploadCompletedAction
-    | UploadViewStateAction;
+    | UploadViewStateAction
+    | UploadCurrentFileAction
+    | UploadCompletedUpdateFolderAction;

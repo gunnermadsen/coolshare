@@ -7,6 +7,7 @@ import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 
 @Component({
@@ -22,16 +23,15 @@ export class UploadDetailsComponent implements OnInit {
   constructor(private store$: Store<AppState>, @Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialogRef<any>) { }
 
   ngOnInit() {
-    // this.completed$ = this.store$.pipe(
-    //   select(fromFileUploadSelectors.selectUploadFileCompleted)
-    // );
-
     this.files$ = this.store$.pipe(
-      select(fromFileUploadSelectors.selectUploadFileState)
+      select(fromFileUploadSelectors.selectUploadFileState),
+      map((state: any) => {
+        return state;
+      })
     )
 
     this.completed$ = this.store$.pipe(
-      select(fromFileUploadSelectors.selectUploadFileCompleted)
+      select(fromFileUploadSelectors.selectUploadFileState)
     );
   }
 

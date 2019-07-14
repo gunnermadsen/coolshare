@@ -210,7 +210,7 @@ export class RepositoryComponent implements OnInit {
         id: this.userId,
         files: clone
       }));
-
+      
       //this.isFileSet = false;
       this.files = null;
     }

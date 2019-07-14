@@ -40,7 +40,9 @@ export const selectUploadFileFailed: MemoizedSelector<object, boolean> = createS
 
 export const selectUploadFileCompleted: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => state.status === UploadStatus.Completed
+  (state: State): boolean => {
+    return state.status === UploadStatus.Completed;
+  }
 );
 
 
@@ -60,4 +62,11 @@ export const selectUploadViewState: MemoizedSelector<object, any> = createSelect
 export const selectUploadState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
   (state: State): any => state
+)
+
+export const selectIndividualFileUploadProgress: MemoizedSelector<object, any> = createSelector(
+  selectUploadFileFeatureState,
+  (state: State): any => {
+    return state.files
+  }
 )
