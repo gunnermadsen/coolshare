@@ -13,8 +13,6 @@ import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
 import { SelectionModel } from '@angular/cdk/collections';
 
-// import * as path from 'path';
-
 @Component({
   selector: 'app-repository',
   templateUrl: './repository.component.html',
@@ -33,14 +31,12 @@ export class RepositoryComponent implements OnInit {
   public isLoadingResults = true;
   public fileList: FileList;
   public files: any[] = [];
-
   public selection: SelectionModel<any>;
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.userId = JSON.parse(localStorage.getItem('Account')).Id;
     this.selection = new SelectionModel<any>(true, []);
     this.initializeTableData();
-    this.checkForSelectionChanges()
   }
 
   ngOnInit() {
@@ -58,32 +54,31 @@ export class RepositoryComponent implements OnInit {
     }
   }
 
-  public checkForSelectionChanges(): void {
-    // this.rowSelected = (numSelected > 0) ? true : false;
-    // this.selection.changed.subscribe(result => {
-      if (this.selection.hasValue) {
-        this.rowSelected = true;
-      }
-      else {
-        this.rowSelected = false;
-      }
-    //})
-    
-    
+  public setSelectionState(event: any, row: any): void {
+    // event.stopPropagation();
+    this.selection.toggle(row);
+    if (this.selection.selected.length > 0) {
+      this.rowSelected = true;
+    } 
+    else {
+      this.rowSelected = false;
+    }
+    console.log(row);
   }
 
   public masterToggle(): void {
     if (this.isAllSelected()) {
-      this.selection.clear()
+      this.selection.clear();
+      this.rowSelected = false;
     } else {
       this.dataSource.data.forEach((row: any) => {
         return this.selection.select(row);
       });
-    }
-    
+      this.rowSelected = true;
+    }    
   }
 
-  public checkboxLabel(row?: any, ): string {
+  public checkboxLabel(row?: any): string {
     if (!row) {
       return `${this.isAllSelected() ? 'select' : 'deselect'} all`
     }
@@ -228,8 +223,19 @@ export class RepositoryComponent implements OnInit {
   }
 
 
-  public deleteItem(value: any): void {
-    this.store$.dispatch(new DeleteItem({ path: this.cwd, name: value.name, id: this.userId }))
+  public deleteItem(mode: number, value?: any): void {
+    let items: string[] = [];
+
+    switch(mode) {
+      case 0: {
+        items.push(value.name);
+      }
+      case 1: {
+        this.selection.selected.map((item: any) => items.push(item.name));
+      }
+    }
+
+    this.store$.dispatch(new DeleteItem({ path: this.cwd, items: items, id: this.userId }));
   }
   
 }

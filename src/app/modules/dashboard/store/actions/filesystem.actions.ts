@@ -60,7 +60,7 @@ export class FileUploadFinished implements Action {
 
 export class DeleteItem implements Action {
     readonly type = FileSystemActionTypes.DeleteItem;
-    constructor(public payload: { id: string, path: string, name: string }) {}
+    constructor(public payload: { id: string, path: string, items: string[] }) {}
 }
 
 export class DownloadItem implements Action {
