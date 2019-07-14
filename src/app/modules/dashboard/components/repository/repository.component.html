@@ -1,10 +1,10 @@
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col mb-3">
-      <mat-card class="mat-elevation-z2">
+      <mat-card class="mat-elevation-z2 path-card">
         <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0 bg-light">
-            <li class="breadcrumb-item active" aria-current="page"><a class="folder-node" (click)="navigateToNode(0)">repo</a></li>
+          <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item active" aria-current="page"><a class="folder-node" (click)="navigateToNode(0)">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page" *ngFor="let node of path; index as i"><a class="folder-node" (click)="navigateToNode(i + 1)">{{ node }}</a></li>
           </ol>
         </nav>
@@ -100,7 +100,7 @@
 <ng-template #actionCard>
   <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
 
-  <mat-card class="mat-elevation-z2">
+  <mat-card class="mat-elevation-z2 action-card">
     <button class="px-3" mat-button color="primary">Create new file</button>
     <button class="px-3" mat-button (click)="uploader.click()">Upload files</button>
     <button class="px-3" mat-button>Upload folder</button>
@@ -109,7 +109,7 @@
 </ng-template>
 
 <ng-template #selectedActionCard>
-  <mat-card class="mat-elevation-z2">
+  <mat-card class="mat-elevation-z2 action-card">
     <button class="px-3" mat-button color="primary">Download</button>
     <button class="px-3" mat-button (click)="uploader.click()">Rename</button>
     <button class="px-3" mat-button (click)="deleteItem(1, row)">Delete</button>

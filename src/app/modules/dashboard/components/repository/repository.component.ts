@@ -63,7 +63,6 @@ export class RepositoryComponent implements OnInit {
     else {
       this.rowSelected = false;
     }
-    console.log(row);
   }
 
   public masterToggle(): void {
@@ -138,7 +137,6 @@ export class RepositoryComponent implements OnInit {
 
     var dir: string;
     let path = this.path;
-
 
     if (!this.path.length) {
       return;
@@ -224,18 +222,31 @@ export class RepositoryComponent implements OnInit {
 
 
   public deleteItem(mode: number, value?: any): void {
+
     let items: string[] = [];
 
     switch(mode) {
       case 0: {
         items.push(value.name);
+        break;
       }
       case 1: {
         this.selection.selected.map((item: any) => items.push(item.name));
+        break;
       }
     }
 
-    this.store$.dispatch(new DeleteItem({ path: this.cwd, items: items, id: this.userId }));
+    this.store$.dispatch(
+      new DeleteItem({ 
+        path: this.cwd, 
+        items: items, 
+        id: this.userId 
+      })
+    );
+
+    this.selection.clear();
+    this.rowSelected = false;
+    
   }
   
 }

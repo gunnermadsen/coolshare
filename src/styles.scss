@@ -2,6 +2,28 @@
 @import '../node_modules/@angular/material/theming';
 @import '../node_modules/@angular/material/prebuilt-themes/deeppurple-amber.css';
 
+// Imports functions, variables, and mixins that are needed by other Bootstrap files
+@import "variables";
+@import "../node_modules/bootstrap/scss/functions";
+@import "../node_modules/bootstrap/scss/variables";
+@import "../node_modules/bootstrap/scss/mixins";
+
+// Import Bootstrap Reboot
+@import "../node_modules/bootstrap/scss/reboot";
+
+// Import Bootstrap Grid System
+@import "../node_modules/bootstrap/scss/grid"; 
+
+// Import Bootstrap CSS Utilities
+@import "../node_modules/bootstrap/scss/utilities"; 
+
+// Import Bootstrap CSS Breadcrumb 
+@import "../node_modules/bootstrap/scss/breadcrumb";
+
+@import "reset";
+
+
+
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // **Be sure that you only ever include this mixin once!**
