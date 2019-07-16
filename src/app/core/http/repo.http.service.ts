@@ -45,4 +45,8 @@ export class HttpRepoService {
 
         return this.http.post<Blob>('/api/repo/download', payload, { responseType: 'blob' as 'json' })
     }
+
+    public verifyLink(linkDetails: any): Observable<any> {
+        return this.http.post<any>('/api/repo/verify', linkDetails);
+    }
 }

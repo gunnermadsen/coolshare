@@ -4,22 +4,22 @@
   min-height: 200px;
 }
 
-.example-table-container {
+.table-container {
+  margin: auto;
+  width: 100%;
   position: relative;
-  max-height: 600px;
   overflow: auto;
 }
 
 table {
   width: 100%;
-  table-layout: fixed;
 }
 
 th, td {
-    overflow: hidden;
-    width: auto;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  overflow: hidden;
+  width: auto;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .mat-column-action {
@@ -39,11 +39,6 @@ th, td {
   justify-content: center;
 }
 
-// .mat-checkbox {
-//   display: none;
-// }
-
-
 
 /* Column Widths */
 .mat-column-createdDate {
@@ -55,22 +50,9 @@ th, td {
   padding: 32px 17px 28px 17px !important;
 }
 
-// .mat-column-select:hover {
-//   .mat-checkbox {
-//     display: inline;
-//   }
-// }
-
-
 .mat-column-name {
   max-width: 150px;
 }
-
-.mat-column-action, .mat-column-createdDate, .mat-column-members {
-  text-align: right;
-  justify-content: flex-end;
-}
-
 
 .mat-column-action {
   width: 90px !important;
@@ -81,7 +63,26 @@ th, td {
   width: 100px !important;
 }
 
-/* Styles for card spacing */
+
+// Css Styles for row action checkboxes
+
+// .mat-column-select:hover {
+//   .mat-checkbox {
+//     display: inline;
+//   }
+// }
+
+// .mat-checkbox {
+//   display: none;
+// }
+
+.mat-column-action, .mat-column-createdDate, .mat-column-members {
+  text-align: right;
+  justify-content: flex-end;
+}
+
+
+/* Styles for Angular Material Cards */
 
 .action-card {
   padding: 8px;
@@ -90,6 +91,13 @@ th, td {
 .path-card {
   padding: 8px 18px;
 }
+
+/* Styles for the action sidebar */
+
+// .action-sidebar {
+//   display: flex;
+//   height: 100%;
+// }
 
 /* Breadcrumb styles*/
 

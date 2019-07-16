@@ -4,6 +4,7 @@ import { AppState } from '@/reducers';
 import { RetrieveFolderContents } from '../../store/actions/filesystem.actions';
 import { Observable } from 'rxjs';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
@@ -12,18 +13,20 @@ import { getRepoData } from '../../store/selectors/dashboard.selectors';
 })
 export class DashboardComponent implements OnInit {
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>, private route: ActivatedRoute) { }
 
   ngOnInit() {
 
     const account = JSON.parse(localStorage.getItem('Account'));
     
-    const data = {
-      id: account.Id,
-      path: '/'
-    };
-
-    this.store.dispatch(new RetrieveFolderContents({ folder: data }));
+    if (account) {
+      const data = {
+        id: account.Id,
+        path: '/'
+      };
+  
+      this.store.dispatch(new RetrieveFolderContents({ folder: data }));
+    } 
 
   }
 

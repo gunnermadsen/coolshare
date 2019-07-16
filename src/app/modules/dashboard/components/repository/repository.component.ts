@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
@@ -14,29 +14,34 @@ import { UploadDetailsComponent } from '../upload-details/upload-details.compone
 import { SelectionModel } from '@angular/cdk/collections';
 
 @Component({
-  selector: 'app-repository',
+  selector: 'repository',
   templateUrl: './repository.component.html',
   styleUrls: ['./repository.component.less']
 })
-export class RepositoryComponent implements OnInit {
+export class RepositoryComponent implements OnChanges, OnInit {
   public dataSource: MatTableDataSource<IContents>;
   public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action'];
   public isXS: boolean = true;
   public rowSelected: boolean = false;
+  public resultsLength: number;
   public path: string[] = [];
   private cwd: string;
   private userId: string;
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) public sort: MatSort;
+  @Input() public mode: number = 0;
+  @Input() public id: string;
   public isLoadingResults = true;
   public fileList: FileList;
   public files: any[] = [];
   public selection: SelectionModel<any>;
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
-    this.userId = JSON.parse(localStorage.getItem('Account')).Id;
     this.selection = new SelectionModel<any>(true, []);
-    this.initializeTableData();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    this.userId = changes.id.currentValue;
   }
 
   ngOnInit() {
@@ -44,6 +49,11 @@ export class RepositoryComponent implements OnInit {
       return state.matches ? this.isXS = true : this.isXS = false;
     })
 
+    if (this.mode === 0) {
+      this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    }
+
+    this.initializeTableData();
   }
 
   public isAllSelected() {
@@ -108,7 +118,7 @@ export class RepositoryComponent implements OnInit {
     .subscribe((data: any) => {
       if (data.length) {
         this.isLoadingResults = false;
-
+        // this.resultsLength = data.length
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
@@ -159,21 +169,6 @@ export class RepositoryComponent implements OnInit {
 
   }
 
-  public createNewFolder(): void {
-
-    const config = new MatDialogConfig();
-
-    config.width = '450px';
-
-    const dialogRef = this.dialog.open(NewFolderComponent, config);
-
-    dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
-      if (result.FolderName) {
-        this.store$.dispatch(new CreateFolder({ id: this.userId, path: this.cwd, data: result }))
-      }
-    });
-  }
-
   public showUploadDetailsDialog(): void {
     const config = new MatDialogConfig();
 
@@ -192,23 +187,7 @@ export class RepositoryComponent implements OnInit {
     })
   }
 
-  public uploadData(event: any): void {
-
-    const clone: FileList = { ...event.target.files };
-
-    if (clone) {
-
-      this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({
-        path: this.cwd,
-        id: this.userId,
-        files: clone
-      }));
-      
-      //this.isFileSet = false;
-      this.files = null;
-    }
-
-  }
+  
 
   public downloadItem(name: string): void {
     if (name) {
@@ -218,35 +197,6 @@ export class RepositoryComponent implements OnInit {
         id: this.userId
       }))
     }
-  }
-
-
-  public deleteItem(mode: number, value?: any): void {
-
-    let items: string[] = [];
-
-    switch(mode) {
-      case 0: {
-        items.push(value.name);
-        break;
-      }
-      case 1: {
-        this.selection.selected.map((item: any) => items.push(item.name));
-        break;
-      }
-    }
-
-    this.store$.dispatch(
-      new DeleteItem({ 
-        path: this.cwd, 
-        items: items, 
-        id: this.userId 
-      })
-    );
-
-    this.selection.clear();
-    this.rowSelected = false;
-    
   }
   
 }

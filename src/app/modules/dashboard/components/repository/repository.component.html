@@ -4,7 +4,7 @@
       <mat-card class="mat-elevation-z2 path-card">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item active" aria-current="page"><a class="folder-node" (click)="navigateToNode(0)">Home</a></li>
+            <li class="breadcrumb-item active" aria-current="page" *ngIf="mode === 0"><a class="folder-node" (click)="navigateToNode(0)">Home</a></li>
             <li class="breadcrumb-item active" aria-current="page" *ngFor="let node of path; index as i"><a class="folder-node" (click)="navigateToNode(i + 1)">{{ node }}</a></li>
           </ol>
         </nav>
@@ -13,21 +13,24 @@
   </div>
 
   <div class="row">
-    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" *ngIf="isXS">
-      <!-- <ng-container *ngTemplateOutlet="actionCard"></ng-container> -->
-      <div *ngIf="rowSelected; then selectedActionCard; else actionCard"></div>
-
+    <!-- Top row: Appears when the viewport size is small or extra small -->
+    <div class="col-lg-2 col-md-2 col-sm-12 col-12 mb-3" *ngIf="isXS">
+      <file-actions 
+        [cwd]="cwd" 
+        [rowSelected]="rowSelected" 
+        [selection]="selection"
+      ></file-actions>
     </div>
   </div>
   
   <div class="row">
-    <div class="col-lg-9 col-md-9 col-sm-12 col-12">
+    <div class="col-lg-10 col-md-10 col-sm-12 col-12">
       <div class="example-container mat-elevation-z2">
         <div class="example-loading-shade" *ngIf="isLoadingResults">
           <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
         </div>
       
-        <div class="example-table-container">
+        <div class="table-container">
       
           <table mat-table [dataSource]="dataSource" class="example-table" matSort > <!-- matSortActive="createdDate" matSortDirection="desc" -->
             <!-- Checkbox Column -->
@@ -38,7 +41,7 @@
                 </mat-checkbox>
               </th>
               <td mat-cell *matCellDef="let row; let i = index">
-                <mat-checkbox (click)="$event.stopPropagation()" (change)="setSelectionState($event, row)" 
+                <mat-checkbox *ngIf="!row.empty" (click)="$event.stopPropagation()" (change)="setSelectionState($event, row)" 
                   [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
                 </mat-checkbox>
               </td>
@@ -69,7 +72,7 @@
                 <button mat-icon-button class="p-0"><mat-icon>list</mat-icon></button>
               </th>
               <td mat-cell *matCellDef="let row">
-                <button class="p-0" mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
+                <button class="p-0" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="menu"><mat-icon>more_vert</mat-icon></button>
                 <mat-menu #menu="matMenu">
                   <button mat-menu-item>Share</button>
                   <button mat-menu-item (click)="downloadItem(row.name)">Download</button>
@@ -82,37 +85,21 @@
               </td>
             </ng-container>
       
-            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="getFolderContents(row)"></tr>
           </table>
-          <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]" showFirstLastButtons></mat-paginator>
+          <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]" ></mat-paginator> <!-- [length]="resultsLength" [pageSize]="30" -->
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" *ngIf="!isXS">
-      <!-- <ng-container *ngTemplateOutlet="actionCard"></ng-container> -->
-      <div *ngIf="rowSelected; then selectedActionCard; else actionCard"></div>
+    <!-- right side column: Appears when the viewport size is medium or large -->
+
+    <div class="col-lg-2 col-md-2 col-sm-12 col-12 pl-0 action-sidebar" *ngIf="!isXS">
+      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection"></file-actions>
     </div>
   </div>
 </div>
 
 
-<ng-template #actionCard>
-  <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
 
-  <mat-card class="mat-elevation-z2 action-card">
-    <button class="px-3" mat-button color="primary">Create new file</button>
-    <button class="px-3" mat-button (click)="uploader.click()">Upload files</button>
-    <button class="px-3" mat-button>Upload folder</button>
-    <button class="px-3" mat-button (click)="createNewFolder()">New folder</button>
-  </mat-card>
-</ng-template>
-
-<ng-template #selectedActionCard>
-  <mat-card class="mat-elevation-z2 action-card">
-    <button class="px-3" mat-button color="primary">Download</button>
-    <button class="px-3" mat-button (click)="uploader.click()">Rename</button>
-    <button class="px-3" mat-button (click)="deleteItem(1, row)">Delete</button>
-  </mat-card>
-</ng-template>
 

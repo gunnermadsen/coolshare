@@ -11,7 +11,8 @@ export enum AuthenticationActionTypes {
     AuthenticateUserRequested = '[Authenticate User] Authenticate User Requested',
     AuthenticateUserSuccessful = '[Authenticate User Successful] User Authentication Successful',
     AuthenticateUserUnsuccessful = '[Authenticate User Unsuccessful] User Authentication Unsuccessful',
-    LogoutUserRequested = '[Logout User] Logout User Requested'
+    LogoutUserRequested = '[Logout User] Logout User Requested',
+    VerifyLink = '[Verify Link] Link Verification Requested'
 };
 
 /**
@@ -61,6 +62,12 @@ export class LogoutUserRequested implements Action {
 
 }
 
+export class VerifyLink implements Action {
+    readonly type = AuthenticationActionTypes.VerifyLink;
+
+    constructor(public payload: { link: string }) {}
+}
+
 
 /**
  * Export a type alias of all actions in this action group
@@ -73,4 +80,5 @@ export type AuthenticationActions
     | AuthenticateUserRequested
     | AuthenticateUserSuccessful
     | AuthenticateUserUnsuccessful
-    | LogoutUserRequested;
+    | LogoutUserRequested
+    | VerifyLink;

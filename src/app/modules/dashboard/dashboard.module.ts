@@ -10,8 +10,8 @@ import { fileSystemReducer } from './store/reducer/dashboard.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { FileSystemEffects } from './store/effects/filesystem.effects';
 import { NewFolderComponent } from './components/new-folder/new-folder.component';
-import { UploadDetailsComponent } from './components/upload-details/upload-details.component';
 import { UploadModule } from '../upload-file/upload.module';
+import { FileActionsComponent } from './components/file-actions/file-actions.component';
 
 @NgModule({
     declarations: [
@@ -19,7 +19,7 @@ import { UploadModule } from '../upload-file/upload.module';
         MainComponent,
         RepositoryComponent,
         NewFolderComponent,
-        // UploadDetailsComponent
+        FileActionsComponent
 
     ],
     imports: [
@@ -30,7 +30,13 @@ import { UploadModule } from '../upload-file/upload.module';
         StoreModule.forFeature('fs', fileSystemReducer),
         EffectsModule.forFeature([FileSystemEffects]),
     ],
-    exports: [],
+    exports: [
+        RepositoryComponent,
+        FileActionsComponent,
+        StoreModule,
+        EffectsModule
+        
+    ],
     entryComponents: [
         NewFolderComponent,
         // UploadDetailsComponent

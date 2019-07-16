@@ -4,6 +4,8 @@ import { LoginComponent } from './modules/home/components/login/login.component'
 
 import { RegisterComponent } from './modules/home/components/register/register.component';
 import { AuthGuardService } from './core/guards/auth.guard';
+import { LinkVerificationResolver } from './core/guards/verify-link.guard';
+import { PublicShareComponent } from './modules/public-share/components/public-share/public-share.component';
 
 const routes: Routes = [
   {
@@ -20,6 +22,14 @@ const routes: Routes = [
     loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
   },
   {
+    path: ':uri',
+    resolve: {
+      status: LinkVerificationResolver
+    },
+    // component: PublicShareComponent
+    loadChildren: './modules/public-share/public-share.module#PublicShareModule'
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }
@@ -27,6 +37,9 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
+  providers: [
+    LinkVerificationResolver
+  ]
 })
 export class AppRoutingModule { }

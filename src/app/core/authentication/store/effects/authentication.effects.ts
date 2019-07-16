@@ -2,19 +2,21 @@ import { Injectable } from '@angular/core';
 import { Observable, of, defer } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { RegisterUserRequested, AuthenticationActionTypes, RegistrationUnsuccessful, AuthenticateUserRequested, AuthenticateUserUnsuccessful, AuthenticateUserSuccessful, RegistrationSuccessful, LogoutUserRequested } from '../actions/authentication.actions';
+import { RegisterUserRequested, AuthenticationActionTypes, RegistrationUnsuccessful, AuthenticateUserRequested, AuthenticateUserUnsuccessful, AuthenticateUserSuccessful, RegistrationSuccessful, LogoutUserRequested, VerifyLink } from '../actions/authentication.actions';
 import { exhaustMap, catchError, tap, map, switchMap, mergeMap } from 'rxjs/operators';
 import { HttpClient } from '@angular/common/http';
 import { AppState } from '@/reducers';
 import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpAuthService } from '@/core/http/auth.http.service';
+import { HttpRepoService } from '@/core/http/repo.http.service';
+import { SaveRetrievedFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
 
 
 @Injectable()
 export class AuthenticationEffects {
 
-    constructor(private actions$: Actions, private authService: HttpAuthService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute) { }
+    constructor(private actions$: Actions, private authService: HttpAuthService, private repoService: HttpRepoService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute) { }
 
     @Effect() 
     registerUserRequested$ = this.actions$.pipe(
@@ -93,14 +95,27 @@ export class AuthenticationEffects {
     )
 
     @Effect()
+    public verifyLink$: Observable<Action> = this.actions$.pipe(
+        ofType<VerifyLink>(AuthenticationActionTypes.VerifyLink),
+        mergeMap((action: any) => {
+            return this.repoService.verifyLink(action.payload.link).pipe(
+                map((payload: any) => {
+                    return new SaveRetrievedFolderContents({ contents: payload });
+                })
+            )
+        })
+    )
+
+    @Effect()
     init$ = defer(() => {
         const account = JSON.parse(localStorage.getItem("Account"));
 
         if (account && account.Token) {
-            return of(new AuthenticateUserSuccessful({ account: account }))
-        } else {
-            return <any> of(new LogoutUserRequested());
-        }
+            return of(new AuthenticateUserSuccessful({ account: account }));
+        } 
+        // else {
+        //     return <any> of(new LogoutUserRequested());
+        // }
         
     })
 

@@ -18,6 +18,7 @@ import { SharedModule } from './shared/shared.module';
 import { UploadModule } from './modules/upload-file/upload.module';
 import { UploadDetailsComponent } from './modules/dashboard/components/upload-details/upload-details.component';
 import { FileSizePipe } from './shared/pipes/file-size.pipe';
+import { PublicShareComponent } from './modules/public-share/components/public-share/public-share.component';
 
 
 @NgModule({
@@ -26,7 +27,7 @@ import { FileSizePipe } from './shared/pipes/file-size.pipe';
     LoginComponent,
     RegisterComponent,
     UploadDetailsComponent,
-
+    // PublicShareComponent
   ],
   imports: [
     BrowserModule,

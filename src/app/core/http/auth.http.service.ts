@@ -13,4 +13,5 @@ export class HttpAuthService {
     public register(user: any): Observable<any> {
         return this.http.post<any>('/api/users/register', user);
     }
+
 }

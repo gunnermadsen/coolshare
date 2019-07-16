@@ -1,13 +1,13 @@
 <div class="container-fluid mt-3" *ngIf="isXS">
   <div class="row">
     <div class="col">
-      <ng-container *ngTemplateOutlet="actionCard"></ng-container>
+      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection"></file-actions>
     </div>
   </div>
 </div>
 
 <div class="container-fluid mt-3">
-  <div class="row">
+  <div class="row mb-3">
     <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" >
       <ng-container *ngTemplateOutlet="actionCard"></ng-container>
     </div> -->
@@ -24,20 +24,20 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <mat-form-field>
-            <input matInput placeholder="First name">
-          </mat-form-field>
-
-          <mat-form-field>
-            <input matInput type="number" min="1" placeholder="Age">
-          </mat-form-field>
+          <div class="row">
+            <div class="col-2" *ngFor="let file of (files$ | async); index as i">
+              <div *ngIf="i < 6">
+                file name
+              </div>
+            </div>
+          </div>
 
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              Starred
+              Favorites
             </mat-panel-title>
             <mat-panel-description>
               <!-- Type the country name
@@ -45,9 +45,11 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <mat-form-field>
-            <input matInput placeholder="Country">
-          </mat-form-field>
+          <div class="row">
+            <div class="col">
+
+            </div>
+          </div>
 
         </mat-expansion-panel>
 
@@ -63,12 +65,17 @@
           </mat-expansion-panel-header>
 
           <mat-list>
-            <h3 mat-subheader>Folders</h3>
-            <!-- <mat-list-item *ngFor="let data of (repoData$ | async)">
-              <div *ngIf="data.type === 'File'; then fileIconTemplate else folderIconTemplate"></div>
-              <h4 mat-line>{{ data.name }}</h4>
-              <p mat-line>{{ data.creationDate | date }}</p>
-            </mat-list-item> -->
+            <!-- <h3 mat-subheader>Folders</h3> -->
+            <mat-divider></mat-divider>
+
+            <mat-list-item *ngFor="let file of (files$ | async); index as i">
+              <!-- <div *ngIf="i < 6"></div> -->
+              <mat-icon mat-list-icon *ngIf="file.type === 'File'">insert_drive_file</mat-icon>
+              <mat-icon mat-list-icon *ngIf="file.type === 'Folder' && !file.isShared">folder</mat-icon>
+              <mat-icon mat-list-icon *ngIf="file.type === 'Folder' && file.isShared">folder_shared</mat-icon>
+              <h4 mat-line>{{ file.name }}</h4>
+              <p mat-line> Added {{ file.creationDate | date }}</p>
+            </mat-list-item>
 
           </mat-list>
 
@@ -76,26 +83,8 @@
 
       </mat-accordion>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" *ngIf="!isXS">
-      <ng-container *ngTemplateOutlet="actionCard"></ng-container>
+    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3 pl-0" *ngIf="!isXS">
+      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection"></file-actions>
     </div>
   </div>
 </div>
-
-<ng-template #actionCard>
-  <mat-card>
-    <button mat-button color="primary">Create new file</button>
-    <button mat-button>Upload files</button>
-    <button mat-button>Upload folder</button>
-    <button mat-button>New shared folder</button>
-  </mat-card>
-</ng-template>
-
-
-<ng-template #folderIconTemplate>
-  <mat-icon mat-list-icon>folder</mat-icon>
-</ng-template>
-
-<ng-template #fileIconTemplate>
-  <mat-icon mat-list-icon>insert_drive_file</mat-icon>
-</ng-template>

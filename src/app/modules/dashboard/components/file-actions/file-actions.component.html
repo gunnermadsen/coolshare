@@ -1,0 +1,20 @@
+<div *ngIf="rowSelected; then selectedActionCard; else actionCard"></div>
+
+<ng-template #actionCard>
+    <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
+
+    <mat-card class="mat-elevation-z2 action-card">
+        <button class="px-3" mat-button color="primary">Create new file</button>
+        <button class="px-3" mat-button (click)="uploader.click()">Upload files</button>
+        <button class="px-3" mat-button >Upload folder</button>
+        <button class="px-3" mat-button (click)="createNewFolder()">New folder</button>
+    </mat-card>
+</ng-template>
+
+<ng-template #selectedActionCard>
+    <mat-card class="mat-elevation-z2 action-card">
+        <button class="px-3" mat-button color="primary">Download</button>
+        <button class="px-3" mat-button >Rename</button>
+        <button class="px-3" mat-button (click)="deleteItem(1, row)">Delete</button>
+    </mat-card>
+</ng-template>

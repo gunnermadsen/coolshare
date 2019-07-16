@@ -3,11 +3,11 @@ import { FileSystemActions, FileSystemActionTypes } from '../actions/filesystem.
 
 export interface FileSystemState extends EntityState<any> {}
 
-export const adapter: EntityAdapter<any> = createEntityAdapter<any>();
-
-// {
-//     selectId: meeting => meeting.Id
-// }
+export const adapter: EntityAdapter<any> = createEntityAdapter<any>({
+    selectId: share => {
+        return share.id;
+    }
+});
 
 export const initialFileSystemState: FileSystemState = adapter.getInitialState()
 

@@ -4,7 +4,6 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DeleteItem, DownloadItem, DownloadItemCancelled } from '../actions/filesystem.actions';
 import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil } from 'rxjs/operators';
-import { HttpClient, HttpEvent, HttpEventType } from '@angular/common/http';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 
 
@@ -18,16 +17,15 @@ export class FileSystemEffects {
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
         ofType<RetrieveFolderContents>(FileSystemActionTypes.RetrieveFolderContents),
         exhaustMap((action: any) => {
-            return this.repoService.getFolderContents(action.payload.folder);
-        }),
-        map((folder: any) => {
-            return new SaveRetrievedFolderContents({ contents: folder });
-        }),
-        catchError(error => {
-            of(error)
-            return throwError(error)
+            return this.repoService.getFolderContents(action.payload.folder).pipe(
+                map((folder: any) => {
+                    return new SaveRetrievedFolderContents({ contents: folder.content });
+                }),
+                catchError(error => {
+                    return throwError(error)
+                })
+            )
         })
-
     )
 
 
@@ -35,13 +33,14 @@ export class FileSystemEffects {
     public createFolder$: Observable<Action> = this.actions$.pipe(
         ofType<CreateFolder>(FileSystemActionTypes.CreateNewFolderRequested),
         mergeMap((action) => {
-            return this.repoService.createFolder(action.payload)
-        }),
-        map((contents) => {
-            return new SaveRetrievedFolderContents({ contents: contents })
-        }),
-        catchError(error => {
-            return throwError(error);
+            return this.repoService.createFolder(action.payload).pipe(
+                map((payload: any) => {
+                    return new SaveRetrievedFolderContents({ contents: payload.content })
+                }),
+                catchError(error => {
+                    return throwError(error);
+                })
+            )
         })
     )
 
@@ -50,13 +49,14 @@ export class FileSystemEffects {
     public deleteItem$: Observable<Action> = this.actions$.pipe(
         ofType<DeleteItem>(FileSystemActionTypes.DeleteItem),
         mergeMap((action) => {
-            return this.repoService.delete(action.payload)
-        }),
-        map((contents) => {
-            return new SaveRetrievedFolderContents({ contents: contents })
-        }),
-        catchError(error => {
-            return throwError(error);
+            return this.repoService.delete(action.payload).pipe(
+                map((contents) => {
+                    return new SaveRetrievedFolderContents({ contents: contents })
+                }),
+                catchError(error => {
+                    return throwError(error);
+                })
+            )
         })
     )
 
