@@ -10,6 +10,10 @@ export class HttpAuthService {
         return this.http.post<any>('/api/users/login', user);
     }
 
+    public logout(): Observable<any> {
+        return this.http.get<any>('/api/users/logout');
+    }
+
     public register(user: any): Observable<any> {
         return this.http.post<any>('/api/users/register', user);
     }

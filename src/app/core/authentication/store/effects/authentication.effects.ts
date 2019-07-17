@@ -4,7 +4,7 @@ import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { RegisterUserRequested, AuthenticationActionTypes, RegistrationUnsuccessful, AuthenticateUserRequested, AuthenticateUserUnsuccessful, AuthenticateUserSuccessful, RegistrationSuccessful, LogoutUserRequested, VerifyLink } from '../actions/authentication.actions';
 import { exhaustMap, catchError, tap, map, switchMap, mergeMap } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpRequest } from '@angular/common/http';
 import { AppState } from '@/reducers';
 import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -19,23 +19,28 @@ export class AuthenticationEffects {
     constructor(private actions$: Actions, private authService: HttpAuthService, private repoService: HttpRepoService, private store: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute) { }
 
     @Effect() 
-    registerUserRequested$ = this.actions$.pipe(
+    public registerUserRequested$: Observable<Action> = this.actions$.pipe(
         ofType<RegisterUserRequested>(AuthenticationActionTypes.RegisterUserRequested),
-        mergeMap((action: any) => {
-            return this.authService.register(action.payload.user)
-        }),
-        switchMap((result) => [
-            this.store.dispatch(new RegistrationSuccessful(result))
-        ]),
-        catchError((err: any) => {
-            return of(this.store.dispatch(new RegistrationUnsuccessful({ error: err.error.message })))
+
+        exhaustMap((action: any): Observable<any> => {
+
+            return this.authService.register(action.payload.user).pipe(
+
+                map((payload: any): Action => {
+                    return new RegistrationSuccessful(payload);
+                }),
+
+                catchError((err: any): Observable<Action> => {
+                    return of(new RegistrationUnsuccessful({ error: err.error.message }));
+                })
+            )
         })
     );
 
     @Effect() 
-    authenticateUserRequested$ = this.actions$.pipe(
+    public authenticateUserRequested$ = this.actions$.pipe(
         ofType<AuthenticateUserRequested>(AuthenticationActionTypes.AuthenticateUserRequested),
-        switchMap((action: any) => {
+        exhaustMap((action: any) => {
             return this.authService.login(action.payload.account).pipe(
                 map((payload) => {
                     return new AuthenticateUserSuccessful({ account: payload.account });
@@ -44,12 +49,30 @@ export class AuthenticationEffects {
                     return this.router.navigateByUrl('/dashboard/main');
                 }),
                 catchError((err: any) => {
-                    return of(this.store.dispatch(new AuthenticateUserUnsuccessful({ error: err })))
+                    return of(new AuthenticateUserUnsuccessful({ error: err }));
                 })
             )
         }),
         
     );
+
+    @Effect()
+    public userLogout$ = this.actions$.pipe(
+        ofType<LogoutUserRequested>(AuthenticationActionTypes.LogoutUserRequested),
+        switchMap((action: any) => {
+            return this.authService.logout().pipe(
+                tap(() => {
+                    localStorage.removeItem('Account');
+                    this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
+                    this.toastrService.success("You have successfully logged out");
+                }),
+                catchError((err: any) => {
+                    return of(new AuthenticateUserUnsuccessful({ error: err }));
+                })
+            )
+        }),
+
+    )
 
     @Effect({ dispatch: false }) 
     registrationUnsuccessful$ = this.actions$.pipe(
@@ -72,7 +95,7 @@ export class AuthenticationEffects {
     authenticationUnsuccessful$ = this.actions$.pipe(
         ofType<AuthenticateUserUnsuccessful>(AuthenticationActionTypes.AuthenticateUserUnsuccessful),
         tap((action: any) => {
-            this.toastrService.error(action.payload.error.message);
+            this.toastrService.error(action.payload.error);
         })
     );
 
@@ -83,16 +106,6 @@ export class AuthenticationEffects {
             localStorage.setItem('Account', JSON.stringify(action.payload.account));
         })
     );
-
-    @Effect({ dispatch: false }) 
-    useLogout$ = this.actions$.pipe(
-        ofType<LogoutUserRequested>(AuthenticationActionTypes.LogoutUserRequested),
-        tap(() => {
-            localStorage.removeItem('Account');
-            this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
-            this.toastrService.success("You have successfully logged out");
-        })
-    )
 
     @Effect()
     public verifyLink$: Observable<Action> = this.actions$.pipe(

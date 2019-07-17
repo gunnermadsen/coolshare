@@ -16,13 +16,13 @@ import { SelectionModel } from '@angular/cdk/collections';
 })
 export class FileActionsComponent implements OnInit {
 
-  public userId: string;
+  @Input() public userId: string;
   @Input() public cwd: string;
   @Input() public rowSelected: boolean;
   @Input() public selection: SelectionModel<any>;
 
   constructor(private store$: Store<AppState>, public dialog: MatDialog) {
-    this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    // this.userId = JSON.parse(localStorage.getItem('Account')).Id;
   }
 
   ngOnInit() {

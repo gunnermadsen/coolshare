@@ -3,6 +3,19 @@
 </div>
 
 <div *ngIf="!isLoaded">
-    <h6>We could not find the URL that you specified. Please check the spelling of the URL or check with the creator</h6>
+    <div class="container-fluid">
+        <div class="row mt-3">
+            <div class="col">
+                <mat-card>
+                    <h3>Uh oh... Well, this is pretty embarssing...</h3>
+                    <p>We had a hard time finding the shared content you are trying to access.</p>
+                    <ul>
+                        <li>Please check the spelling of the URL.</li>
+                        <li>Verify with the owner that the content is still available</li>
+                    </ul>
+                </mat-card>
+            </div>
+        </div>
+    </div>
 </div>
 

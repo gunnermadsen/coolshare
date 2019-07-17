@@ -17,9 +17,11 @@ export class LinkVerificationResolver implements Resolve<any> {
     resolve(route: ActivatedRouteSnapshot) {
 
         return this.repoService.verifyLink(route.params).pipe(
-            map((result: any) => result),
+            map((result: any) => {
+                return result;
+            }),
             catchError((error: any) => {
-                return throwError(error);
+                return of({ content: null, message: error.message })
             })
         );
 

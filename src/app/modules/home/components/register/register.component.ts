@@ -23,7 +23,8 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.registerFormGroup = this.formBuilder.group({
-      UserName: ['gunner.madsen@outlook.com', Validators.compose([Validators.required])],
+      Email: ['gunner.madsen@outlook.com', Validators.compose([Validators.required])],
+      UserName: ['', Validators.compose([Validators.required])],
       Password: ['Megatron1!', Validators.compose([Validators.required])],
       RepeatPassword: ['Megatron1!', Validators.compose([Validators.required])]
     });
@@ -35,8 +36,9 @@ export class RegisterComponent implements OnInit {
     }
 
     const user = {
+      Email: this.f.Email,
       UserName: this.f.UserName,
-      Password: this.f.Password
+      Password: this.f.Password,
     }
     
     this.store.dispatch(new RegisterUserRequested({ user: user }));

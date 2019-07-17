@@ -1,17 +1,28 @@
-<div class="container mt-4">
+<div class="container-fluid mt-4">
   <div class="row justify-content-center">
     <div class="col-auto">
       <mat-card>
         <div class="container-fluid">
+          <div class="row mb-3">
+            <div class="col">
+              <h3>Create a new account</h3>
+              <mat-divider></mat-divider>
+            </div>
+          </div>
           <div class="row">
             <div class="col">
-              <h4>Register</h4>
-              <hr>
+              
               <form [formGroup]="registerFormGroup" (ngSubmit)="onSubmit()">
                 <div class="registration-form-container">
                   <mat-form-field appearance="outline">
+                    <mat-label>Email</mat-label>
+                    <input type="email" matInput formControlName="Email">
+                    <mat-error *ngIf="submitted && f.Email.invalid">{{ getErrorMessage('Email') }}</mat-error>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="outline">
                     <mat-label>User Name</mat-label>
-                    <input type="email" matInput formControlName="UserName">
+                    <input type="text" matInput formControlName="UserName">
                     <mat-error *ngIf="submitted && f.UserName.invalid">{{ getErrorMessage('UserName') }}</mat-error>
                   </mat-form-field>
   

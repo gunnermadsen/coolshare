@@ -13,6 +13,7 @@ import { map, tap } from 'rxjs/operators';
 })
 export class MainComponent implements OnInit {
 
+  public userId: string;
   public isXS: boolean = true;
   public cwd: string;
   public path: string[] = [];
@@ -20,7 +21,7 @@ export class MainComponent implements OnInit {
 
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver) {
-
+    this.userId = JSON.parse(localStorage.getItem('Account')).Id;
   }
 
   ngOnInit() {
