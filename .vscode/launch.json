@@ -9,14 +9,14 @@
             "type": "chrome",
             "request": "launch",
             "url": "http://localhost:4200",
-            "port": 9222,
             "webRoot": "${workspaceFolder}",
-            "skipFiles": [
-                "${workspaceRoot}/dist",
-                "${workspaceRoot}/src/environments",
-                "${workspaceRoot}/node_modules/**/*.js",
-                "<node_internals>/**/*.js"
-            ]
+            "sourceMapPathOverrides": {
+                "webpack:/*": "${webRoot}/*",
+                "/./*": "${webRoot}/*",
+                "/src/*": "${webRoot}/*",
+                "/*": "*",
+                "/./~/*": "${webRoot}/node_modules/*"
+            }
         }
     ]
 }

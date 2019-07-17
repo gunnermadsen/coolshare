@@ -12,6 +12,7 @@ import { authenticationReducer } from './authentication/store/reducer/authentica
 import { AuthenticationEffects } from './authentication/store/effects/authentication.effects';
 import { AuthGuardService } from './guards/auth.guard';
 import { SharedModule } from '@/shared/shared.module';
+import { HttpErrorInterceptor } from './interceptors/http-error.interceptor.service';
 
 @NgModule({
     declarations: [],
@@ -33,6 +34,11 @@ import { SharedModule } from '@/shared/shared.module';
             useClass: URLInterceptorService,
             multi: true
         },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: HttpErrorInterceptor,
+            multi: true
+        }
     ],
 })
 export class CoreModule {

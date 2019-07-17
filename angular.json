@@ -22,6 +22,7 @@
              
               "replaceDuplicatePlugins": true
             },
+            "indexTransform": "./src/app/config/index-html.transform.js",
             "outputPath": "dist/CoolShare",
             "index": "src/index.html",
             "main": "src/main.ts",
@@ -49,7 +50,7 @@
               ],
               "optimization": true,
               "outputHashing": "all",
-              "sourceMap": false,
+              "sourceMap": true,
               "extractCss": true,
               "namedChunks": false,
               "aot": true,

@@ -1,1 +1,8 @@
-<repository [mode]="1" [id]="id"></repository>
+<div *ngIf="isLoaded">
+    <repository [mode]="1" [id]="id"></repository>
+</div>
+
+<div *ngIf="!isLoaded">
+    <h6>We could not find the URL that you specified. Please check the spelling of the URL or check with the creator</h6>
+</div>
+

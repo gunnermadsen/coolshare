@@ -1,6 +1,5 @@
 const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
-
 module.exports = {
     // module: {
     //     rules: [

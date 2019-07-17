@@ -10,17 +10,28 @@ import { SaveRetrievedFolderContents } from '@/modules/dashboard/store/actions/f
   styleUrls: ['./public-share.component.less']
 })
 export class PublicShareComponent implements OnInit {
-  public data: any;
   public id: string;
+
+  public isLoaded: boolean;
 
   constructor(private route: ActivatedRoute, private store$: Store<AppState>) { }
 
   ngOnInit() {
     const data: any = this.route.snapshot.data.status.content;
 
-    this.id = this.route.snapshot.data.status.userId;
+    if (data) {
+      this.isLoaded = true;
 
-    this.store$.dispatch(new SaveRetrievedFolderContents({ contents: data }))
+      this.id = this.route.snapshot.data.status.userId;
+  
+      this.store$.dispatch(new SaveRetrievedFolderContents({ contents: data }));
+
+    } else {
+
+      this.isLoaded = false;
+      
+    }
+
   }
 
 }
