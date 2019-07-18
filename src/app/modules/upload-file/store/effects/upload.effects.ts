@@ -26,12 +26,14 @@ export class UploadEffects {
             let loaded: number = 0;
             const files: any[] = Object.values(action.payload.files);
 
-            files.map((file: File) => total += file.size)
+            files.map((file: File) => {
+                return total += file.size;
+            })
 
             // subscribe to upload state changes and recalculate the amount of data loaded.
             this.store$
                 .pipe(
-                    takeWhile(() => Math.round((100 * loaded) / total) != 100),
+                    takeWhile(() => Math.round((100 * loaded) / total) <= 100),
                     select(fromFileUploadSelectors.selectUploadState)
                 )
                 .subscribe((state: any) => {
@@ -42,7 +44,7 @@ export class UploadEffects {
                 });
 
             const requests$ = files.map((file: File, index: number) => {
-                return this.repoService.uploadFile(file, action.payload.path, action.payload.id, index).pipe(
+                return this.repoService.uploadFile(file, action.payload.path, action.payload.userId, index).pipe(
                     takeUntil(
                         this.actions$.pipe(
                             ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL)
@@ -82,7 +84,7 @@ export class UploadEffects {
         }),
         map((action: any) => {
             //return new fromFileUploadActions.UploadCompletedUpdateFolderAction({ files: action.payload.body });
-            return new RetrieveFolderContents({ folder: { id: action.payload.id, path: action.payload.path }})
+            return new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path }})
         }),
         catchError((error: any) => of(this.handleError(error)))
     )

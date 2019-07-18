@@ -3,15 +3,16 @@ import { Observable, of, throwError } from 'rxjs';
 import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DeleteItem, DownloadItem, DownloadItemCancelled } from '../actions/filesystem.actions';
-import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil } from 'rxjs/operators';
+import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { HttpRepoService } from '@/core/http/repo.http.service';
+import { ToastrService } from 'ngx-toastr';
 
 
 
 @Injectable()
 export class FileSystemEffects {
 
-    constructor(private actions$: Actions, private repoService: HttpRepoService) { }
+    constructor(private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService) { }
 
     @Effect() 
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
@@ -36,6 +37,9 @@ export class FileSystemEffects {
             return this.repoService.createFolder(action.payload).pipe(
                 map((payload: any) => {
                     return new SaveRetrievedFolderContents({ contents: payload.content })
+                }),
+                tap(() => {
+                    this.toastrService.success("Your folder was created successfully!");
                 }),
                 catchError(error => {
                     return throwError(error);

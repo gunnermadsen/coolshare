@@ -20,6 +20,7 @@ export class FileActionsComponent implements OnInit {
   @Input() public cwd: string;
   @Input() public rowSelected: boolean;
   @Input() public selection: SelectionModel<any>;
+  @Input() public userName: string;
 
   constructor(private store$: Store<AppState>, public dialog: MatDialog) {
     // this.userId = JSON.parse(localStorage.getItem('Account')).Id;
@@ -36,7 +37,7 @@ export class FileActionsComponent implements OnInit {
 
       this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({
         path: this.cwd,
-        id: this.userId,
+        userId: this.userId,
         files: clone
       }));
 
@@ -51,12 +52,16 @@ export class FileActionsComponent implements OnInit {
     const config = new MatDialogConfig();
 
     config.width = '450px';
+    
+    config.data = {
+      userName: this.userName
+    }
 
     const dialogRef = this.dialog.open(NewFolderComponent, config);
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result.FolderName) {
-        this.store$.dispatch(new CreateFolder({ id: this.userId, path: this.cwd, data: result }))
+        this.store$.dispatch(new CreateFolder({ id: this.userId, path: this.cwd, data: result, userName: this.userName }))
       }
     });
   }

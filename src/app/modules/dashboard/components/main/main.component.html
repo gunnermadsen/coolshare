@@ -1,7 +1,13 @@
 <div class="container-fluid mt-3" *ngIf="isXS">
   <div class="row">
     <div class="col">
-      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId"></file-actions>
+      <file-actions 
+        [cwd]="cwd" 
+        [rowSelected]="rowSelected" 
+        [userId]="userId" 
+        [selection]="selection" 
+        [userName]="userName"
+      ></file-actions>
     </div>
   </div>
 </div>
@@ -84,7 +90,13 @@
       </mat-accordion>
     </div>
     <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3 pl-0" *ngIf="!isXS">
-      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection"></file-actions>
+      <file-actions 
+        [cwd]="cwd" 
+        [rowSelected]="rowSelected" 
+        [userId]="userId" 
+        [selection]="selection" 
+        [userName]="userName"
+      ></file-actions>
     </div>
   </div>
 </div>

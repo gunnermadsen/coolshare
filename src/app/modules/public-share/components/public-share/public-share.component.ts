@@ -11,6 +11,7 @@ import { SaveRetrievedFolderContents } from '@/modules/dashboard/store/actions/f
 })
 export class PublicShareComponent implements OnInit {
   public id: string;
+  public userName: string;
 
   public isLoaded: boolean;
 
@@ -23,6 +24,7 @@ export class PublicShareComponent implements OnInit {
       this.isLoaded = true;
 
       this.id = this.route.snapshot.data.status.userId;
+      this.userName = this.route.snapshot.data.status.userName;
   
       this.store$.dispatch(new SaveRetrievedFolderContents({ contents: data }));
 

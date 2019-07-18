@@ -56,22 +56,22 @@ export class AuthenticationEffects {
         
     );
 
-    @Effect()
+    @Effect({ dispatch: false })
     public userLogout$ = this.actions$.pipe(
         ofType<LogoutUserRequested>(AuthenticationActionTypes.LogoutUserRequested),
-        switchMap((action: any) => {
+        exhaustMap((action: any) => {
             return this.authService.logout().pipe(
                 tap(() => {
                     localStorage.removeItem('Account');
                     this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
                     this.toastrService.success("You have successfully logged out");
                 }),
-                catchError((err: any) => {
-                    return of(new AuthenticateUserUnsuccessful({ error: err }));
+                catchError((error: any) => {
+                    this.toastrService.error(error);
+                    return error;
                 })
             )
-        }),
-
+        })
     )
 
     @Effect({ dispatch: false }) 

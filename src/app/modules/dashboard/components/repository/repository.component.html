@@ -19,6 +19,8 @@
         [cwd]="cwd" 
         [rowSelected]="rowSelected" 
         [selection]="selection"
+        [userId]="userId"
+        [userName]="userName"
       ></file-actions>
     </div>
   </div>
@@ -95,7 +97,7 @@
     <!-- right side column: Appears when the viewport size is medium or large -->
 
     <div class="col-lg-2 col-md-2 col-sm-12 col-12 pl-0 action-sidebar" *ngIf="!isXS">
-      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="id"></file-actions>
+      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="userName"></file-actions>
     </div>
   </div>
 </div>

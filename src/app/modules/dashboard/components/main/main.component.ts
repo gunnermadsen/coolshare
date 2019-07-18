@@ -15,13 +15,16 @@ export class MainComponent implements OnInit {
 
   public userId: string;
   public isXS: boolean = true;
+  public userName: string;
   public cwd: string;
   public path: string[] = [];
   public files$: Observable<any>;
 
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver) {
-    this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    const account = JSON.parse(localStorage.getItem('Account'));
+    this.userId = account.Id;
+    this.userName = account.UserName;
   }
 
   ngOnInit() {

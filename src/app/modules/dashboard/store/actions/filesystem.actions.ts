@@ -45,13 +45,13 @@ export class CreateNode implements Action {
 export class FileUpload implements Action {
     readonly type = FileSystemActionTypes.FileUploadRequested;
 
-    constructor(public payload: { id: string, path: string, data: any }) {}
+    constructor(public payload: { userId: string, path: string, data: any }) {}
 }
 
 export class CreateFolder implements Action {
     readonly type = FileSystemActionTypes.CreateNewFolderRequested;
 
-    constructor(public payload: { id: string, path: string, data: any }) {}
+    constructor(public payload: { id: string, path: string, data: any, userName: string }) {}
 }
 
 export class FileUploadFinished implements Action {

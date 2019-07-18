@@ -26,11 +26,11 @@ export class RepositoryComponent implements OnChanges, OnInit {
   public resultsLength: number;
   public path: string[] = [];
   private cwd: string;
-  private userId: string;
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) public sort: MatSort;
   @Input() public mode: number = 0;
-  @Input() public id: string;
+  @Input() public userId: string;
+  @Input() public userName: string;
   public isLoadingResults = true;
   public fileList: FileList;
   public files: any[] = [];
@@ -41,7 +41,8 @@ export class RepositoryComponent implements OnChanges, OnInit {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.userId = changes.id.currentValue;
+    // this.userId = changes.id.currentValue;
+    // this.userName = changes.userName.currentValue;
   }
 
   ngOnInit() {
@@ -50,7 +51,9 @@ export class RepositoryComponent implements OnChanges, OnInit {
     })
 
     if (this.mode === 0) {
-      this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+      const account = JSON.parse(localStorage.getItem('Account'));
+      this.userId = account.Id;
+      this.userName = account.UserName;
     }
 
     this.initializeTableData();

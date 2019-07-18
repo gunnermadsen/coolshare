@@ -18,6 +18,11 @@
                         <!-- <mat-hint>Hint</mat-hint> -->
                     </mat-form-field>
 
+                    <div *ngIf="mode === 1">
+                        <p>Your share is accesssible at:</p>
+                        <span>{{ checkDevMode() }}/{{ userName }}/{{ shareName | lowercase }}</span>
+                    </div>
+
                     <mat-list>
                         <h3 mat-subheader class="px-0 pb-1">Who has access</h3>
                         <mat-divider class="mb-2"></mat-divider>

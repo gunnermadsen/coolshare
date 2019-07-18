@@ -16,7 +16,7 @@ export enum ActionTypes {
 
 export class UploadRequestAction implements Action {
     readonly type = ActionTypes.UPLOAD_REQUEST;
-    constructor(public payload: { id: string, path: string, files: any }) { }
+    constructor(public payload: { userId: string, path: string, files: any }) { }
 }
 
 export class UploadCurrentFileAction implements Action {

@@ -17,14 +17,14 @@ export class HttpRepoService {
         return this.http.post<any>('/api/repo', directory)
     }
 
-    public uploadFile(file: File, path: string, id: string, index: number): Observable<HttpEvent<{}> | any> { //file: File, index: number, path: string, id: string
+    public uploadFile(file: File, path: string, userId: string, index: number): Observable<HttpEvent<{}> | any> { //file: File, index: number, path: string, id: string
         const formData = new FormData();
 
         //Object.values(payload.files).forEach((file: File, index: number) => formData.append(index.toString(), file));
 
         formData.append(index.toString(), file)
 
-        formData.append('id', id);
+        formData.append('userId', userId);
         formData.append('path', path);
 
         return this.http.post<any>('/api/repo/upload', formData, { reportProgress: true, observe: 'events' })

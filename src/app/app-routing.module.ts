@@ -22,7 +22,7 @@ const routes: Routes = [
     loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
   },
   {
-    path: ':uri',
+    path: ':userName/:shareName',
     resolve: {
       status: LinkVerificationResolver
     },
