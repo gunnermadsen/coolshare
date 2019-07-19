@@ -1,7 +1,7 @@
 <div class="container-fluid mt-4">
   <div class="row justify-content-center">
-    <div class="col-auto">
-      <mat-card>
+    <div class="col-auto px-0">
+      <mat-card class="px-0">
         <div class="container-fluid">
           <div class="row mb-3">
             <div class="col">
@@ -14,28 +14,35 @@
               
               <form [formGroup]="registerFormGroup" (ngSubmit)="onSubmit()">
                 <div class="registration-form-container">
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="mb-2">
                     <mat-label>Email</mat-label>
                     <input type="email" matInput formControlName="Email">
-                    <mat-error *ngIf="submitted && f.Email.invalid">{{ getErrorMessage('Email') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Email.errors && c.Email.errors.required">{{ getErrorMessage('Email', 'required') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Email.errors && c.Email.errors.pattern">{{ getErrorMessage('Email', 'pattern') }}</mat-error>
                   </mat-form-field>
 
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="mb-2" >
                     <mat-label>User Name</mat-label>
                     <input type="text" matInput formControlName="UserName">
-                    <mat-error *ngIf="submitted && f.UserName.invalid">{{ getErrorMessage('UserName') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.UserName.errors && c.UserName.errors.required">{{ getErrorMessage('UserName', 'required') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.UserName.errors && c.UserName.errors['invalidCharacters']">{{ getErrorMessage('UserName', 'invalidCharacters') }}</mat-error>
                   </mat-form-field>
   
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="mb-2">
                     <mat-label>Password</mat-label>
                     <input type="password" matInput formControlName="Password">
-                    <mat-error *ngIf="submitted && f.Password.invalid">{{ getErrorMessage('Password') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Password.errors && c.Password.errors.required">{{ getErrorMessage('Password', 'required') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Password.errors && c.Password.errors['invalidCharacters']">{{ getErrorMessage('Password', 'invalidCharacters') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Password.errors && c.Password.errors['passwordStrength']">{{ getErrorMessage('Password', 'passwordStrength') }}</mat-error>
+
                   </mat-form-field>
   
-                  <mat-form-field appearance="outline">
+                  <mat-form-field appearance="outline" class="mb-2">
                     <mat-label>Repeat Password</mat-label>
                     <input type="password" matInput formControlName="RepeatPassword">
-                    <mat-error *ngIf="submitted && f.RepeatPassword.invalid">{{ getErrorMessage('RepeatPassword') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.RepeatPassword.errors && c.RepeatPassword.errors.required">{{ getErrorMessage('RepeatPassword', 'required') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.RepeatPassword.errors && c.RepeatPassword.errors['invalidCharacters']">{{ getErrorMessage('RepeatPassword', 'invalidCharacters') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.RepeatPassword.errors && c.RepeatPassword.errors['mustMatch']">{{ getErrorMessage('RepeatPassword', 'mustMatch') }}</mat-error>
                   </mat-form-field>
 
                   <div class="form-group">

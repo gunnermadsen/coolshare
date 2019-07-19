@@ -1,15 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { Router, ActivatedRoute } from '@angular/router';
+import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { first } from 'rxjs/operators';
-import { Store, select } from '@ngrx/store';
+import { Store } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { AuthenticateUserRequested } from '@/core/authentication/store/actions/authentication.actions';
-import { selectAuthState } from '@/core/authentication/store/selectors/authentication.selectors';
-
-// import { AlertService } from '@/shared/services/alert.service';
-// import { AuthenticationService } from '@/shared/services/authentication.service';
-
+import { InvalidCharacterValidator } from '@/shared/validators/invalid-characters.validator';
 
 @Component({
   selector: 'login',
@@ -25,8 +20,20 @@ export class LoginComponent implements OnInit {
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      UserName: ['mgun', Validators.compose([Validators.required]) ],
-      Password: ['Megatron1!', Validators.compose([Validators.required])]
+      UserName: [
+        'madgunner', 
+        Validators.compose([
+          Validators.required, 
+          InvalidCharacterValidator
+        ]) 
+      ],
+      Password: [
+        'Megatron1!', 
+        Validators.compose([
+          Validators.required, 
+          InvalidCharacterValidator
+        ])
+      ]
     });
 
     //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
@@ -34,6 +41,10 @@ export class LoginComponent implements OnInit {
 
   public get f() {
     return this.loginForm.value;
+  }
+
+  public get c() {
+    return this.loginForm.controls;
   }
 
   public onSubmit() {
@@ -50,15 +61,20 @@ export class LoginComponent implements OnInit {
 
     this.store.dispatch(new AuthenticateUserRequested({ account: user }));
 
-    // this.store.pipe(select(selectAuthState)).subscribe(result => {
-    //   if (result) {
-    //     this.router.navigateByUrl('/dashboard/main');
-    //   }
-    // });
-
   }
 
-  public getErrorMessage(control: string): string {
-    return this.loginForm.controls[control].hasError('required') ? `${control} is required` : '';
+  public getErrorMessage(control: string, error: string): string {
+    let message: string;
+    switch(error) {
+      case 'required': {
+        message = `${control} is required`;
+        break;
+      }
+      case 'invalidCharacters': {
+        message = 'You are entering invalid characters. <>^*?+=[]{}"\'|\/= are not allowed';
+        break;
+      }
+    }
+    return this.loginForm.controls[control].hasError(error) ? message : '';
   }
 }

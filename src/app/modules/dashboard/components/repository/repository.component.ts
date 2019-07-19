@@ -27,7 +27,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
   public rowSelected: boolean = false;
   public resultsLength: number;
   public path: string[] = [];
-  private cwd: string;
+  public cwd: string;
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) public sort: MatSort;
   @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent;

@@ -1,7 +1,7 @@
 <div class="container-fluid mt-4">
   <div class="row justify-content-center">
-    <div class="col-auto">
-      <mat-card>
+    <div class="col-auto px-0">
+      <mat-card class="px-0">
         <div class="container-fluid">
           <div class="row mb-3">
             <div class="col">
@@ -13,16 +13,19 @@
             <div class="col">
               <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
                 <div class="login-form-container">
+
                   <mat-form-field appearance="outline">
                     <mat-label>User Name</mat-label>
                     <input type="email" matInput formControlName="UserName">
-                    <mat-error *ngIf="submitted && f.UserName.invalid">{{ getErrorMessage('UserName') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.UserName.errors && c.UserName.invalid">{{ getErrorMessage('UserName', 'required') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.UserName.errors && c.UserName.errors['invalidCharacters']">{{ getErrorMessage('UserName', 'invalidCharacters') }}</mat-error>
                   </mat-form-field>
               
                   <mat-form-field appearance="outline">
                     <mat-label>Password</mat-label>
                     <input type="password" matInput formControlName="Password">
-                    <mat-error *ngIf="submitted && f.Password.invalid">{{ getErrorMessage('Password') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Password.errors && c.Password.invalid">{{ getErrorMessage('Password', 'required') }}</mat-error>
+                    <mat-error *ngIf="submitted && c.Password.errors && c.Password.errors['invalidCharacters']">{{ getErrorMessage('Password', 'invalidCharacters') }}</mat-error>
                   </mat-form-field>
               
                   <div class="form-group">
