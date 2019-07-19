@@ -5,7 +5,7 @@ import * as fromFileUploadActions from '@/modules/upload-file/store/actions/uplo
 import { MatDialogConfig, MatDialog } from '@angular/material';
 import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { take } from 'rxjs/operators';
-import { CreateFolder, DeleteItem } from '../../store/actions/filesystem.actions';
+import { CreateFolder, DeleteAction } from '../../store/actions/filesystem.actions';
 import { SelectionModel } from '@angular/cdk/collections';
 
 
@@ -69,24 +69,35 @@ export class FileActionsComponent implements OnInit {
   public deleteItem(mode: number, value?: any): void {
 
     let items: string[] = [];
+    let ids: string[] = [];
+    let id: string = "";
 
     switch (mode) {
       case 0: {
         items.push(value.name);
+        id = value.id;
         break;
       }
       case 1: {
-        this.selection.selected.map((item: any) => items.push(item.name));
+        this.selection.selected.map((item: any) => {
+          items.push(item.name);
+          ids.push(item.id);
+        });
         break;
       }
     }
 
+    const result = {
+      path: this.cwd,
+      items: items,
+      userId: this.userId,
+      id: id,
+      ids: ids,
+      mode: mode
+    }
+
     this.store$.dispatch(
-      new DeleteItem({
-        path: this.cwd,
-        items: items,
-        id: this.userId
-      })
+      new DeleteAction(result)
     );
 
     this.selection.clear();

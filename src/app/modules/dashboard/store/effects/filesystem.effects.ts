@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DeleteItem, DownloadItem, DownloadItemCancelled } from '../actions/filesystem.actions';
+import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DeleteAction, DownloadItem, DownloadItemCancelled, DeleteFolderItem, DeleteFolderItems } from '../actions/filesystem.actions';
 import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 import { ToastrService } from 'ngx-toastr';
@@ -51,13 +51,31 @@ export class FileSystemEffects {
 
     @Effect()
     public deleteItem$: Observable<Action> = this.actions$.pipe(
-        ofType<DeleteItem>(FileSystemActionTypes.DeleteItem),
+        ofType<DeleteAction>(FileSystemActionTypes.DeleteAction),
         mergeMap((action) => {
-            return this.repoService.delete(action.payload).pipe(
-                map((contents) => {
-                    return new SaveRetrievedFolderContents({ contents: contents })
+
+            const payload = { 
+                path: action.payload.path, 
+                id: action.payload.userId, 
+                items: action.payload.items
+            }
+
+            return this.repoService.delete(payload).pipe(
+                map(() => {
+                    switch (action.payload.mode) {
+                        case 0: {
+                            return new DeleteFolderItem({ id: action.payload.id })
+                        }
+                        case 1: {
+                            return new DeleteFolderItems({ ids: action.payload.ids })
+                        }
+                    }
+                }),
+                tap(() => {
+                    this.toastrService.success("Delete operation successful");
                 }),
                 catchError(error => {
+                    this.toastrService.error(error);
                     return throwError(error);
                 })
             )

@@ -11,8 +11,10 @@ export enum FileSystemActionTypes {
     FileUploadRequested = '[File Upload] Upload File to Repo',
     UpdateRetrievedFolderContents = '[Update Folder Contents] Update Existing Contents',
     FileUploadFinished = '[File Upload] File Upload Finished',
+    DeleteAction = '[Delete Item] Delete Item from Server',
     CreateNewFolderRequested = '[Create Folder] Create Folder Requested',
-    DeleteItem = '[Delete Item] Delete Item From Folder',
+    DeleteFolderItems = '[Delete Items] Delete Items From Store',
+    DeleteFolderItem = '[Delete Item] Delete Item From Store',
     DownloadItem = '[Download Item] Download Item From Folder',
     DownloadItemCancelled = '[Download Item] Download Item Cancelled'
 
@@ -58,9 +60,9 @@ export class FileUploadFinished implements Action {
     readonly type = FileSystemActionTypes.FileUploadFinished;
 }
 
-export class DeleteItem implements Action {
-    readonly type = FileSystemActionTypes.DeleteItem;
-    constructor(public payload: { id: string, path: string, items: string[] }) {}
+export class DeleteAction implements Action {
+    readonly type = FileSystemActionTypes.DeleteAction;
+    constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string,  mode: number }) {}
 }
 
 export class DownloadItem implements Action {
@@ -71,6 +73,16 @@ export class DownloadItem implements Action {
 export class DownloadItemCancelled implements Action {
     readonly type = FileSystemActionTypes.DownloadItemCancelled;
     constructor(public payload: { id: string, path: string, name: string }) {}
+}
+
+export class DeleteFolderItems implements Action {
+    readonly type = FileSystemActionTypes.DeleteFolderItems;
+    constructor(public payload: { ids: string[] }) {}
+}
+
+export class DeleteFolderItem implements Action {
+    readonly type = FileSystemActionTypes.DeleteFolderItem;
+    constructor(public payload: { id: string }) {}
 }
 
 
@@ -84,7 +96,9 @@ export type FileSystemActions
     | SaveRetrievedFolderContents
     | FileUpload
     | CreateFolder
-    | DeleteItem
+    | DeleteAction
+    | DeleteFolderItems
+    | DeleteFolderItem
     | DownloadItem
     | DownloadItemCancelled;
     // | UpdateRetrievedFolderContents;

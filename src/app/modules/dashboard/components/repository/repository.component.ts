@@ -7,11 +7,12 @@ import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig }
 import { startWith, switchMap, map, catchError, delay, tap, take } from 'rxjs/operators';
 import { IContents } from '@/shared/models/contents.model';
 import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
-import { FileUpload, CreateFolder, RetrieveFolderContents, DeleteItem, DownloadItem } from '../../store/actions/filesystem.actions';
+import { FileUpload, CreateFolder, RetrieveFolderContents, DownloadItem } from '../../store/actions/filesystem.actions';
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
 import { SelectionModel } from '@angular/cdk/collections';
+import { FileActionsComponent } from '../file-actions/file-actions.component';
 
 @Component({
   selector: 'repository',
@@ -28,6 +29,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
   private cwd: string;
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) public sort: MatSort;
+  @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent;
   @Input() public mode: number = 0;
   @Input() public userId: string;
   @Input() public userName: string;
@@ -103,6 +105,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
       tap((result: any) => {
         if (result.length) {
           this.cwd = result[0].cwd;
+          this.path = [];
 
           if (result[0].cwd != "/") {
             this.path = result[0].cwd.split('/');
@@ -127,6 +130,18 @@ export class RepositoryComponent implements OnChanges, OnInit {
         this.dataSource.sort = this.sort;
       }
     });
+  }
+
+  public deleteItem(index: number, row: any): void {
+    this.fileActionsComponent.deleteItem(index, row);
+  }
+
+  public uploadData(event: any): void {
+    this.fileActionsComponent.uploadData(event);
+  }
+
+  public createNewFolder(): void {
+    this.fileActionsComponent.createNewFolder();
   }
 
   public getFolderContents(row: any): void {

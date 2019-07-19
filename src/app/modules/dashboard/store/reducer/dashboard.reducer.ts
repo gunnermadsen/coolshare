@@ -18,12 +18,13 @@ export function fileSystemReducer(state = initialFileSystemState, action: FileSy
 
         case FileSystemActionTypes.SaveRetrievedFolderContents:
             return adapter.addAll(action.payload.contents, { ...state });
+            
+        case FileSystemActionTypes.DeleteFolderItem:
+            return adapter.removeOne(action.payload.id, state);
 
-        // case FileSystemActionTypes.UpdateRetrievedFolderContents:
-        //     return adapter.updateMany(action.payload.contents, state);
+        case FileSystemActionTypes.DeleteFolderItems:
+            return adapter.removeMany(action.payload.ids, state);
 
-        // case FileSystemActionTypes.DeleteMeeting:
-        //     return adapter.removeOne(action.payload.meetingId, state);
 
         default: {
             return state;
