@@ -13,6 +13,7 @@ import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FileActionsComponent } from '../file-actions/file-actions.component';
+import * as icons from 'pretty-file-icons';
 
 @Component({
   selector: 'repository',
@@ -99,6 +100,17 @@ export class RepositoryComponent implements OnChanges, OnInit {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.index + 1}`
   }
 
+
+  // public getIcon(row: any): any {
+  //   if (row.type === 'Folder') {
+  //     return;
+  //   }
+
+  //   let result = row.name.split('.');
+  //   const extension = result[result.length];
+  //   const icon = icons.getIcon(extension);
+  //   return 'svg/' + icon + '.svg';
+  // }
   public initializeTableData() {
     this.store$.pipe(
       select(getRepoData),

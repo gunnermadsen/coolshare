@@ -22,7 +22,6 @@
              
               "replaceDuplicatePlugins": true
             },
-            "indexTransform": "./src/app/config/index-html.transform.js",
             "outputPath": "dist/CoolShare",
             "index": "src/index.html",
             "main": "src/main.ts",

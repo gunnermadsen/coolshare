@@ -53,6 +53,7 @@
     "ngx-toastr": "^10.0.4",
     "path": "^0.12.7",
     "popper.js": "^1.15.0",
+    "pretty-file-icons": "^2.2.1",
     "rxjs": "^6.5.2",
     "serialize-error": "^4.1.0",
     "tslib": "^1.9.0",

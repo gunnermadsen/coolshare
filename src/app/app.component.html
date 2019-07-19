@@ -1,18 +1,7 @@
-  <div class="sidenav-container">
-    <mat-toolbar color="primary">
-      <div class="navbar-center">
-        <div class="side-nav-menu">
-          <button mat-button class="menu-icon" (click)="sidenav.toggle()">
-            <mat-icon [inline]="true">menu</mat-icon>
-          </button>
-        </div>
-        <button mat-button type="button" class="px-0" routerLink="/dashboard/main">
-          <h4>Coolshare</h4>
-        </button>
-      </div>
-    </mat-toolbar>
+  <!-- <div class="sidenav-container"> -->
+    
 
-    <mat-sidenav-container class="mat-sidenav-container">
+    <mat-sidenav-container fullscreen class="mat-sidenav-container">
       <mat-sidenav mode="over" #sidenav>
         <mat-action-list>
           <button mat-list-item class="float-right close-btn" (click)="sidenav.close()">
@@ -23,11 +12,25 @@
           <div *ngIf="authState; then dashboardNav; else homeNav"></div>
         </mat-nav-list>
       </mat-sidenav>
-      <mat-sidenav-content>
-        <router-outlet></router-outlet>
-      </mat-sidenav-content>
+      <mat-toolbar color="primary">
+        <div class="navbar-center">
+          <div class="side-nav-menu">
+            <button mat-button class="menu-icon" (click)="sidenav.toggle()">
+              <mat-icon [inline]="true">menu</mat-icon>
+            </button>
+          </div>
+          <button mat-button type="button" class="px-0" routerLink="/dashboard/main">
+            <h4>Coolshare</h4>
+          </button>
+        </div>
+      </mat-toolbar>
+      <!-- <mat-sidenav-content> -->
+        <div class="container-fluid">
+          <router-outlet></router-outlet>
+        </div>
+      <!-- </mat-sidenav-content> -->
     </mat-sidenav-container>
-  </div>
+  <!-- </div> -->
 
 
   <ng-template #homeNav>
