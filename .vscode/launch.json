@@ -16,7 +16,13 @@
                 "/src/*": "${webRoot}/*",
                 "/*": "*",
                 "/./~/*": "${webRoot}/node_modules/*"
-            }
+            },
+            "skipFiles": [
+                "${workspaceFolder}/dist",
+                "${workspaceFolder}/src/environments",
+                "${workspaceFolder}/node_modules/**/*.js",
+                "<node_internals>/**/*.js"
+            ]
         }
     ]
 }

@@ -30,7 +30,7 @@ import { PublicShareComponent } from './modules/public-share/components/public-s
     // PublicShareComponent
   ],
   imports: [
-    BrowserModule,
+    BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     BrowserAnimationsModule,
     SharedModule,
