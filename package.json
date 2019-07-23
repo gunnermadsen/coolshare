@@ -13,7 +13,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "heroku-postbuild": "ng build --prod",
+    "heroku-postbuild": "npm run build:ssr",
     "start": "node ./app.js",
     "wp:start": "webpack-dev-server --mode development --config webpack.config.js",
     "wp:build": "webpack --mode production",
