@@ -18,7 +18,9 @@
 import 'zone.js/dist/zone-node';
 
 import * as express from 'express';
-import {join} from 'path';
+import { join } from 'path';
+import * as compression from 'compression'
+
 
 // Express server
 const app = express();
@@ -39,6 +41,8 @@ app.engine('html', ngExpressEngine({
 
 app.set('view engine', 'html');
 app.set('views', DIST_FOLDER);
+
+app.use(compression());
 
 // Example Express Rest API endpoints
 // app.get('/api/**', (req, res) => { });
