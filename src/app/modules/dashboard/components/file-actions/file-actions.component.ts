@@ -5,8 +5,9 @@ import * as fromFileUploadActions from '@/modules/upload-file/store/actions/uplo
 import { MatDialogConfig, MatDialog } from '@angular/material';
 import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { take } from 'rxjs/operators';
-import { CreateFolder, DeleteAction } from '../../store/actions/filesystem.actions';
 import { SelectionModel } from '@angular/cdk/collections';
+
+import * as fromFolderActions from '../../store/actions/filesystem.actions'
 
 
 @Component({
@@ -61,7 +62,7 @@ export class FileActionsComponent implements OnInit {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result.FolderName) {
-        this.store$.dispatch(new CreateFolder({ id: this.userId, path: this.cwd, data: result, userName: this.userName }))
+        this.store$.dispatch(new fromFolderActions.CreateFolder({ id: this.userId, path: this.cwd, data: result, userName: this.userName }))
       }
     });
   }
@@ -96,9 +97,12 @@ export class FileActionsComponent implements OnInit {
       mode: mode
     }
 
-    this.store$.dispatch(
-      new DeleteAction(result)
-    );
+    if (mode === 0) {
+      this.store$.dispatch(new fromFolderActions.DeleteFolderItem(result));
+    } 
+    else {
+      this.store$.dispatch(new fromFolderActions.DeleteFolderItems(result));
+    }
 
     this.selection.clear();
     this.rowSelected = false;

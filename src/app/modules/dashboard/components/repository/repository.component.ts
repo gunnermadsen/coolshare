@@ -110,7 +110,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
   //   const extension = result[result.length];
   //   const icon = icons.getIcon(extension);
   //   return 'svg/' + icon + '.svg';
-  // }
+  // }Í
   public initializeTableData() {
     this.store$.pipe(
       select(getRepoData),
@@ -129,7 +129,6 @@ export class RepositoryComponent implements OnChanges, OnInit {
         return result;
       }),
       catchError((error: any) => {
-        console.log(error);
         return observableOf([]);
       })
     )
@@ -146,6 +145,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
 
   public deleteItem(index: number, row: any): void {
     this.fileActionsComponent.deleteItem(index, row);
+    this.rowSelected = false;
   }
 
   public uploadData(event: any): void {

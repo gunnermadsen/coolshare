@@ -60,11 +60,6 @@ export class FileUploadFinished implements Action {
     readonly type = FileSystemActionTypes.FileUploadFinished;
 }
 
-export class DeleteAction implements Action {
-    readonly type = FileSystemActionTypes.DeleteAction;
-    constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string,  mode: number }) {}
-}
-
 export class DownloadItem implements Action {
     readonly type = FileSystemActionTypes.DownloadItem;
     constructor(public payload: { id: string, path: string, name: string }) {}
@@ -77,12 +72,12 @@ export class DownloadItemCancelled implements Action {
 
 export class DeleteFolderItems implements Action {
     readonly type = FileSystemActionTypes.DeleteFolderItems;
-    constructor(public payload: { ids: string[] }) {}
+    constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string, mode: number }) {}
 }
 
 export class DeleteFolderItem implements Action {
     readonly type = FileSystemActionTypes.DeleteFolderItem;
-    constructor(public payload: { id: string }) {}
+    constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string, mode: number }) {}
 }
 
 
@@ -96,7 +91,6 @@ export type FileSystemActions
     | SaveRetrievedFolderContents
     | FileUpload
     | CreateFolder
-    | DeleteAction
     | DeleteFolderItems
     | DeleteFolderItem
     | DownloadItem

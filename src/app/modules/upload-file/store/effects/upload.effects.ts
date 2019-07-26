@@ -1,17 +1,20 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError, forkJoin, combineLatest, concat } from 'rxjs';
+import { Observable, of, forkJoin } from 'rxjs';
 import { Action, Store, select } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { concatMap, takeUntil, map, catchError, finalize, tap, switchMap, withLatestFrom, mergeMap, concatMapTo, concatAll, takeWhile, merge, zip, mapTo } from 'rxjs/operators';
-import { FileSystemActionTypes, SaveRetrievedFolderContents, RetrieveFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
-import { HttpEvent, HttpEventType, HttpResponse } from '@angular/common/http';
+import { takeUntil, map, catchError, tap, mergeMap, takeWhile } from 'rxjs/operators';
+import { SaveRetrievedFolderContents, RetrieveFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
+import { HttpEvent, HttpEventType } from '@angular/common/http';
 import serializeError from 'serialize-error';
-import * as fromFileUploadActions from '../actions/upload.actions';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 import { AppState } from '@/reducers';
-import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
-import { State } from '../../state';
 
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
+import * as fromFileUploadActions from '../actions/upload.actions';
+
+import { State, UploadStatus } from '../../state';
+
+import * as _ from 'lodash';
 
 
 @Injectable()
@@ -63,7 +66,8 @@ export class UploadEffects {
                             this.store$.dispatch(new fromFileUploadActions.UploadProgressAction({
                                 progress: progress,
                                 index: index,
-                                httpEvent: event
+                                httpEvent: event,
+                                //files: updateFileUploadProgress()
                             }));
 
                         }
@@ -76,20 +80,19 @@ export class UploadEffects {
                 )
             })
             return forkJoin(requests$).pipe(
-                map(() => {
+                map((action: any) => {
                     return action;
                 }),
                 catchError((error: any) => of(this.handleError(error)))
             )
         }),
-        // map((action: any) => {
-        //     //return new fromFileUploadActions.UploadCompletedUpdateFolderAction({ files: action.payload.body });
-        //     return new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path }})
-        // }),
-        switchMap((action: any) => [
-            new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path } }),
-            new fromFileUploadActions.UploadCompletedAction()
-        ]),
+        map((action: any) => {
+            return new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path }})
+        }),
+        // switchMap((action: any) => [
+        //     new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path } }),
+        //     new fromFileUploadActions.UploadCompletedAction()
+        // ]),
         catchError((error: any) => of(this.handleError(error)))
     )
 
@@ -151,5 +154,34 @@ export class UploadEffects {
         return new fromFileUploadActions.UploadFailureAction({
             error: friendlyErrorMessage
         });
+    }
+
+    // Formula for calculating the progress
+
+    /* Math.round((100 * event.loaded) / event.total); */
+
+    private updateFileUploadProgress(state: State, payload: any): any {
+
+        if (state.files[payload.index].loaded < payload.httpEvent.loaded) {
+            let data: any = _.cloneDeep(state);
+
+            const progress: number = Math.round((100 * payload.httpEvent.loaded) / payload.httpEvent.total)
+
+            const content = {
+                progress: progress,
+                file: data.files[payload.index].file,
+                loaded: payload.httpEvent.loaded,
+                completed: (progress === 100) ? true : false,
+                status: (progress === 100) ? UploadStatus.Completed : UploadStatus.Started
+            }
+
+            data.files.splice(payload.index, 1, content);
+
+            return data.files;
+        }
+        else {
+            return state.files;
+        }
+
     }
 }
