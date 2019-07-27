@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin } from 'rxjs';
 import { Action, Store, select } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { takeUntil, map, catchError, tap, mergeMap, takeWhile } from 'rxjs/operators';
+import { takeUntil, map, catchError, tap, mergeMap, takeWhile, switchMap, withLatestFrom } from 'rxjs/operators';
 import { SaveRetrievedFolderContents, RetrieveFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
 import { HttpEvent, HttpEventType } from '@angular/common/http';
 import serializeError from 'serialize-error';
@@ -29,52 +29,36 @@ export class UploadEffects {
             let loaded: number = 0;
             const files: any[] = Object.values(action.payload.files);
 
-            files.map((file: File) => {
-                return total += file.size;
-            })
+            files.forEach((file: File) => total += file.size);
 
             // subscribe to upload state changes and recalculate the amount of data loaded.
-            this.store$
-                .pipe(
-                    takeWhile(() => Math.round((100 * loaded) / total) <= 100),
-                    select(fromFileUploadSelectors.selectUploadState)
-                )
-                .subscribe((state: any) => {
-                    loaded = 0;
-                    return state.files.forEach((payload: any, index: number) => {
-                        loaded += state.files[index].loaded;
-                    });
+            this.store$.pipe(
+                takeWhile(() => Math.round((100 * loaded) / total) <= 100),
+                select(fromFileUploadSelectors.selectUploadState)
+            )
+            .subscribe((state: any) => {
+                loaded = 0;
+                return state.files.forEach((payload: any, index: number) => {
+                    loaded += state.files[index].loaded;
                 });
+            });
 
             const requests$ = files.map((file: File, index: number) => {
                 return this.repoService.uploadFile(file, action.payload.path, action.payload.userId, index).pipe(
-                    takeUntil(
-                        this.actions$.pipe(
-                            ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL)
-                        )
-                    ),
-                    tap((event: any) => {
-                        let progress: number = 0;
-                        if (event.loaded) {
-
-                            // calculate the total progress for all files, 
-                            // using the amount loaded divided by the sum of their sizes
-                            progress = Math.round((100 * loaded) / total);
-
-                            console.log(`Progress of file ${files[index].name}: ${progress}%`);
-
-                            this.store$.dispatch(new fromFileUploadActions.UploadProgressAction({
-                                progress: progress,
-                                index: index,
-                                httpEvent: event,
-                                //files: updateFileUploadProgress()
-                            }));
-
-                        }
-                        return event; 
+                    takeUntil(this.actions$.pipe(
+                        ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL)
+                    )),
+                    withLatestFrom(this.store$.pipe(
+                        select(fromFileUploadSelectors.selectUploadState),
+                        // takeUntil(this.actions$.pipe(
+                        //     ofType(fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED)
+                        // ))
+                    )),
+                    map((state: any) => {
+                        return this.updateFileUploadState(state, index);  
                     }),
-                    map((event: HttpEvent<any>) => {
-                        return this.getActionFromHttpEvent(event, index, loaded, total);
+                    map((result: any) => {
+                        return this.getActionFromHttpEvent(result.event, index, loaded, total, files);
                     }),
                     catchError((error: any) => of(this.handleError(error)))
                 )
@@ -86,13 +70,13 @@ export class UploadEffects {
                 catchError((error: any) => of(this.handleError(error)))
             )
         }),
-        map((action: any) => {
-            return new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path }})
-        }),
-        // switchMap((action: any) => [
-        //     new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path } }),
-        //     new fromFileUploadActions.UploadCompletedAction()
-        // ]),
+        // map((action: any) => {
+        //     return new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path }})
+        // }), 
+        switchMap((action: any) => [
+            new RetrieveFolderContents({ folder: { id: action.payload.userId, path: action.payload.path } }),
+            new fromFileUploadActions.UploadCompletedAction()
+        ]),
         catchError((error: any) => of(this.handleError(error)))
     )
 
@@ -106,7 +90,7 @@ export class UploadEffects {
 
     constructor(private repoService: HttpRepoService, private actions$: Actions<fromFileUploadActions.Actions>, private store$: Store<AppState>) { }
 
-    private getActionFromHttpEvent(event: any, index: number, loaded: number, total: number): Action {
+    private getActionFromHttpEvent(event: any, index: number, loaded: number, total: number, files: any): Action {
 
         switch (event.type) {
             case HttpEventType.Sent: {
@@ -123,7 +107,8 @@ export class UploadEffects {
                 return new fromFileUploadActions.UploadProgressAction({
                     progress: totalProgress,
                     index: index,
-                    httpEvent: event
+                    httpEvent: event,
+                    files: files
                 });
 
             }
@@ -160,28 +145,62 @@ export class UploadEffects {
 
     /* Math.round((100 * event.loaded) / event.total); */
 
-    private updateFileUploadProgress(state: State, payload: any): any {
+    /** 
+     * Payload must contain:
+     *      - The current file index.
+     *      - The files being uploaded
+     *      - The http event
+     */
 
-        if (state.files[payload.index].loaded < payload.httpEvent.loaded) {
-            let data: any = _.cloneDeep(state);
+    private updateFileUploadState(state: any, index: number): any {
 
-            const progress: number = Math.round((100 * payload.httpEvent.loaded) / payload.httpEvent.total)
+        let result: any = {};
+
+        if (state[0].event && state[0].event.loaded) {
+
+            const progress: number = Math.round((100 * state[0].event.loaded) / state[0].event.total)
 
             const content = {
                 progress: progress,
-                file: data.files[payload.index].file,
-                loaded: payload.httpEvent.loaded,
+                file: state[1].files[index].file,
+                loaded: state[0].event.loaded,
                 completed: (progress === 100) ? true : false,
                 status: (progress === 100) ? UploadStatus.Completed : UploadStatus.Started
             }
 
-            data.files.splice(payload.index, 1, content);
+            const data = state.files.splice(index, 1, content);
 
-            return data.files;
+            result.content = data;
+            result.event = state[0].event;
+
+            return result;
         }
+
         else {
-            return state.files;
+            result.event = state[0];
+            return result;
         }
 
     }
 }
+
+// tap((event: any) => {
+//     let progress: number = 0;
+//     if (event.loaded) {
+
+//         // calculate the total progress for all files, 
+//         // using the amount loaded divided by the sum of their sizes
+//         progress = Math.round((100 * loaded) / total);
+
+//         console.log(`Progress of file ${files[index].name}: ${progress}%`);
+
+//         this.store$.dispatch(new fromFileUploadActions.UploadProgressAction({
+//             progress: progress,
+//             index: index,
+//             httpEvent: event,
+//             //files: updateFileUploadProgress()
+//         }));
+
+//     }
+//     return event; 
+// }),

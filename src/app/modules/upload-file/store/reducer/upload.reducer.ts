@@ -15,35 +15,6 @@ const setFileState = (files: any): any[] => {
     return data;
 }
 
-// Formula for calculating the progress
-
-/* Math.round((100 * event.loaded) / event.total); */
-
-const updateFileUploadProgress = (state: State, payload: any): any => {
-
-    if (state.files[payload.index].loaded < payload.httpEvent.loaded) {
-        let data: any = _.cloneDeep(state);
-    
-        const progress: number = Math.round((100 * payload.httpEvent.loaded) / payload.httpEvent.total)
-        
-        const content = {
-            progress: progress,
-            file: data.files[payload.index].file,
-            loaded: payload.httpEvent.loaded,
-            completed: (progress === 100) ? true : false,
-            status: (progress === 100) ? UploadStatus.Completed : UploadStatus.Started
-        }
-    
-        data.files.splice(payload.index, 1, content);
-        
-        return data.files;
-    }
-    else {
-        return state.files;
-    }
-
-}
-
 export function uploadReducer(state = initialState, action: Actions): State {
     switch (action.type) {
         case ActionTypes.UPLOAD_VIEW_STATE: {
@@ -106,7 +77,7 @@ export function uploadReducer(state = initialState, action: Actions): State {
             const result = {
                 ...state,
                 progress: action.payload.progress,
-                files: updateFileUploadProgress(state, action.payload)
+                files: action.payload.files
             };
             return result;
         }

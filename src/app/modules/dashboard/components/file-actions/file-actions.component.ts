@@ -61,7 +61,7 @@ export class FileActionsComponent implements OnInit {
     const dialogRef = this.dialog.open(NewFolderComponent, config);
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
-      if (result.FolderName) {
+      if (result) {
         this.store$.dispatch(new fromFolderActions.CreateFolder({ id: this.userId, path: this.cwd, data: result, userName: this.userName }))
       }
     });
