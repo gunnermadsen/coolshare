@@ -156,14 +156,14 @@ export class UploadEffects {
 
         let result: any = {};
 
-        if (state[0].event && state[0].event.loaded) {
+        if (state[0].type === 1) {
 
-            const progress: number = Math.round((100 * state[0].event.loaded) / state[0].event.total)
+            const progress: number = Math.round((100 * state[0].loaded) / state[0].total)
 
             const content = {
                 progress: progress,
                 file: state[1].files[index].file,
-                loaded: state[0].event.loaded,
+                loaded: state[0].loaded,
                 completed: (progress === 100) ? true : false,
                 status: (progress === 100) ? UploadStatus.Completed : UploadStatus.Started
             }
@@ -171,7 +171,7 @@ export class UploadEffects {
             const data = state.files.splice(index, 1, content);
 
             result.content = data;
-            result.event = state[0].event;
+            result.event = state[0];
 
             return result;
         }
