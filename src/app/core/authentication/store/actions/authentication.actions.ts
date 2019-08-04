@@ -48,7 +48,7 @@ export class AuthenticateUserRequested implements Action {
 export class AuthenticateUserSuccessful implements Action {
     readonly type = AuthenticationActionTypes.AuthenticateUserSuccessful;
 
-    constructor(public payload: { account: any }) { }
+    constructor(public payload: { token: any }) { }
 }
 
 export class AuthenticateUserUnsuccessful implements Action {
@@ -65,7 +65,7 @@ export class LogoutUserRequested implements Action {
 export class VerifyLink implements Action {
     readonly type = AuthenticationActionTypes.VerifyLink;
 
-    constructor(public payload: { link: string }) {}
+    constructor(public payload: { link: string }) { }
 }
 
 

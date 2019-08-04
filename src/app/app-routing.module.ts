@@ -30,6 +30,11 @@ const routes: Routes = [
     loadChildren: './modules/public-share/public-share.module#PublicShareModule'
   },
   {
+    path: 'account',
+    loadChildren: './modules/account/account.module#AccountModule',
+    canActivate: [AuthGuardService]
+  },
+  {
     path: '**',
     redirectTo: '/login'
   }

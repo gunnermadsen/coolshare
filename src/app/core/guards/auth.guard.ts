@@ -15,7 +15,7 @@ export class AuthGuardService implements CanActivate {
 
     const account = JSON.parse(localStorage.getItem('Account'))
     
-    if (account && account.Token) {
+    if (account && account.JWTToken) {
       return true;
     }
     else {

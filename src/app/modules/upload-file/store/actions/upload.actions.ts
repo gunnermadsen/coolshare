@@ -39,7 +39,7 @@ export class UploadStartedAction implements Action {
 
 export class UploadProgressAction implements Action {
     readonly type = ActionTypes.UPLOAD_PROGRESS;
-    constructor(public payload: { progress: number, index: number, httpEvent: any, files?: any }) { }
+    constructor(public payload: { progress: number, index: number, files: any }) { }
 }
 
 export class UploadProgressSumAction implements Action {
@@ -68,7 +68,7 @@ export class UploadViewStateAction implements Action {
     constructor(public payload: { viewState: boolean }) {}
 }
 
-export type Actions =
+export type UploadActions =
     | UploadRequestAction
     | UploadCancelAction
     | UploadResetAction

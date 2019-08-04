@@ -7,18 +7,13 @@ import { LoginComponent } from './modules/home/components/login/login.component'
 import { CoreModule } from './core/core.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { reducers, metaReducers } from './reducers';
-import { StoreModule } from '@ngrx/store';
-import { environment } from '@/../environments/environment';
-import { StoreDevtoolsModule } from '@ngrx/store-devtools';
-import { EffectsModule } from '@ngrx/effects';
-
 import { RegisterComponent } from './modules/home/components/register/register.component';
 import { SharedModule } from './shared/shared.module';
 import { UploadModule } from './modules/upload-file/upload.module';
 import { UploadDetailsComponent } from './modules/dashboard/components/upload-details/upload-details.component';
-import { FileSizePipe } from './shared/pipes/file-size.pipe';
-import { PublicShareComponent } from './modules/public-share/components/public-share/public-share.component';
+
+import { AccountModule } from './modules/account/account.module';
+import { HomeModule } from './modules/home/home.module';
 
 
 @NgModule({
@@ -33,14 +28,12 @@ import { PublicShareComponent } from './modules/public-share/components/public-s
     BrowserModule.withServerTransition({ appId: 'serverApp' }),
     AppRoutingModule,
     BrowserAnimationsModule,
+    CoreModule,
     SharedModule,
+    HomeModule,
     UploadModule,
+    AccountModule,
 
-    StoreModule.forRoot(reducers, { metaReducers }),
-    !environment.production ? StoreDevtoolsModule.instrument() : [],
-    EffectsModule.forRoot([]),
-
-    CoreModule
   ],
   exports: [
   ],

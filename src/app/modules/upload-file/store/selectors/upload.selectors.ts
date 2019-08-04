@@ -61,7 +61,9 @@ export const selectUploadViewState: MemoizedSelector<object, any> = createSelect
 
 export const selectUploadState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): any => state
+  (state: State): any => {
+    return state;
+  }
 )
 
 export const selectIndividualFileUploadProgress: MemoizedSelector<object, any> = createSelector(

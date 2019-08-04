@@ -8,18 +8,24 @@ import { EffectsModule } from '@ngrx/effects';
 import { URLInterceptorService } from './interceptors/jwt.interceptor.service';
 
 import { ToastrModule } from 'ngx-toastr';
-import { authenticationReducer } from './authentication/store/reducer/authentication.reducer';
+import { AuthenticationReducer } from './authentication/store/reducer/authentication.reducer';
 import { AuthenticationEffects } from './authentication/store/effects/authentication.effects';
 import { AuthGuardService } from './guards/auth.guard';
 import { SharedModule } from '@/shared/shared.module';
 import { HttpErrorInterceptor } from './interceptors/http-error.interceptor.service';
+import { reducers, metaReducers } from '@/reducers';
+import { environment } from 'environments/environment';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
     declarations: [],
     imports: [ 
         CommonModule,
-        StoreModule.forFeature('auth', authenticationReducer),
-        EffectsModule.forFeature([AuthenticationEffects]),
+
+        StoreModule.forRoot(reducers, { metaReducers }),
+        !environment.production ? StoreDevtoolsModule.instrument() : [],
+        EffectsModule.forRoot([]),
+        
         HttpClientXsrfModule.withOptions({
             cookieName: 'XSRF-TOKEN',
             headerName: 'x-xsrf-token'

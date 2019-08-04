@@ -23,6 +23,10 @@
             <h4>Coolshare</h4>
           </button>
         </div>
+        <span class="spacer"></span>
+        <div class="navbar-end" *ngIf="authState">
+          <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1" (click)="navigate('/account')">GM</button>
+        </div>
       </mat-toolbar>
       <!-- <mat-sidenav-content> -->
         <div class="container-fluid px-0">

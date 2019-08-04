@@ -12,14 +12,20 @@ export class URLInterceptorService implements HttpInterceptor {
 
         const account = JSON.parse(localStorage.getItem('Account'));
 
+        // if (request.url.includes('/api/account/picture')) {
+        //     request = request.clone({
+        //         headers: request.headers.set('Content-Type', 'application/x-www-form-urlencoded')
+        //     });
+        // }
+
         request = request.clone({ 
             url: `${environment.localRepo}${request.url}`,
             withCredentials: true // (account && account.Token) ? true : false
         });
 
-        if (account && account.Token) {
+        if (account && account.JWTToken) {
             request = request.clone({
-                headers: request.headers.set('Authorization', `Bearer ${account.Token}`)
+                headers: request.headers.set('Authorization', `Bearer ${account.JWTToken}`)
             })
         }
         

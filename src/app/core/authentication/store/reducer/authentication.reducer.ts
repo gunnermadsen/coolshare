@@ -2,26 +2,26 @@ import { AuthenticationActionTypes, AuthenticationActions } from '../actions/aut
 
 export interface AuthenticationState {
     isLoggedIn: boolean;
-    user: any
+    token: any
 }
 
 export const initialAuthenticationState: AuthenticationState = {
     isLoggedIn: false,
-    user: undefined
+    token: undefined
 };
 
-export function authenticationReducer(state = initialAuthenticationState, action: AuthenticationActions): AuthenticationState {
+export function AuthenticationReducer(state = initialAuthenticationState, action: AuthenticationActions): AuthenticationState {
     switch (action.type) {
         case AuthenticationActionTypes.AuthenticateUserSuccessful:
             return {
                 isLoggedIn: true,
-                user: action.payload.account
+                token: action.payload.token
             }
 
         case AuthenticationActionTypes.LogoutUserRequested:
             return {
                 isLoggedIn: false,
-                user: undefined
+                token: undefined
             }
 
         default:

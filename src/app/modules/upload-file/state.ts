@@ -11,7 +11,7 @@ export interface State {
   currentFile: number;
   error: string | null;
   progress: number | null;
-  files?: any[];
+  files: any[] | null;
   viewState: boolean | null;
 }
 

@@ -1,0 +1,56 @@
+
+<form [formGroup]="profileForm">
+
+    <div class="container-fluid">
+        <div class="profile-container">
+            <div class="row mt-4">
+                <div class="col px-0">
+    
+                    <mat-form-field appearance="outline">
+                        <mat-label>First Name</mat-label>
+                        <input matInput formControlName="FirstName">
+                    </mat-form-field>
+    
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col px-0">
+    
+                    <mat-form-field appearance="outline">
+                        <mat-label>Last Name</mat-label>
+                        <input matInput formControlName="LastName">
+                    </mat-form-field>
+    
+                </div>
+            </div>
+            <div class="row mt-4">
+                <div class="col px-0">
+    
+                    <mat-form-field appearance="outline">
+                        <mat-label>User Name</mat-label>
+                        <input matInput formControlName="UserName">
+                    </mat-form-field>
+    
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col px-0">
+    
+                    <mat-form-field appearance="outline">
+                        <mat-label>Email</mat-label>
+                        <input matInput formControlName="Email">
+                    </mat-form-field>
+    
+                </div>
+            </div>
+            <div class="row mt-2 py-2">
+                <div class="col-auto ml-auto">
+    
+                    <button mat-raised-button color="primary" class="mr-2" (click)="saveProfile()">Save</button>
+                    <button mat-raised-button>Cancel</button>
+    
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
