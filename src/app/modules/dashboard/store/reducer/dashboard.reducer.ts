@@ -13,16 +13,16 @@ export const initialFileSystemState: FileSystemState = adapter.getInitialState()
 
 export function fileSystemReducer(state = initialFileSystemState, action: FileSystemActions): FileSystemState {
     switch (action.type) {
-        case FileSystemActionTypes.CreateNode:
-            return adapter.addOne(action.payload.node, state);
+        // case FileSystemActionTypes.CreateNode:
+        //     return adapter.addOne(action.payload.node, state);
 
-        case FileSystemActionTypes.SaveRetrievedFolderContents:
+        case FileSystemActionTypes.FS_SAVE_RETRIEVED_FOLDER_CONTENTS:
             return adapter.addAll(action.payload.contents, { ...state });
             
-        case FileSystemActionTypes.DeleteFolderItem:
+        case FileSystemActionTypes.FS_DELETE_FOLDER_ITEM:
             return adapter.removeOne(action.payload.id, state);
 
-        case FileSystemActionTypes.DeleteFolderItems:
+        case FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS:
             return adapter.removeMany(action.payload.ids, state);
 
 

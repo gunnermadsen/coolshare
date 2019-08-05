@@ -162,14 +162,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
       return;
     }
 
-    //let path: string = `${row.name}`;
-
-    const data = {
-      id: this.userId,
-      path: row.path
-    }
-
-    this.store$.dispatch(new RetrieveFolderContents({ folder: data }))
+    this.store$.dispatch(new RetrieveFolderContents({ folder: row.path }))
 
   }
 

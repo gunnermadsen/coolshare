@@ -2,6 +2,9 @@ import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
+
+import * as filesystem from '../actions/filesystem.actions';
+
 import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DownloadItem, DownloadItemCancelled, DeleteFolderItem, DeleteFolderItems } from '../actions/filesystem.actions';
 import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { HttpRepoService } from '@/core/http/repo.http.service';
@@ -16,7 +19,7 @@ export class FileSystemEffects {
 
     @Effect() 
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
-        ofType<RetrieveFolderContents>(FileSystemActionTypes.RetrieveFolderContents),
+        ofType(filesystem.FileSystemActionTypes.FS_READ_FOLDER),
         exhaustMap((action: any) => {
             return this.repoService.getFolderContents(action.payload.folder).pipe(
                 map((folder: any) => {
@@ -32,8 +35,9 @@ export class FileSystemEffects {
 
     @Effect()
     public createFolder$: Observable<Action> = this.actions$.pipe(
-        ofType<CreateFolder>(FileSystemActionTypes.CreateNewFolderRequested),
-        mergeMap((action) => {
+        ofType(filesystem.FileSystemActionTypes.FS_CREATE_FOLDER),
+        mergeMap((action: any) => {
+
             return this.repoService.createFolder(action.payload).pipe(
                 map((payload: any) => {
                     return new SaveRetrievedFolderContents({ contents: payload.content })
@@ -51,22 +55,20 @@ export class FileSystemEffects {
 
     @Effect()
     public deleteFile$ = this.actions$.pipe(
-        ofType<DeleteFolderItem>(FileSystemActionTypes.DeleteFolderItem),
+        ofType<DeleteFolderItem>(FileSystemActionTypes.FS_DELETE_FOLDER_ITEM),
         mergeMap((action) => {
 
             const payload = { 
                 path: action.payload.path, 
-                id: action.payload.userId, 
                 items: action.payload.items
             }
 
             return this.repoService.delete(payload).pipe(
-                map(() => {
-                    const payload = { id: action.payload.userId, path: action.payload.path }
-                    return new RetrieveFolderContents({ folder: payload })
-                }),
                 tap(() => {
                     this.toastrService.success("Delete operation successful");
+                }),
+                map(() => {
+                    return new RetrieveFolderContents({ folder: { path: action.payload.path }})
                 }),
                 catchError(error => {
                     this.toastrService.error(error);
@@ -77,22 +79,20 @@ export class FileSystemEffects {
     )
     @Effect()
     public deleteFiles$ = this.actions$.pipe(
-        ofType<DeleteFolderItems>(FileSystemActionTypes.DeleteFolderItems),
+        ofType<DeleteFolderItems>(FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS),
         mergeMap((action) => {
 
             const payload = { 
                 path: action.payload.path, 
-                id: action.payload.userId, 
                 items: action.payload.items
             }
 
             return this.repoService.delete(payload).pipe(
-                map(() => {
-                    const payload = { id: action.payload.userId, path: action.payload.path }
-                    return new RetrieveFolderContents({ folder: payload })
-                }),
                 tap(() => {
                     this.toastrService.success("Delete operation successful");
+                }),
+                map(() => {
+                    return new RetrieveFolderContents({ folder: { path: action.payload.path }})
                 }),
                 catchError(error => {
                     this.toastrService.error(error);

@@ -9,7 +9,9 @@ export enum ActionTypes {
     UPLOAD_PROGRESS = '[File Upload API] Progress',
     UPLOAD_PROGRESS_SUM = '[File Upload API] Progress Sum',
     UPLOAD_FAILURE = '[File Upload API] Failure',
+    SINGLE_FILE_UPLOAD_FAILURE = '[File Upload API] File Upload Failure',
     UPLOAD_COMPLETED = '[File Upload API] Success',
+    SINGLE_FILE_UPLOAD_COMPLETED = '[File Upload API] File Upload Complete',
     UPLOAD_CURRENT_FILE = '[File Upload API] Switch Files',
     UPLOAD_FINISHED = '[File Upload API] Update Folder Contents'
 }
@@ -51,11 +53,21 @@ export class UploadFailureAction implements Action {
     readonly type = ActionTypes.UPLOAD_FAILURE;
     constructor(public payload: { error: string }) { }
 }
+export class FileUploadFailureAction implements Action {
+    readonly type = ActionTypes.SINGLE_FILE_UPLOAD_FAILURE;
+    constructor(public payload: { files: any }) { }
+}
 
 export class UploadCompletedAction implements Action {
     readonly type = ActionTypes.UPLOAD_COMPLETED;
 
     // constructor(public payload: { index: number }) {}
+}
+
+export class FileUploadCompletedAction implements Action {
+    readonly type = ActionTypes.SINGLE_FILE_UPLOAD_COMPLETED;
+
+    constructor(public payload: { files: any }) {}
 }
 
 export class UploadCompletedUpdateFolderAction implements Action {
@@ -78,4 +90,6 @@ export type UploadActions =
     | UploadCompletedAction
     | UploadViewStateAction
     | UploadCurrentFileAction
-    | UploadCompletedUpdateFolderAction;
+    | UploadCompletedUpdateFolderAction
+    | FileUploadCompletedAction
+    | FileUploadFailureAction;

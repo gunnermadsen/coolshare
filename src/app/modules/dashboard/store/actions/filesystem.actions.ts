@@ -5,18 +5,16 @@ import { Action } from '@ngrx/store';
  * enum object for all of this group's action types.
  */
 export enum FileSystemActionTypes {
-    RetrieveFolderContents = '[Get Folder Contents] Folder Contents Requested',
-    CreateNode = '[Save File] File Save Requested',
-    SaveRetrievedFolderContents = '[Saved Contents] Saved Retrieved Folder Contents',
-    FileUploadRequested = '[File Upload] Upload File to Repo',
-    UpdateRetrievedFolderContents = '[Update Folder Contents] Update Existing Contents',
-    FileUploadFinished = '[File Upload] File Upload Finished',
-    DeleteAction = '[Delete Item] Delete Item from Server',
-    CreateNewFolderRequested = '[Create Folder] Create Folder Requested',
-    DeleteFolderItems = '[Delete Items] Delete Items From Store',
-    DeleteFolderItem = '[Delete Item] Delete Item From Store',
-    DownloadItem = '[Download Item] Download Item From Folder',
-    DownloadItemCancelled = '[Download Item] Download Item Cancelled'
+    FS_READ_FOLDER = '[Get Folder Contents] Folder Contents Requested',
+    FS_CREATE_FOLDER_ITEM = '[Save File] File Save Requested',
+    FS_SAVE_RETRIEVED_FOLDER_CONTENTS = '[Saved Contents] Saved Retrieved Folder Contents',
+    FS_UPLOAD_FILE = '[File Upload] Upload File to Repo',
+    FS_UPDATE_FOLDER_CONTENTS = '[Update Folder Contents] Update Existing Contents',
+    FS_CREATE_FOLDER = '[Create Folder] Create Folder Requested',
+    FS_DELETE_FOLDER_ITEMS = '[Delete Items] Delete Items From Store',
+    FS_DELETE_FOLDER_ITEM = '[Delete Item] Delete Item From Store',
+    FS_DOWNLOAD_ITEM = '[Download Item] Download Item From Folder',
+    FS_DOWNLOAD_ITEM_CANCELLED = '[Download Item] Download Item Cancelled'
 
 };
 
@@ -27,56 +25,46 @@ export enum FileSystemActionTypes {
  */
 
 export class RetrieveFolderContents implements Action {
-    readonly type = FileSystemActionTypes.RetrieveFolderContents;
+    readonly type = FileSystemActionTypes.FS_READ_FOLDER;
     constructor(public payload: { folder: any }) {}
 
 }
 
 export class SaveRetrievedFolderContents implements Action {
-    readonly type = FileSystemActionTypes.SaveRetrievedFolderContents;
+    readonly type = FileSystemActionTypes.FS_SAVE_RETRIEVED_FOLDER_CONTENTS;
     constructor(public payload: { contents: any }) {}
 
 }
 
-export class CreateNode implements Action {
-    readonly type = FileSystemActionTypes.CreateNode;
-
-    constructor(public payload: { node: any }) { }
-}
-
 export class FileUpload implements Action {
-    readonly type = FileSystemActionTypes.FileUploadRequested;
+    readonly type = FileSystemActionTypes.FS_UPLOAD_FILE;
 
     constructor(public payload: { userId: string, path: string, data: any }) {}
 }
 
 export class CreateFolder implements Action {
-    readonly type = FileSystemActionTypes.CreateNewFolderRequested;
+    readonly type = FileSystemActionTypes.FS_CREATE_FOLDER;
 
     constructor(public payload: { id: string, path: string, data: any, userName: string }) {}
 }
 
-export class FileUploadFinished implements Action {
-    readonly type = FileSystemActionTypes.FileUploadFinished;
-}
-
 export class DownloadItem implements Action {
-    readonly type = FileSystemActionTypes.DownloadItem;
+    readonly type = FileSystemActionTypes.FS_DOWNLOAD_ITEM;
     constructor(public payload: { id: string, path: string, name: string }) {}
 }
 
 export class DownloadItemCancelled implements Action {
-    readonly type = FileSystemActionTypes.DownloadItemCancelled;
+    readonly type = FileSystemActionTypes.FS_DOWNLOAD_ITEM_CANCELLED;
     constructor(public payload: { id: string, path: string, name: string }) {}
 }
 
 export class DeleteFolderItems implements Action {
-    readonly type = FileSystemActionTypes.DeleteFolderItems;
+    readonly type = FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS;
     constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string, mode: number }) {}
 }
 
 export class DeleteFolderItem implements Action {
-    readonly type = FileSystemActionTypes.DeleteFolderItem;
+    readonly type = FileSystemActionTypes.FS_DELETE_FOLDER_ITEM;
     constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string, mode: number }) {}
 }
 
@@ -87,7 +75,6 @@ export class DeleteFolderItem implements Action {
  */
 export type FileSystemActions
     = RetrieveFolderContents
-    | CreateNode
     | SaveRetrievedFolderContents
     | FileUpload
     | CreateFolder
@@ -95,4 +82,3 @@ export type FileSystemActions
     | DeleteFolderItem
     | DownloadItem
     | DownloadItemCancelled;
-    // | UpdateRetrievedFolderContents;

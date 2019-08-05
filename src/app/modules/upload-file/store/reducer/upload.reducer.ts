@@ -66,6 +66,13 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 progress: null,
             };
         }
+        case ActionTypes.SINGLE_FILE_UPLOAD_FAILURE: {
+            return {
+                ...state,
+                status: UploadStatus.Failed,
+                files: action.payload.files
+            };
+        }
         case ActionTypes.UPLOAD_STARTED: {
             return {
                 ...state,
@@ -85,6 +92,14 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 ...state,
                 status: UploadStatus.Completed,
                 progress: 100,
+                error: null
+            };
+        }
+        case ActionTypes.SINGLE_FILE_UPLOAD_COMPLETED: {
+            return {
+                ...state,
+                status: UploadStatus.Completed,
+                files: action.payload.files,
                 error: null
             };
         }
