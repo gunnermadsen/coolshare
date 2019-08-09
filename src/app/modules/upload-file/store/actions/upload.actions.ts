@@ -4,6 +4,7 @@ export enum ActionTypes {
     UPLOAD_VIEW_STATE = '[File Upload View] Current View State',
     UPLOAD_REQUEST = '[File Upload Form] Request',
     UPLOAD_CANCEL = '[File Upload Form] Cancel',
+    SINGLE_FILE_UPLOAD_CANCELLED = '[File Upload API] Sing File Upload Cancelled',
     UPLOAD_RESET = '[File Upload Form] Reset',
     UPLOAD_STARTED = '[File Upload API] Started',
     UPLOAD_PROGRESS = '[File Upload API] Progress',
@@ -13,7 +14,8 @@ export enum ActionTypes {
     UPLOAD_COMPLETED = '[File Upload API] Success',
     SINGLE_FILE_UPLOAD_COMPLETED = '[File Upload API] File Upload Complete',
     UPLOAD_CURRENT_FILE = '[File Upload API] Switch Files',
-    UPLOAD_FINISHED = '[File Upload API] Update Folder Contents'
+    UPLOAD_FINISHED = '[File Upload API] Update Folder Contents',
+    SINGLE_FILE_UPLOAD_PAUSED = '[File Upload API] Upload File Paused'
 }
 
 export class UploadRequestAction implements Action {
@@ -29,6 +31,17 @@ export class UploadCurrentFileAction implements Action {
 
 export class UploadCancelAction implements Action {
     readonly type = ActionTypes.UPLOAD_CANCEL;
+    constructor(public payload: { index: number }) {}
+}
+
+export class UploadFileCancelAction implements Action {
+    readonly type = ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED;
+    constructor(public payload: { index: number, files: any, progress: number }) {}
+}
+
+export class UploadFilePausedAction implements Action {
+    readonly type = ActionTypes.SINGLE_FILE_UPLOAD_PAUSED;
+    constructor(public payload: { index: number, files: any, progress: number }) {}
 }
 
 export class UploadResetAction implements Action {
@@ -41,7 +54,7 @@ export class UploadStartedAction implements Action {
 
 export class UploadProgressAction implements Action {
     readonly type = ActionTypes.UPLOAD_PROGRESS;
-    constructor(public payload: { progress: number, index: number, files: any }) { }
+    constructor(public payload: { progress: number, progressColor: string, index: number, files: any }) { }
 }
 
 export class UploadProgressSumAction implements Action {
@@ -92,4 +105,6 @@ export type UploadActions =
     | UploadCurrentFileAction
     | UploadCompletedUpdateFolderAction
     | FileUploadCompletedAction
-    | FileUploadFailureAction;
+    | FileUploadFailureAction
+    | UploadFileCancelAction
+    | UploadFilePausedAction;

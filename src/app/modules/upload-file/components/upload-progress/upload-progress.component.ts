@@ -1,11 +1,12 @@
 import { Component, OnInit, Inject, Input, SimpleChanges, OnChanges } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
-import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import { Observable, BehaviorSubject } from 'rxjs';
 import { MatSnackBarRef, MAT_SNACK_BAR_DATA, MatDialogRef, MatDialog, MatDialogConfig } from '@angular/material';
 import { UploadDetailsComponent } from '@/modules/dashboard/components/upload-details/upload-details.component';
 import { take, tap, map } from 'rxjs/operators';
+
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 
 
@@ -23,7 +24,6 @@ export class UploadProgressComponent implements OnChanges, OnInit {
   public isInProgress$: Observable<boolean>;
   public isReady$: Observable<boolean>;
   public hasFailed$: Observable<boolean>;
-
   public viewState$: Observable<boolean>;
 
   private userId: string;
@@ -32,15 +32,13 @@ export class UploadProgressComponent implements OnChanges, OnInit {
 
   @Input() public key: number;
 
+  @Input() public color: string;
+
   constructor(private store$: Store<AppState>, private dialog: MatDialog) {
     this.userId = JSON.parse(localStorage.getItem('Account')).Id;
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add `${implements OnChanges}` to the class.
-    //this.progress$ = new BehaviorSubject(changes.progress.currentValue.progress).asObservable();
-    console.log(changes);
     this.getProgressState();
   }
 
@@ -56,6 +54,10 @@ export class UploadProgressComponent implements OnChanges, OnInit {
     this.isInProgress$ = this.store$.pipe(
       select(fromFileUploadSelectors.selectUploadFileInProgress)
     );
+
+    // this.progressState$ = this.store$.pipe(
+    //   select(fromFileUploadSelectors.)
+    // )
 
     this.isReady$ = this.store$.pipe(
       select(fromFileUploadSelectors.selectUploadFileReady)

@@ -32,7 +32,7 @@
 
 // Define the default theme.
 $primary: mat-palette($mat-indigo);
-$accent: mat-palette($mat-blue, A400, A900, A900);
+$accent: mat-palette($mat-green, A700);
 $warn: mat-palette($mat-red);
 $theme: mat-light-theme($primary, $accent, $warn);
 

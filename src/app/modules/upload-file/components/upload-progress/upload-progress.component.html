@@ -1,19 +1,16 @@
-<!-- <div *ngIf="isInProgress$ | async"> -->
-    <div class="container-fluid px-0">
-        <div class="row" *ngIf="viewState$ | async as viewState">
-            <div class="col">
-                <button mat-button class="px-0" (click)="viewDetails()">View details</button>
-            </div>
-            <div class="col-auto">
-                <button mat-button class="px-0" *ngIf="(completed$ | async) as completed"><mat-icon>close</mat-icon></button>
-                {{ progress$ | async }}%
-            </div>
+<div class="container-fluid px-0">
+    <div class="row" *ngIf="(viewState$ | async) as viewState">
+        <div class="col">
+            <button mat-button class="px-0" (click)="viewDetails()">View details</button>
         </div>
-        <div class="row">
-            <div class="col px-0">
-                <mat-progress-bar mode="determinate" [value]="progress$ | async"></mat-progress-bar>
-            </div>
+        <div class="col-auto pr-1">
+            <button mat-button class="px-0" *ngIf="(completed$ | async) as completed"><mat-icon>close</mat-icon></button>
+            <div *ngIf="(isInProgress$ | async) as inProgress">{{ (progress$ | async) }}%</div>
         </div>
     </div>
-
-<!-- </div> -->
+    <div class="row">
+        <div class="col px-0">
+            <mat-progress-bar [color]="color" mode="determinate" [value]="(progress$ | async)"></mat-progress-bar>
+        </div>
+    </div>
+</div>

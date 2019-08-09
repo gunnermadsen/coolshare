@@ -42,11 +42,22 @@ export class FileActionsComponent implements OnInit {
         files: clone
       }));
 
-      //this.isFileSet = false;
+      // this.isFileSet = false;
       // this.files = null;
     }
 
   }
+
+  public refreshFiles(): void {
+    
+    const data = {
+      id: this.userId,
+      path: this.cwd
+    }
+
+    this.store$.dispatch(new fromFolderActions.RetrieveFolderContents({ folder: data }))
+  }
+
 
   public createNewFolder(): void {
 

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges } from '@
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
-import { Observable, merge, of as observableOf } from 'rxjs';
+import { Observable, merge, of as observableOf, throwError } from 'rxjs';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
 import { startWith, switchMap, map, catchError, delay, tap, take } from 'rxjs/operators';
 import { IContents } from '@/shared/models/contents.model';
@@ -14,6 +14,13 @@ import { UploadDetailsComponent } from '../upload-details/upload-details.compone
 import { SelectionModel } from '@angular/cdk/collections';
 import { FileActionsComponent } from '../file-actions/file-actions.component';
 import * as icons from 'pretty-file-icons';
+import { HttpRepoService } from '@/core/http/repo.http.service';
+
+import { saveAs } from 'file-saver'
+
+import * as mime from 'mime';
+import * as fileSaver from 'file-saver';
+
 
 @Component({
   selector: 'repository',
@@ -39,7 +46,7 @@ export class RepositoryComponent implements OnChanges, OnInit {
   public files: any[] = [];
   public selection: SelectionModel<any>;
 
-  constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
+  constructor(private store$: Store<AppState>, private repoService: HttpRepoService, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
   }
 
@@ -213,13 +220,45 @@ export class RepositoryComponent implements OnChanges, OnInit {
   
 
   public downloadItem(name: string): void {
-    if (name) {
-      this.store$.dispatch(new DownloadItem({ 
-        path: this.cwd,
-        name: name,
-        id: this.userId
-      }))
+
+    const params = {
+      path: this.cwd,
+      name: name,
+      id: this.userId
     }
+
+    this.repoService.download(params).pipe(
+      catchError((error) => {
+        return throwError(error)
+      })
+    ).subscribe((response: any) => {
+      const type = mime.getType(name);
+
+      let blob = new Blob([response], { type: type });
+
+      // const url = window.URL.createObjectURL(blob);
+      // window.open(url);
+
+      // window.location.href = response.url;
+
+      // let downloadLink = document.createElement('a');
+
+      // window.location.href = window.URL.createObjectURL(new Blob([response], { type: type }));
+
+      fileSaver.saveAs(blob, name);
+    })
+
+    // const url = `resource=${name}&path=${this.cwd}&id=${this.userId}`.replace(/ /g, '%20').replace(/\//g, '%2F');
+    
+    // window.open(`http://localhost:3000/api/repo/download?${url}`);
+
+    // if (name) {
+    //   this.store$.dispatch(new DownloadItem({ 
+    //     path: this.cwd,
+    //     name: name,
+    //     id: this.userId
+    //   }))
+    // }
   }
   
 }

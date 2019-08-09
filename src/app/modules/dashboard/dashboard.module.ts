@@ -12,6 +12,7 @@ import { FileSystemEffects } from './store/effects/filesystem.effects';
 import { NewFolderComponent } from './components/new-folder/new-folder.component';
 import { UploadModule } from '../upload-file/upload.module';
 import { FileActionsComponent } from './components/file-actions/file-actions.component';
+import { FileSaverModule } from 'ngx-filesaver';
 
 @NgModule({
     declarations: [
@@ -29,6 +30,8 @@ import { FileActionsComponent } from './components/file-actions/file-actions.com
         UploadModule,
         StoreModule.forFeature('fs', fileSystemReducer),
         EffectsModule.forFeature([FileSystemEffects]),
+
+        FileSaverModule
     ],
     exports: [
         RepositoryComponent,

@@ -6,10 +6,13 @@ import { EffectsModule } from '@ngrx/effects';
 import { UploadEffects } from './store/effects/upload.effects';
 import { UploadProgressComponent } from './components/upload-progress/upload-progress.component';
 import { SharedModule } from '@/shared/shared.module';
+import { FileUploadProgressComponent } from './components/file-upload-progress/file-upload-progress.component';
 
 @NgModule({
     declarations: [
-        UploadProgressComponent
+        UploadProgressComponent,
+        FileUploadProgressComponent
+
     ],
     imports: [
         CommonModule,
@@ -18,10 +21,12 @@ import { SharedModule } from '@/shared/shared.module';
         EffectsModule.forFeature([UploadEffects])
     ],
     exports: [
-        UploadProgressComponent
+        UploadProgressComponent,
+        FileUploadProgressComponent
     ],
     entryComponents: [
-        UploadProgressComponent
+        UploadProgressComponent,
+        FileUploadProgressComponent
     ],
     providers: [],
 })

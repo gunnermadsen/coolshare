@@ -9,7 +9,8 @@ const setFileState = (files: any): any[] => {
             progress: 0,
             file: file,
             loaded: 0,
-            completed: false
+            completed: false,
+            status: UploadStatus.Ready
         })
     });
     return data;
@@ -29,6 +30,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 currentFile: 0,
                 status: UploadStatus.Requested,
                 progress: null,
+                progressColor: 'primary',
                 error: null,
                 files: setFileState(action.payload.files),
                 viewState: true
@@ -41,6 +43,13 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 ...state,
                 currentFile: action.payload.currentFile
             }
+        }
+        case ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED: {
+            return {
+                ...state,
+                files: action.payload.files,
+                progress: action.payload.progress
+            };
         }
         case ActionTypes.UPLOAD_CANCEL: {
             return {
@@ -64,6 +73,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 status: UploadStatus.Failed,
                 error: action.payload.error,
                 progress: null,
+                progressColor: 'warm'
             };
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_FAILURE: {
@@ -71,6 +81,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 ...state,
                 status: UploadStatus.Failed,
                 files: action.payload.files
+               
             };
         }
         case ActionTypes.UPLOAD_STARTED: {
@@ -84,6 +95,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
             return {
                 ...state,
                 progress: action.payload.progress,
+                progressColor: 'primary',
                 files: action.payload.files
             };
         }
@@ -91,6 +103,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
             return {
                 ...state,
                 status: UploadStatus.Completed,
+                progressColor: 'accent',
                 progress: 100,
                 error: null
             };
@@ -101,6 +114,12 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 status: UploadStatus.Completed,
                 files: action.payload.files,
                 error: null
+            };
+        }
+        case ActionTypes.SINGLE_FILE_UPLOAD_PAUSED: {
+            return {
+                ...state,
+                files: action.payload.files,
             };
         }
         default: {

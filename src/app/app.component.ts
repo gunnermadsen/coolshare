@@ -6,10 +6,10 @@ import { AppState } from './reducers/index';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import { tap } from 'rxjs/operators';
-import { UploadProgressComponent } from './modules/upload-file/components/upload-progress/upload-progress.component';
 
 import * as fromAccount from '@/modules/account/store/actions/account.actions';
 import { Router, ActivatedRoute } from '@angular/router';
+import { FileUploadProgressComponent } from './modules/upload-file/components/file-upload-progress/file-upload-progress.component';
 
 @Component({
   selector: 'app-root',
@@ -19,6 +19,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 
 export class AppComponent {
   public authState: boolean;
+  public notifications: string[] = ["notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification"]
   constructor(private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {}
   ngOnInit(): void {
     this.store$.pipe(select(selectUser)).subscribe((result: any) => {
@@ -43,7 +44,7 @@ export class AppComponent {
 
   private openSnackBar(state: boolean): void {
     if (state) {
-      this.snackBar.openFromComponent(UploadProgressComponent);
+      this.snackBar.openFromComponent(FileUploadProgressComponent);
     } else {
       this.snackBar.dismiss()
     }

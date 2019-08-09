@@ -8,6 +8,14 @@ export const selectUploadFileError: MemoizedSelector<object, string> = createSel
   (state: State): string => state.error
 );
 
+export const selectProgressBarColor = (index: number) => createSelector(
+  selectUploadFileFeatureState,
+  (state: State) => { 
+    const progressColor = state.files[index].progressColor;
+    return progressColor;
+  }
+)
+
 export const selectUploadFileReady: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
   (state: State): boolean => state.status === UploadStatus.Ready
@@ -44,7 +52,6 @@ export const selectUploadFileCompleted: MemoizedSelector<object, boolean> = crea
     return state.status === UploadStatus.Completed;
   }
 );
-
 
 export const selectUploadFileState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,

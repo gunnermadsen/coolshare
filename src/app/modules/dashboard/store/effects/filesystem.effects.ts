@@ -1,21 +1,24 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError } from 'rxjs';
+import { Observable, of, throwError, from } from 'rxjs';
 import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import * as filesystem from '../actions/filesystem.actions';
+import { saveAs } from 'file-saver'
 
 import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DownloadItem, DownloadItemCancelled, DeleteFolderItem, DeleteFolderItems } from '../actions/filesystem.actions';
 import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 import { ToastrService } from 'ngx-toastr';
-
+import { DomSanitizer } from '@angular/platform-browser';
+import * as mime from 'mime';
+import { FileSaverService } from 'ngx-filesaver';
 
 
 @Injectable()
 export class FileSystemEffects {
 
-    constructor(private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService) { }
+    constructor(private sanitizer: DomSanitizer, private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService, private fileSaver: FileSaverService) { }
 
     @Effect() 
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
@@ -23,7 +26,7 @@ export class FileSystemEffects {
         exhaustMap((action: any) => {
             return this.repoService.getFolderContents(action.payload.folder).pipe(
                 map((folder: any) => {
-                    return new SaveRetrievedFolderContents({ contents: folder.content });
+                    return new filesystem.SaveRetrievedFolderContents({ contents: folder.content });
                 }),
                 catchError(error => {
                     return throwError(error)
@@ -40,7 +43,7 @@ export class FileSystemEffects {
 
             return this.repoService.createFolder(action.payload).pipe(
                 map((payload: any) => {
-                    return new SaveRetrievedFolderContents({ contents: payload.content })
+                    return new filesystem.SaveRetrievedFolderContents({ contents: payload.content })
                 }),
                 tap(() => {
                     this.toastrService.success("Your folder was created successfully!");
@@ -68,7 +71,7 @@ export class FileSystemEffects {
                     this.toastrService.success("Delete operation successful");
                 }),
                 map(() => {
-                    return new RetrieveFolderContents({ folder: { path: action.payload.path }})
+                    return new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})
                 }),
                 catchError(error => {
                     this.toastrService.error(error);
@@ -92,7 +95,7 @@ export class FileSystemEffects {
                     this.toastrService.success("Delete operation successful");
                 }),
                 map(() => {
-                    return new RetrieveFolderContents({ folder: { path: action.payload.path }})
+                    return new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})
                 }),
                 catchError(error => {
                     this.toastrService.error(error);
@@ -103,20 +106,31 @@ export class FileSystemEffects {
     )
 
 
-    // @Effect()
-    // public downloadItem$: Observable<Action> = this.actions$.pipe(
-    //     ofType<DownloadItem>(FileSystemActionTypes.DownloadItem),
-    //     mergeMap((action) => {
-    //         return this.repoService.download(action.payload)
-    //     }),
-    //     map((blob: any) => {
-    //         const url = window.URL.createObjectURL(blob);
-    //     }),
-    //     catchError((error) => {
-    //         return throwError(error)
-    //     })
+    @Effect({ dispatch: false })
+    public downloadItem$ = this.actions$.pipe(
+        ofType<DownloadItem>(filesystem.FileSystemActionTypes.FS_DOWNLOAD_ITEM),
+        exhaustMap((action: any) => {
+            return this.repoService.download(action.payload).pipe(
+                tap((response: Blob) => {
+                    
+                    this.fileSaver.save(response, action.payload.name);
+                }),
+                catchError((error) => {
+                    return throwError(error)
+                })
+            )
+        })
+
+
+            // const blob = new Blob([response], { type: 'application/octet-stream' });
+            // const downloadURL = window.URL.createObjectURL(blob);
+            // const link = document.createElement('a');
+            // link.href = downloadURL;
+            // link.download = action.payload.name;
+            // link.click();
         
-    // )
+     
+    )
 
 
 }

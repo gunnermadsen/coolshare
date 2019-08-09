@@ -8,6 +8,7 @@
             <!-- <button mat-list-item class="px-3" color="primary">Create new file</button> -->
             <button mat-list-item (click)="uploader.click()"> <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files</button>
             <!-- <button mat-list-item class="px-3" >Upload folder</button> -->
+            <button mat-list-item (click)="refreshFiles()"><mat-icon class="mr-2">refresh</mat-icon>Refresh</button>
             <button mat-list-item (click)="createNewFolder()"><mat-icon class="mr-2">create_new_folder</mat-icon>New folder</button>
         </mat-action-list>
     </mat-card>
@@ -17,6 +18,7 @@
     <mat-card class="mat-elevation-z2 action-card px-0">
         <button class="px-3" mat-button color="primary">Download</button>
         <button class="px-3" mat-button >Rename</button>
+        
         <button class="px-3" mat-button (click)="deleteItem(1, row)">Delete</button>
     </mat-card>
 </ng-template>

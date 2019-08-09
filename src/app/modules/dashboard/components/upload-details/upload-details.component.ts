@@ -7,7 +7,7 @@ import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 
 
 @Component({
@@ -19,19 +19,17 @@ export class UploadDetailsComponent implements OnInit {
 
   public files$: Observable<boolean>;
   public completed$: Observable<boolean>;
+  public progressColor$: Observable<string>;
 
   constructor(private store$: Store<AppState>, @Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialogRef<any>) { }
 
   ngOnInit() {
     this.files$ = this.store$.pipe(
-      select(fromFileUploadSelectors.selectUploadFileState),
-      map((state: any) => {
-        return state;
-      })
+      select(fromFileUploadSelectors.selectUploadFileState)
     )
 
     this.completed$ = this.store$.pipe(
-      select(fromFileUploadSelectors.selectUploadFileState)
+      select(fromFileUploadSelectors.selectUploadFileCompleted)
     );
   }
 
@@ -48,8 +46,14 @@ export class UploadDetailsComponent implements OnInit {
     this.dialog.close();
   }
 
-  public cancelUpload(): void {
-    this.store$.dispatch(new fromFileUploadActions.UploadCancelAction())
+  public cancelUpload(index: number): void {
+    this.store$.dispatch(new fromFileUploadActions.UploadCancelAction({ index: index }))
+  }
+
+  public getProgressColor$(index: number): Observable<string> {
+    return this.store$.pipe(
+      select(fromFileUploadSelectors.selectProgressBarColor(index))
+    )
   }
 
 }

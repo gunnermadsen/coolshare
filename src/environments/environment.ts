@@ -5,8 +5,8 @@
 export const environment = {
   production: false,
   hmr: false,
-  //localRepo: 'https://portfolioapis.herokuapp.com',
-  localRepo: 'http://localhost:3000'
+  localRepo: 'https://portfolioapis.herokuapp.com',
+  //localRepo: 'http://localhost:3000'
 };
 
 /*
