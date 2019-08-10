@@ -2,7 +2,7 @@ import { Component, OnInit, Inject, Input, SimpleChanges, OnChanges } from '@ang
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { Observable, BehaviorSubject } from 'rxjs';
-import { MatSnackBarRef, MAT_SNACK_BAR_DATA, MatDialogRef, MatDialog, MatDialogConfig } from '@angular/material';
+import { MatSnackBarRef, MAT_SNACK_BAR_DATA, MatDialogRef, MatDialog, MatDialogConfig, MatSnackBar } from '@angular/material';
 import { UploadDetailsComponent } from '@/modules/dashboard/components/upload-details/upload-details.component';
 import { take, tap, map } from 'rxjs/operators';
 
@@ -34,7 +34,7 @@ export class UploadProgressComponent implements OnChanges, OnInit {
 
   @Input() public color: string;
 
-  constructor(private store$: Store<AppState>, private dialog: MatDialog) {
+  constructor(private store$: Store<AppState>, private dialog: MatDialog, private snackbar: MatSnackBar) {
     this.userId = JSON.parse(localStorage.getItem('Account')).Id;
   }
 
@@ -108,5 +108,12 @@ export class UploadProgressComponent implements OnChanges, OnInit {
       this.store$.dispatch(new fromFileUploadActions.UploadViewStateAction({ viewState: true }))
     })
   }
+
+
+  public close(): void {
+    this.store$.dispatch(new fromFileUploadActions.UploadViewStateAction({ viewState: false }))
+    // this.snackbar.dismiss();
+  }
+
 
 }

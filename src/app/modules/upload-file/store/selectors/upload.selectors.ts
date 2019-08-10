@@ -8,11 +8,27 @@ export const selectUploadFileError: MemoizedSelector<object, string> = createSel
   (state: State): string => state.error
 );
 
+export const concatFileArrays = (state: any) => {
+  let files = state.completedFiles.concat(state.pendingFiles);
+  return files;
+}
+  
+
 export const selectProgressBarColor = (index: number) => createSelector(
   selectUploadFileFeatureState,
   (state: State) => { 
-    const progressColor = state.files[index].progressColor;
+    const files = concatFileArrays(state);
+    const progressColor = files[index].progressColor;
     return progressColor;
+  }
+)
+
+export const selectIndividualFileUploadState = (index: number) => createSelector(
+  selectUploadFileFeatureState,
+  (state: State) => { 
+    const files = concatFileArrays(state);
+    const file = files[index];
+    return file;
   }
 )
 
@@ -56,7 +72,7 @@ export const selectUploadFileCompleted: MemoizedSelector<object, boolean> = crea
 export const selectUploadFileState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
   (state: State): any => {
-    const files = Object.values(state.files);
+    const files = concatFileArrays(state);
     return files;
   }
 )
@@ -69,13 +85,16 @@ export const selectUploadViewState: MemoizedSelector<object, any> = createSelect
 export const selectUploadState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
   (state: State): any => {
-    return state;
+    const result = { ...state, files: concatFileArrays(state )}
+    return result;
   }
 )
 
 export const selectIndividualFileUploadProgress: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
   (state: State): any => {
-    return state.files
+    return state.pendingFiles
   }
 )
+
+

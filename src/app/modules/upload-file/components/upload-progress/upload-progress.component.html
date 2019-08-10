@@ -4,8 +4,8 @@
             <button mat-button class="px-0" (click)="viewDetails()">View details</button>
         </div>
         <div class="col-auto pr-1">
-            <button mat-button class="px-0" *ngIf="(completed$ | async) as completed"><mat-icon>close</mat-icon></button>
-            <div *ngIf="(isInProgress$ | async) as inProgress">{{ (progress$ | async) }}%</div>
+            <button mat-button class="px-0" *ngIf="(completed$ | async) as completed" (click)="close()"><mat-icon>close</mat-icon></button>
+            <div *ngIf="(isInProgress$ | async)">{{ (progress$ | async) }}%</div>
         </div>
     </div>
     <div class="row">

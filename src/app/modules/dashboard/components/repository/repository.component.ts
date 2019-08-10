@@ -1,10 +1,10 @@
-import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
-import { Observable, merge, of as observableOf, throwError } from 'rxjs';
+import { Observable, merge, of as observableOf, throwError, Subject } from 'rxjs';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
-import { startWith, switchMap, map, catchError, delay, tap, take } from 'rxjs/operators';
+import { startWith, switchMap, map, catchError, delay, tap, take, takeUntil } from 'rxjs/operators';
 import { IContents } from '@/shared/models/contents.model';
 import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
 import { FileUpload, CreateFolder, RetrieveFolderContents, DownloadItem } from '../../store/actions/filesystem.actions';
@@ -27,7 +27,7 @@ import * as fileSaver from 'file-saver';
   templateUrl: './repository.component.html',
   styleUrls: ['./repository.component.less']
 })
-export class RepositoryComponent implements OnChanges, OnInit {
+export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   public dataSource: MatTableDataSource<IContents>;
   public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action'];
   public isXS: boolean = true;
@@ -45,6 +45,8 @@ export class RepositoryComponent implements OnChanges, OnInit {
   public fileList: FileList;
   public files: any[] = [];
   public selection: SelectionModel<any>;
+
+  private destroy$: Subject<boolean> = new Subject<boolean>()
 
   constructor(private store$: Store<AppState>, private repoService: HttpRepoService, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
@@ -117,10 +119,13 @@ export class RepositoryComponent implements OnChanges, OnInit {
   //   const extension = result[result.length];
   //   const icon = icons.getIcon(extension);
   //   return 'svg/' + icon + '.svg';
-  // }Í
+  // }
+
+
   public initializeTableData() {
     this.store$.pipe(
       select(getRepoData),
+      takeUntil(this.destroy$),
       tap((result: any) => {
         if (result.length) {
           this.cwd = result[0].cwd;
@@ -169,7 +174,9 @@ export class RepositoryComponent implements OnChanges, OnInit {
       return;
     }
 
-    this.store$.dispatch(new RetrieveFolderContents({ folder: row.path }))
+    const folder = { path: row.path, id: this.userId }
+
+    this.store$.dispatch(new RetrieveFolderContents({ folder: folder }))
 
   }
 
@@ -217,8 +224,6 @@ export class RepositoryComponent implements OnChanges, OnInit {
     })
   }
 
-  
-
   public downloadItem(name: string): void {
 
     const params = {
@@ -231,34 +236,22 @@ export class RepositoryComponent implements OnChanges, OnInit {
       catchError((error) => {
         return throwError(error)
       })
-    ).subscribe((response: any) => {
+    )
+    .subscribe((response: any) => {
       const type = mime.getType(name);
 
       let blob = new Blob([response], { type: type });
 
-      // const url = window.URL.createObjectURL(blob);
-      // window.open(url);
-
-      // window.location.href = response.url;
-
-      // let downloadLink = document.createElement('a');
-
-      // window.location.href = window.URL.createObjectURL(new Blob([response], { type: type }));
-
       fileSaver.saveAs(blob, name);
     })
 
-    // const url = `resource=${name}&path=${this.cwd}&id=${this.userId}`.replace(/ /g, '%20').replace(/\//g, '%2F');
-    
-    // window.open(`http://localhost:3000/api/repo/download?${url}`);
+  }
 
-    // if (name) {
-    //   this.store$.dispatch(new DownloadItem({ 
-    //     path: this.cwd,
-    //     name: name,
-    //     id: this.userId
-    //   }))
-    // }
+  public ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
   
 }

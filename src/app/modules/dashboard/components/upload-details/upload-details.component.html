@@ -19,7 +19,16 @@
                             </div>
                             <div class="col-auto ml-auto pr-0">
                                 <!-- <div *ngIf="(completed$ | async) as completed; then done; else loading"></div> -->
-                                <ng-container [ngTemplateOutlet]="item.file.progress === 100 ? done : loading" [ngTemplateOutletContext]="{ index: i, progressColor: item.file.progressColor }"></ng-container>
+                                <ng-container *ngTemplateOutlet="
+                                    (getFileState$(i) | async).progress === 100
+                                        ? done
+                                        : loading;
+
+                                    context: { 
+                                        index: i
+                                    }
+
+                                "></ng-container>
                             </div>
                         </div>
                         <div class="row">
@@ -41,14 +50,14 @@
     </div>
 </div>
 
-<ng-template let-color="progressColor" #done>
-    <mat-icon [color]="color">check_circle_outline</mat-icon>
+<ng-template let-index="index" #done>
+    <mat-icon [color]="getProgressColor$(index) | async">check_circle_outline</mat-icon>
 </ng-template>
 
 
 <ng-template let-index="index" #loading>
-    <button mat-icon-button class="mr-0 px-0" (click)="cancelUpload(index)">
-        <mat-icon>close</mat-icon>
+    <button mat-icon-button class="mr-0 px-0" (click)="cancelUpload($event, index)">
+        <mat-icon [color]="getProgressColor$(index) | async">close</mat-icon>
     </button>
 </ng-template>
 

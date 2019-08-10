@@ -32,7 +32,8 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 progress: null,
                 progressColor: 'primary',
                 error: null,
-                files: setFileState(action.payload.files),
+                pendingFiles: setFileState(action.payload.files),
+                completedFiles: [],
                 viewState: true
             };
             return result;
@@ -47,7 +48,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
         case ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED: {
             return {
                 ...state,
-                files: action.payload.files,
+                pendingFiles: action.payload.files,
                 progress: action.payload.progress
             };
         }
@@ -80,7 +81,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
             return {
                 ...state,
                 status: UploadStatus.Failed,
-                files: action.payload.files
+                pendingFiles: action.payload.files
                
             };
         }
@@ -96,30 +97,33 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
                 ...state,
                 progress: action.payload.progress,
                 progressColor: 'primary',
-                files: action.payload.files
+                pendingFiles: action.payload.files
             };
         }
         case ActionTypes.UPLOAD_COMPLETED: {
-            return {
+            const result = {
                 ...state,
                 status: UploadStatus.Completed,
+                completedFiles: state.pendingFiles,
+                pendingFiles: [],
                 progressColor: 'accent',
                 progress: 100,
                 error: null
             };
+            return result;
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_COMPLETED: {
             return {
                 ...state,
                 status: UploadStatus.Completed,
-                files: action.payload.files,
+                pendingFiles: action.payload.files,
                 error: null
             };
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_PAUSED: {
             return {
                 ...state,
-                files: action.payload.files,
+                pendingFiles: action.payload.files,
             };
         }
         default: {

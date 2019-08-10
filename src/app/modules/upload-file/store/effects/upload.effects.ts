@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin, throwError } from 'rxjs';
 import { Action, Store, select } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
-import { takeUntil, map, catchError, tap, mergeMap, withLatestFrom } from 'rxjs/operators';
+import { takeUntil, map, catchError, tap, mergeMap, withLatestFrom, retryWhen, take, switchMapTo, switchMap } from 'rxjs/operators';
 import { SaveRetrievedFolderContents, RetrieveFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
 import { HttpEventType } from '@angular/common/http';
 import serializeError from 'serialize-error';
@@ -39,10 +39,20 @@ export class UploadEffects {
             const requests$ = files.map((file: File, index: number) => {
                 return this.repoService.uploadFile(file, path, index, userId).pipe(
                     takeUntil(this.actions$.pipe(
-                        ofType(fromFileUploadActions.ActionTypes.UPLOAD_CANCEL),
-                        // ofType(fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED),
-                        tap((action: any) => {
-                            return action;
+                        ofType(
+                            fromFileUploadActions.ActionTypes.UPLOAD_CANCEL, 
+                            fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED
+                        ),
+                        withLatestFrom(this.store$.pipe(take(1), select(fromFileUploadSelectors.selectUploadState))),
+                        switchMap((action: any) => {
+                            switch (action[0].type) {
+                                case ActionTypes.UPLOAD_CANCEL: {
+                                    return this.updateFileUploadState(action[1], action[0].type, action[0].payload.index, action)
+                                }
+                                default: {
+                                    return action;
+                                }
+                            }
                         })
                     )),
                     withLatestFrom(this.store$.pipe(
@@ -54,9 +64,9 @@ export class UploadEffects {
                     )),
                     tap(([mode, state]) => {
                         loaded = 0
-                        state.files.forEach((payload: any) => loaded += payload.loaded);
+                        state.pendingFiles.forEach((payload: any) => loaded += payload.loaded);
                         if (loaded >= total) {
-                            this.updateFileProgress(index, state.files, loaded, total, action);
+                            this.updateFileProgress(index, state.pendingFiles, loaded, total, action);
                         }
                         return state
                     }),
@@ -101,7 +111,7 @@ export class UploadEffects {
 
                 const payload = this.updateFileUploadState(result, mode, index, action);
 
-                return this.updateFileProgress(index, payload.content.files, loaded, total, action);
+                return this.updateFileProgress(index, payload.content.pendingFiles, loaded, total, action);
 
             }
 
@@ -113,18 +123,16 @@ export class UploadEffects {
             case HttpEventType.Response: {
                 if (mode.status === 400) {
                     const payload = this.updateFileUploadState(result, mode, index, action);
-                    return of(this.store$.dispatch(new fromFileUploadActions.FileUploadFailureAction({ files: payload.content.files })));
+                    return of(this.store$.dispatch(new fromFileUploadActions.FileUploadFailureAction({ files: payload.content.pendingFiles })));
                 }
                 else if (mode.status === 204) {
                     const payload = this.updateFileUploadState(result, mode, index, action);
-                    return of(this.store$.dispatch(new fromFileUploadActions.FileUploadCompletedAction({ files: payload.content.files })));
+                    return of(this.store$.dispatch(new fromFileUploadActions.FileUploadCompletedAction({ files: payload.content.pendingFiles })));
                 }
             }
 
             default: {
-                return of(this.store$.dispatch(new fromFileUploadActions.UploadFailureAction({
-                    error: `Unknown Event: ${JSON.stringify(event)}`
-                })));
+                return of(this.store$.dispatch(new fromFileUploadActions.UploadFailureAction({ error: `Unknown Event: ${JSON.stringify(event)}` })));
             }
         }
     }
@@ -152,13 +160,16 @@ export class UploadEffects {
         let loaded: number = 0
         let progress: number = 0
 
+        
+        // if (state.status === 'Paused') return state
+
         let clone = _.cloneDeep(state)
 
         const progressState: any = this.setProgressState(action)
 
         if (event.type === 2 || event.type === 4) {
-            loaded = state.files[index].loaded
-            progress = state.files[index].progress
+            loaded = state.pendingFiles[index].loaded
+            progress = state.pendingFiles[index].progress
         } 
         else {
             loaded = event.loaded
@@ -168,13 +179,13 @@ export class UploadEffects {
         const newFileState = {
             progress: progress,
             progressColor: (progress === 100) ? 'accent' : progressState.color,
-            file: state.files[index].file,
+            file: state.pendingFiles[index].file,
             loaded: loaded,
             completed: (progress === 100) ? true : false,
             status: (progress === 100) ? UploadStatus.Completed : UploadStatus.Started
         }
 
-        clone.files[index] = newFileState 
+        clone.pendingFiles[index] = newFileState 
 
         payload.content = clone
         payload.event = event

@@ -12,11 +12,12 @@ export interface FileState {
 
 export interface State {
   status: UploadStatus;
+  completedFiles: any[] | null;
   currentFile: number;
   error: string | null;
   progress: number | null;
   progressColor: string | null;
-  files: any[] | null;
+  pendingFiles: any[] | null;
   viewState: boolean | null;
 }
 
@@ -26,6 +27,7 @@ export const initialState: State = {
   error: null,
   progress: null,
   progressColor: null,
-  files: null,
+  pendingFiles: null,
+  completedFiles: null,
   viewState: null
 };

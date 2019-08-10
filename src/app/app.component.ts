@@ -49,7 +49,7 @@ export class AppComponent {
       this.snackBar.dismiss()
     }
   }
-
+  
   public navigate(route: string): void {
     this.router.navigate([route], { relativeTo: this.route });
   }

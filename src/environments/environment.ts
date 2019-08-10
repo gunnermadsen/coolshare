@@ -2,11 +2,12 @@
 // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
 // The list of file replacements can be found in `angular.json`.
 
+let production: boolean = false;
+
 export const environment = {
   production: false,
   hmr: false,
-  localRepo: 'https://portfolioapis.herokuapp.com',
-  //localRepo: 'http://localhost:3000'
+  localRepo: production ? 'https://portfolioapis.herokuapp.com' : 'http://localhost:3000'
 };
 
 /*

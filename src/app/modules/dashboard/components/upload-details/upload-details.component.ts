@@ -18,6 +18,7 @@ import { map, tap } from 'rxjs/operators';
 export class UploadDetailsComponent implements OnInit {
 
   public files$: Observable<boolean>;
+  public fileState$: Observable<any>;
   public completed$: Observable<boolean>;
   public progressColor$: Observable<string>;
 
@@ -31,6 +32,7 @@ export class UploadDetailsComponent implements OnInit {
     this.completed$ = this.store$.pipe(
       select(fromFileUploadSelectors.selectUploadFileCompleted)
     );
+
   }
 
   public removeListItem(i: number): void {
@@ -46,13 +48,22 @@ export class UploadDetailsComponent implements OnInit {
     this.dialog.close();
   }
 
-  public cancelUpload(index: number): void {
+  public cancelUpload(event: any, index: number): void {
+    console.log(index);
+    event.preventDefault();
+    event.stopPropagation();
     this.store$.dispatch(new fromFileUploadActions.UploadCancelAction({ index: index }))
   }
 
   public getProgressColor$(index: number): Observable<string> {
     return this.store$.pipe(
       select(fromFileUploadSelectors.selectProgressBarColor(index))
+    )
+  }
+
+  public getFileState$(index: number): Observable<any> {
+    return this.store$.pipe(
+      select(fromFileUploadSelectors.selectIndividualFileUploadState(index))
     )
   }
 
