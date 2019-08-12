@@ -15,9 +15,12 @@ import { UploadActions, ActionTypes } from '../actions/upload.actions';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import * as fromFileUploadActions from '../actions/upload.actions';
 
+import * as fromNotificationActionTypes from '@/modules/notifications/store/actions/notification.actions';
+
 import { UploadStatus } from '../../state';
 
 import * as _ from 'lodash';
+import { NotificationTypes } from '@/modules/notifications/store/state';
 
 @Injectable()
 export class UploadEffects {
@@ -25,6 +28,10 @@ export class UploadEffects {
     @Effect()
     public uploadFile$: Observable<Action> = this.actions$.pipe(
         ofType(fromFileUploadActions.ActionTypes.UPLOAD_REQUEST),
+        // tap((action: any) => {
+        //     this.store$.dispatch(new fromNotificationActionTypes.CreateNewNotification({ createdDate: new Date(), type: NotificationTypes.Upload, options: { count: action.payload.files.length } }))
+        //     return action;
+        // }),
         mergeMap((action: any) => {      
             
             let path = action.payload.path;

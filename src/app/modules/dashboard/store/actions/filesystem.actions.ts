@@ -45,7 +45,7 @@ export class FileUpload implements Action {
 export class CreateFolder implements Action {
     readonly type = FileSystemActionTypes.FS_CREATE_FOLDER;
 
-    constructor(public payload: { id: string, path: string, data: any, userName: string }) {}
+    constructor(public payload: { userId: string, path: string, data: any, userName: string }) {}
 }
 
 export class DownloadItem implements Action {

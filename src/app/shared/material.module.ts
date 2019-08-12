@@ -8,7 +8,7 @@ import { CdkTableModule } from '@angular/cdk/table';
 import { NgModule } from '@angular/core';
 import {
   // MatAutocompleteModule,
-  // MatBadgeModule,
+  MatBadgeModule,
   // MatBottomSheetModule,
   MatButtonModule,
   MatButtonToggleModule,
@@ -52,7 +52,7 @@ import {
     // CdkTreeModule,
     // DragDropModule,
     // MatAutocompleteModule,
-    // MatBadgeModule,
+    MatBadgeModule,
     // MatBottomSheetModule,
     MatButtonModule,
     MatButtonToggleModule,

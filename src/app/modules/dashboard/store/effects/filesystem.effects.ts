@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError, from } from 'rxjs';
-import { Action } from '@ngrx/store';
+import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import * as filesystem from '../actions/filesystem.actions';
@@ -14,11 +14,16 @@ import { DomSanitizer } from '@angular/platform-browser';
 import * as mime from 'mime';
 import { FileSaverService } from 'ngx-filesaver';
 
+import * as fromNotificationActionTypes from '@/modules/notifications/store/actions/notification.actions';
+import { AppState } from '@/reducers';
+import { NotificationTypes } from '@/modules/notifications/store/state';
+
+
 
 @Injectable()
 export class FileSystemEffects {
 
-    constructor(private sanitizer: DomSanitizer, private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService, private fileSaver: FileSaverService) { }
+    constructor(private store$: Store<AppState>, private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService, private fileSaver: FileSaverService) { }
 
     @Effect() 
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
@@ -39,8 +44,11 @@ export class FileSystemEffects {
     @Effect()
     public createFolder$: Observable<Action> = this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_CREATE_FOLDER),
+        tap((action: any) => {
+            this.generateNotification(action.payload, 0);
+            return action;
+        }),
         mergeMap((action: any) => {
-
             return this.repoService.createFolder(action.payload).pipe(
                 map((payload: any) => {
                     return new filesystem.SaveRetrievedFolderContents({ contents: payload.content })
@@ -59,20 +67,17 @@ export class FileSystemEffects {
     @Effect()
     public deleteFile$ = this.actions$.pipe(
         ofType<DeleteFolderItem>(FileSystemActionTypes.FS_DELETE_FOLDER_ITEM),
-        mergeMap((action) => {
+        tap((action: any) => {
+            this.generateNotification(action.payload, 1);
+            return action;
+        }),
+        mergeMap((action: any) => {
+            return this.repoService.delete(action.payload).pipe(
 
-            const payload = { 
-                path: action.payload.path, 
-                items: action.payload.items
-            }
+                tap(() => this.toastrService.success("Delete operation successful")),
 
-            return this.repoService.delete(payload).pipe(
-                tap(() => {
-                    this.toastrService.success("Delete operation successful");
-                }),
-                map(() => {
-                    return new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})
-                }),
+                map(() => new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})),
+
                 catchError(error => {
                     this.toastrService.error(error);
                     return throwError(error);
@@ -80,23 +85,23 @@ export class FileSystemEffects {
             )
         })
     )
+
+
     @Effect()
     public deleteFiles$ = this.actions$.pipe(
         ofType<DeleteFolderItems>(FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS),
-        mergeMap((action) => {
+        tap((action: any) => {
+            this.generateNotification(action.payload, 1);
+            return action;
+        }),
+        mergeMap((action: any) => {
 
-            const payload = { 
-                path: action.payload.path, 
-                items: action.payload.items
-            }
+            return this.repoService.delete(action.payload).pipe(
 
-            return this.repoService.delete(payload).pipe(
-                tap(() => {
-                    this.toastrService.success("Delete operation successful");
-                }),
-                map(() => {
-                    return new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})
-                }),
+                tap(() => this.toastrService.success("Delete operation successful")),
+
+                map(() => new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})),
+                
                 catchError(error => {
                     this.toastrService.error(error);
                     return throwError(error);
@@ -120,17 +125,42 @@ export class FileSystemEffects {
                 })
             )
         })
-
-
-            // const blob = new Blob([response], { type: 'application/octet-stream' });
-            // const downloadURL = window.URL.createObjectURL(blob);
-            // const link = document.createElement('a');
-            // link.href = downloadURL;
-            // link.download = action.payload.name;
-            // link.click();
-        
-     
     )
 
+    public generateNotification(payload: any, mode: number): void {
+        let type: NotificationTypes
+        let options: any
+        let title: string
+
+        switch (mode) {
+            case 0: {
+                type = payload.data.Accessibility === 0 ? NotificationTypes.CreateNewFolder : NotificationTypes.CreateNewSharedFolder
+                title = `${payload.data.Accessibility === 0 ? "" : "shared "}folder created`
+                options = {
+                    folderName: payload.data.FolderName
+                }
+            }
+            break;
+            case 1: {
+                type = payload.items.length === 1 ? NotificationTypes.DeleteFile : NotificationTypes.DeleteFiles
+                title = `${payload.items.length === 1 ? "file" : "files"} deleted`
+                options = {
+                    deleteContext: payload.items
+                }
+            }
+            break;
+        }
+
+        const result = {
+            type: type,
+            createdOn: new Date(),
+            title: title,
+            userId: payload.userId,
+            options: options,
+        }
+
+        this.store$.dispatch(new fromNotificationActionTypes.CreateNewNotification(result))
+
+    }
 
 }

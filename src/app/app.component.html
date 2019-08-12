@@ -24,19 +24,10 @@
           </button>
         </div>
         <span class="spacer"></span>
-        <div class="navbar-end" *ngIf="authState">
-          <button mat-icon-button [matMenuTriggerFor]="menu"><mat-icon>notifications_none</mat-icon></button>
-          <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1" (click)="navigate('/account')">GM</button>
-          <mat-menu #menu="matMenu">
-            <div class="coontainer-fluid">
-              <div class="row" *ngFor="let notification of notifications">
-                <div class="col">
-                  {{ notification }}
-                </div>
-              </div>
-            </div>
-          </mat-menu>
+        <div class="navbar-end mr-3" *ngIf="authState">
+          <notifications></notifications>
         </div>
+        <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1" (click)="navigate('/account')">GM</button>
       </mat-toolbar>
       <!-- <mat-sidenav-content> -->
         <div class="container-fluid px-0">

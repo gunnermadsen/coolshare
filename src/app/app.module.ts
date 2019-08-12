@@ -14,6 +14,7 @@ import { UploadDetailsComponent } from './modules/dashboard/components/upload-de
 
 import { AccountModule } from './modules/account/account.module';
 import { HomeModule } from './modules/home/home.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 
 
 @NgModule({
@@ -33,7 +34,7 @@ import { HomeModule } from './modules/home/home.module';
     HomeModule,
     UploadModule,
     AccountModule,
-
+    NotificationsModule
   ],
   exports: [
   ],

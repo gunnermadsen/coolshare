@@ -73,7 +73,7 @@ export class FileActionsComponent implements OnInit {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
-        this.store$.dispatch(new fromFolderActions.CreateFolder({ id: this.userId, path: this.cwd, data: result, userName: this.userName }))
+        this.store$.dispatch(new fromFolderActions.CreateFolder({ userId: this.userId, path: this.cwd, data: result, userName: this.userName }))
       }
     });
   }

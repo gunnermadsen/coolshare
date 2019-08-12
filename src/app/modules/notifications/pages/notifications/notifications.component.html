@@ -1,0 +1,76 @@
+<button mat-icon-button [matMenuTriggerFor]="menu">
+    <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="notificationState" matBadgePosition="before" matBadgeColor="accent">notifications_none</mat-icon>
+</button>
+<mat-menu #menu="matMenu">
+    <div class="container-fluid">
+        <div class="row" *ngFor="let notification of (notifications$ | async); index as i">
+            <div class="col px-0" [ngSwitch]="notification.type">
+                <div class="notification m-2" *ngSwitchCase="'Upload'">
+                    <h4>{{ notification.title }}</h4>
+                    <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Delete File'">
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon class="mr-2 text-danger">delete_outline</mat-icon>
+                        </div>
+                        <div class="col pl-0">
+                            <h4>{{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Delete Files'">
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon class="mr-2 text-danger">delete_sweep</mat-icon>
+                        </div>
+                        <div class="col pl-0">
+                            <h4>{{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Download'">
+                    <h4>{{ notification.title }}</h4>
+                    <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Account Modified'">
+                    <h4>{{ notification.title }}</h4>
+                    <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Create New Shared Folder'">
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon class="mr-2" color="primary">folder_shared</mat-icon>
+                        </div>
+                        <div class="col pl-0">
+                            <h4>{{ notification.options.folderName }} {{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Create New Folder'">
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon class="mr-2" color="primary">create_new_folder</mat-icon>
+                        </div>
+                        <div class="pl-0 col">
+                            <h4>{{ notification.options.folderName }} {{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-2 no-new-notification" *ngSwitchCase="'Default'">
+                    <h4 class="mb-0">{{ notification.title }}</h4>
+                </div>
+                <mat-divider class="mx-2" *ngIf="!notificationState"></mat-divider>
+            </div>
+        </div>
+        <div class="row mt-2" *ngIf="!notificationState">
+            <div class="col-auto ml-auto">
+                <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)">Clear</button>
+            </div>
+        </div>
+    </div>
+</mat-menu>

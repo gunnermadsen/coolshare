@@ -1,11 +1,14 @@
 <div class="container-fluid px-0">
     <div class="row" *ngIf="(viewState$ | async) as viewState">
-        <div class="col">
+        <div class="col-auto">
             <button mat-button class="px-0" (click)="viewDetails()">View details</button>
         </div>
-        <div class="col-auto pr-1">
-            <button mat-button class="px-0" *ngIf="(completed$ | async) as completed" (click)="close()"><mat-icon>close</mat-icon></button>
-            <div *ngIf="(isInProgress$ | async)">{{ (progress$ | async) }}%</div>
+        
+        <div class="col-auto ml-auto pr-1">
+            <button mat-icon-button class="px-0" *ngIf="(completed$ | async) as completed" (click)="close()"><mat-icon>close</mat-icon></button>
+            <div *ngIf="(progress$ | async) < 100">
+                {{ (progress$ | async) }}%
+            </div>
         </div>
     </div>
     <div class="row">

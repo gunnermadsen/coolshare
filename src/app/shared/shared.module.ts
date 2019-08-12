@@ -18,7 +18,10 @@ import { FileSizePipe } from './pipes/file-size.pipe';
         ReactiveFormsModule,
         HttpClientModule,
         MaterialModule,
-        ToastrModule.forRoot(),
+        ToastrModule.forRoot({
+            timeOut: 4000,
+            positionClass: 'toast-bottom-right'
+        }),
         RouterModule
         
     ],

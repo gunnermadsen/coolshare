@@ -3,11 +3,12 @@ import { Store, select } from '@ngrx/store';
 import { selectUser } from './core/authentication/store/selectors/authentication.selectors';
 import { LogoutUserRequested } from './core/authentication/store/actions/authentication.actions';
 import { AppState } from './reducers/index';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material';
-import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
-import { tap } from 'rxjs/operators';
+import { MatSnackBar } from '@angular/material';
 
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import * as fromAccount from '@/modules/account/store/actions/account.actions';
+import * as fromNotifications from '@/modules/notifications/store/actions/notification.actions';
+
 import { Router, ActivatedRoute } from '@angular/router';
 import { FileUploadProgressComponent } from './modules/upload-file/components/file-upload-progress/file-upload-progress.component';
 
@@ -19,13 +20,13 @@ import { FileUploadProgressComponent } from './modules/upload-file/components/fi
 
 export class AppComponent {
   public authState: boolean;
-  public notifications: string[] = ["notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification", "notification"]
   constructor(private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {}
   ngOnInit(): void {
     this.store$.pipe(select(selectUser)).subscribe((result: any) => {
 
       if (result.isLoggedIn) {
-        this.store$.dispatch(new fromAccount.FetchAccountInfo());
+        this.store$.dispatch(new fromAccount.FetchAccountInfo())
+        this.store$.dispatch(new fromNotifications.FetchNotifications({ id: result.token.Id }))
       }
 
       return this.authState = result.isLoggedIn;
