@@ -6,6 +6,8 @@ import { getRepoData } from '../../store/selectors/dashboard.selectors';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 
+import * as icons from 'pretty-file-icons';
+
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
@@ -44,5 +46,16 @@ export class MainComponent implements OnInit {
         return contents.sort((a: any, b: any) => b.creationDate - a.creationDate)
       })
     )
+  }
+
+  public getIcon(row: any): any {
+    if (row.type === 'Folder') {
+      return;
+    }
+
+    let result = row.name.split('.');
+    const extension = result[result.length];
+    const icon = icons.getIcon(extension);
+    return 'svg/' + icon + '.svg';
   }
 }

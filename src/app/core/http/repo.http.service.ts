@@ -29,7 +29,7 @@ export class HttpRepoService {
     }
 
     public createFolder(payload: any): Observable<any> {
-        return this.http.post<any>('/api/repo/create', payload);
+        return this.http.post<any>('/api/repo/create', payload)
     }
 
     public delete(payload: any): Observable<any> {
@@ -45,21 +45,19 @@ export class HttpRepoService {
             'Accept'       : '*/*'
         });
 
-        const mimeType = mime.getType(payload.name);
-
         return this.http.get(`/api/repo/download?${query}`, { headers: headers, responseType: 'blob' as 'json' })
     }
 
     public verifyLink(linkDetails: any): Observable<any> {
-        return this.http.post<any>('/api/repo/verify', linkDetails);
+        return this.http.post<any>('/api/repo/verify', linkDetails)
     }
 
-    private generateQueryUri(payload: { id: string, path: string, name: string }): string {
+    private generateQueryUri(payload: { userId: string, path: string, name: string }): string {
 
-        let uri = `resource=${payload.name}&path=${payload.path}&id=${payload.id}`;
-        uri = uri.replace(/ /g, '%20').replace(/\//g, '%2F');
+        let uri = `resource=${payload.name}&path=${payload.path}&id=${payload.userId}`
+        uri = uri.replace(/ /g, '%20').replace(/\//g, '%2F')
 
-        return uri;
+        return uri
 
     }
 }

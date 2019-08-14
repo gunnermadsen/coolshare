@@ -1,6 +1,4 @@
   <!-- <div class="sidenav-container"> -->
-    
-
     <mat-sidenav-container fullscreen class="mat-sidenav-container">
       <mat-sidenav mode="over" #sidenav>
         <mat-action-list>
@@ -9,25 +7,38 @@
           </button>
         </mat-action-list>
         <mat-nav-list (click)="sidenav.close()">
-          <div *ngIf="authState; then dashboardNav; else homeNav"></div>
+          <div *ngIf="(authState$ | async); then dashboardNav; else homeNav"></div>
         </mat-nav-list>
       </mat-sidenav>
       <mat-toolbar color="primary">
         <div class="navbar-center">
-          <div class="side-nav-menu">
+          <div class="side-nav-menu" *ngIf="isXS">
             <button mat-button class="menu-icon" (click)="sidenav.toggle()">
               <mat-icon [inline]="true">menu</mat-icon>
             </button>
           </div>
           <button mat-button type="button" class="px-0" routerLink="/dashboard/main">
-            <h4>Coolshare</h4>
+            <h3>Coolshare</h3>
           </button>
+          <div class="navbar-center ml-3" *ngIf="!isXS && (authState$ | async)">
+            <button mat-button type="button" class="px-0" routerLink="/dashboard/files">
+              <h4>Files</h4>
+            </button>
+          </div>
+          <div class="navbar-center ml-3" *ngIf="!isXS && !(authState$ | async)">
+            <button mat-button type="button" class="px-1 mx-1" routerLink="/login">
+              Login
+            </button>
+            <button mat-button type="button" class="px-1 mx-1" routerLink="/register">
+              Register
+            </button>
+          </div>
         </div>
         <span class="spacer"></span>
-        <div class="navbar-end mr-3" *ngIf="authState">
+        <div class="navbar-end" *ngIf="(authState$ | async)">
           <notifications></notifications>
+          <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1 ml-3" (click)="navigate('/account')">{{ initials$ | async }}</button>
         </div>
-        <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1" (click)="navigate('/account')">GM</button>
       </mat-toolbar>
       <!-- <mat-sidenav-content> -->
         <div class="container-fluid px-0">

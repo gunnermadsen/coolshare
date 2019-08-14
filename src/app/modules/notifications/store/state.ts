@@ -8,3 +8,12 @@ export enum NotificationTypes {
     FileDownloaded = 'Download',
     Default = 'Default'
 }
+
+
+export interface NotificationSettingsState {
+    notificationBadgeHidden: boolean | null;
+}
+
+export const initialNotificationSettingsState: NotificationSettingsState = {
+    notificationBadgeHidden: null
+};

@@ -2,24 +2,19 @@ import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges, OnDestro
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
-import { Observable, merge, of as observableOf, throwError, Subject } from 'rxjs';
+import { Observable, of as observableOf, Subject } from 'rxjs';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
-import { startWith, switchMap, map, catchError, delay, tap, take, takeUntil } from 'rxjs/operators';
+import { catchError, tap, take, takeUntil } from 'rxjs/operators';
 import { IContents } from '@/shared/models/contents.model';
 import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
-import { FileUpload, CreateFolder, RetrieveFolderContents, DownloadItem } from '../../store/actions/filesystem.actions';
-import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
-import { NewFolderComponent } from '../new-folder/new-folder.component';
+import { RetrieveFolderContents, DownloadItem } from '../../store/actions/filesystem.actions';
+
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
 import { SelectionModel } from '@angular/cdk/collections';
 import { FileActionsComponent } from '../file-actions/file-actions.component';
-import * as icons from 'pretty-file-icons';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 
-import { saveAs } from 'file-saver'
-
-import * as mime from 'mime';
-import * as fileSaver from 'file-saver';
+import * as fromAccount from '@/modules/account/store/selectors/account.selectors';
 
 
 @Component({
@@ -29,12 +24,14 @@ import * as fileSaver from 'file-saver';
 })
 export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   public dataSource: MatTableDataSource<IContents>;
+  public displayMode: number = 0;
   public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action'];
   public isXS: boolean = true;
   public rowSelected: boolean = false;
   public resultsLength: number;
   public path: string[] = [];
   public cwd: string;
+  public userName$: Observable<string>;
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
   @ViewChild(MatSort, { static: true }) public sort: MatSort;
   @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent;
@@ -63,9 +60,9 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
     })
 
     if (this.mode === 0) {
-      const account = JSON.parse(localStorage.getItem('Account'));
-      this.userId = account.Id;
-      this.userName = account.UserName;
+      const user = JSON.parse(localStorage.getItem('Account'));
+      this.userId = user.Id;
+      this.userName$ = this.store$.pipe(select(fromAccount.selectUserName))
     }
 
     this.initializeTableData();
@@ -108,18 +105,6 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
     }
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.index + 1}`
   }
-
-
-  // public getIcon(row: any): any {
-  //   if (row.type === 'Folder') {
-  //     return;
-  //   }
-
-  //   let result = row.name.split('.');
-  //   const extension = result[result.length];
-  //   const icon = icons.getIcon(extension);
-  //   return 'svg/' + icon + '.svg';
-  // }
 
 
   public initializeTableData() {
@@ -206,44 +191,33 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
 
   }
 
-  public showUploadDetailsDialog(): void {
-    const config = new MatDialogConfig();
+  public setTableViewState(event: MouseEvent, mode: number): void {
+    this.displayMode = mode;
+  }
 
-    config.width = '520px';
-    config.height = '550px';
+  public showUploadDetailsDialog(): void {
+    const config = new MatDialogConfig()
+
+    config.width = '520px'
+    config.height = '550px'
 
     config.data = {
       cwd: this.cwd,
       id: this.userId
     }
 
-    const dialogRef = this.dialog.open(UploadDetailsComponent, config);
+    const dialogRef = this.dialog.open(UploadDetailsComponent, config)
 
-    dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
-      console.log(result);
-    })
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
   public downloadItem(name: string): void {
 
-    const params = {
+    this.store$.dispatch(new DownloadItem({
       path: this.cwd,
       name: name,
-      id: this.userId
-    }
-
-    this.repoService.download(params).pipe(
-      catchError((error) => {
-        return throwError(error)
-      })
-    )
-    .subscribe((response: any) => {
-      const type = mime.getType(name);
-
-      let blob = new Blob([response], { type: type });
-
-      fileSaver.saveAs(blob, name);
-    })
+      userId: this.userId
+    }));
 
   }
 

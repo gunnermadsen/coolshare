@@ -1,12 +1,18 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { NotificationEffects } from './store/effects/notification.effects';
-import { StoreModule } from '@ngrx/store';
+import { StoreModule, ActionReducerMap } from '@ngrx/store';
 import { notificationReducer } from './store/reducer/notification.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '@/shared/shared.module';
-import { UploadModule } from '../upload-file/upload.module';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { notificationSettingsReducer } from './store/reducer/settings.reducer';
+
+export const NotificationReducersMap: ActionReducerMap<any> = {
+    Events: notificationReducer,
+    Settings: notificationSettingsReducer
+};
+
 
 @NgModule({
     declarations: [
@@ -16,7 +22,7 @@ import { NotificationsComponent } from './pages/notifications/notifications.comp
         CommonModule,
         SharedModule,
         
-        StoreModule.forFeature('notifications', notificationReducer),
+        StoreModule.forFeature('Notifications', NotificationReducersMap),
         EffectsModule.forFeature([NotificationEffects]), 
     ],
     exports: [

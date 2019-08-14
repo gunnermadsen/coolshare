@@ -5,7 +5,7 @@
         </div>
         
         <div class="col-auto ml-auto pr-1">
-            <button mat-icon-button class="px-0" *ngIf="(completed$ | async) as completed" (click)="close()"><mat-icon>close</mat-icon></button>
+            <button mat-icon-button class="px-0" *ngIf="(completed$ | async)" (click)="close()"><mat-icon>close</mat-icon></button>
             <div *ngIf="(progress$ | async) < 100">
                 {{ (progress$ | async) }}%
             </div>

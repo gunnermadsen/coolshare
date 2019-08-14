@@ -16,4 +16,8 @@ export class HttpNotificationService {
     public deleteAllNotifications(id: string): Observable<any> {
         return this.http.delete<any>(`/api/notifications/deleteall/${id}`);
     }
+
+    public setNotificationViewState(id: string, state: boolean): Observable<any> {
+        return this.http.put<any>(`/api/notifications/${id}`, { state: state }) ;
+    }
 }

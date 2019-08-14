@@ -1,13 +1,21 @@
-<button mat-icon-button [matMenuTriggerFor]="menu">
-    <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="notificationState" matBadgePosition="before" matBadgeColor="accent">notifications_none</mat-icon>
+<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setNotificationViewState($event)">
+    <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="(viewState$ | async)" matBadgePosition="before" matBadgeColor="accent">notifications_none</mat-icon>
 </button>
+
 <mat-menu #menu="matMenu">
     <div class="container-fluid">
-        <div class="row" *ngFor="let notification of (notifications$ | async); index as i">
+        <div class="row notification-container" *ngFor="let notification of (notifications$ | async); index as i">
             <div class="col px-0" [ngSwitch]="notification.type">
                 <div class="notification m-2" *ngSwitchCase="'Upload'">
-                    <h4>{{ notification.title }}</h4>
-                    <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon color="primary" class="mr-2">cloud_upload</mat-icon>
+                        </div>
+                        <div class="col pl-0">
+                            <h4>{{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Delete File'">
                     <div class="row">
@@ -32,8 +40,15 @@
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Download'">
-                    <h4>{{ notification.title }}</h4>
-                    <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon color="primary" class="mr-2">cloud_download</mat-icon>
+                        </div>
+                        <div class="col pl-0">
+                            <h4>{{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Account Modified'">
                     <h4>{{ notification.title }}</h4>
@@ -64,12 +79,16 @@
                 <div class="m-2 no-new-notification" *ngSwitchCase="'Default'">
                     <h4 class="mb-0">{{ notification.title }}</h4>
                 </div>
-                <mat-divider class="mx-2" *ngIf="!notificationState"></mat-divider>
+                
             </div>
         </div>
-        <div class="row mt-2" *ngIf="!notificationState">
+        <div class="row mt-2 notification-actions" *ngIf="!notificationState">
+            <div class="col">
+                <!-- <mat-divider class="mx-2" *ngIf="!notificationState"></mat-divider> -->
+                <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)"><mat-icon class="mr-2">clear</mat-icon>Clear</button>
+            </div>
             <div class="col-auto ml-auto">
-                <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)">Clear</button>
+                <button mat-raised-button color="primary" (click)="refreshNotifications($event)"><mat-icon class="mr-2">refresh</mat-icon>Refresh</button>
             </div>
         </div>
     </div>

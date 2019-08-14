@@ -4,40 +4,44 @@ import { Action } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import * as notifications from '../actions/notification.actions';
-import { saveAs } from 'file-saver'
+import * as notificationSettings from '../actions/settings.actions';
 
-import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
-import { ToastrService } from 'ngx-toastr';
-import { FileSaverService } from 'ngx-filesaver';
+import { exhaustMap, map, mergeMap, catchError, tap, switchMap } from 'rxjs/operators';
 import { HttpNotificationService } from '@/core/http/notification.http.service';
 
 
 @Injectable()
 export class NotificationEffects {
 
-    constructor(private actions$: Actions, private notificationService: HttpNotificationService, private toastrService: ToastrService, private fileSaver: FileSaverService) { }
-
-    @Effect({ dispatch: false })
+    @Effect()
     public createNewNotification$: Observable<Action> = this.actions$.pipe(
         ofType(notifications.NotificationActionTypes.CREATE_NOTIFICATION),
         exhaustMap((action: any) => {
             return this.notificationService.createNotification(action.payload).pipe(
 
-                tap((action) => action),
+                map((payload: any) => {
+                    return new notificationSettings.SaveNotificationSettingsViewState({ notificationBadgeHidden: payload.notificationBadgeHidden })
+                }),
+                // tap((action) => action),
 
                 catchError(error => throwError(error))
-                
+
             )
         })
     )
 
     @Effect()
-    public getNotifications$: Observable<Action> = this.actions$.pipe(
+    public getNotifications$ = this.actions$.pipe(
         ofType(notifications.NotificationActionTypes.FETCH_NOTIFICATIONS),
         exhaustMap((action: any) => {
             return this.notificationService.getNotifications(action.payload.id).pipe(
 
-                map((payload: any) => new notifications.SaveNotifications({ notifications: payload.Notifications })),
+                switchMap((payload: any) => {
+                    return [
+                        new notifications.SaveNotifications({ notifications: payload.Notifications }),
+                        new notificationSettings.SaveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden })
+                    ]
+                }),
                 
                 catchError(error => throwError(error))
 
@@ -57,4 +61,19 @@ export class NotificationEffects {
             )
         })
     )
+
+    @Effect()
+    public setNotificationViewState$: Observable<Action> = this.actions$.pipe(
+        ofType(notificationSettings.NotificationSettingsActionTypes.SET_NOTIFICATION_VIEW_STATE),
+        mergeMap((action: any) => {
+            return this.notificationService.setNotificationViewState(action.payload.id, action.payload.notificationBadgeHidden).pipe(
+                map((payload: any) => {
+                    return new notificationSettings.SaveNotificationSettingsViewState({ notificationBadgeHidden: action.payload.notificationBadgeHidden }) 
+                }),
+                catchError((error) => throwError(error))
+            )
+        })
+    )
+
+    constructor(private actions$: Actions, private notificationService: HttpNotificationService) { }
 }

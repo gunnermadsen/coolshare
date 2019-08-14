@@ -8,9 +8,13 @@ import { MatSnackBar } from '@angular/material';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import * as fromAccount from '@/modules/account/store/actions/account.actions';
 import * as fromNotifications from '@/modules/notifications/store/actions/notification.actions';
+import * as account from '@/modules/account/store/selectors/account.selectors';
 
 import { Router, ActivatedRoute } from '@angular/router';
 import { FileUploadProgressComponent } from './modules/upload-file/components/file-upload-progress/file-upload-progress.component';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { takeUntil, map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -19,9 +23,14 @@ import { FileUploadProgressComponent } from './modules/upload-file/components/fi
 })
 
 export class AppComponent {
-  public authState: boolean;
-  constructor(private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {}
+  public authState$: Observable<boolean>;
+  public initials$: Observable<string>;
+  public isXS: boolean = true;
+  constructor(private breakpointObserver: BreakpointObserver, private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {
+    
+  }
   ngOnInit(): void {
+    
     this.store$.pipe(select(selectUser)).subscribe((result: any) => {
 
       if (result.isLoggedIn) {
@@ -29,14 +38,23 @@ export class AppComponent {
         this.store$.dispatch(new fromNotifications.FetchNotifications({ id: result.token.Id }))
       }
 
-      return this.authState = result.isLoggedIn;
+      this.authState$ = of(result.isLoggedIn);
     });
 
     this.store$.pipe(
       select(fromFileUploadSelectors.selectUploadViewState)
-    ).subscribe((state: any): void => {
-      return this.openSnackBar(state);
-    })
+    ).subscribe((state: any): void => this.openSnackBar(state))
+
+    this.initials$ = this.store$.pipe(
+      select(account.selectAccountInfo),
+      map((account: any) => {
+        if (Object.keys(account).length > 1) {
+          return this.getInitialsFromAccountData(account);
+        }
+      })
+    )
+
+    this.observeBreakpointChanges()
   }
 
   public logout(): void {
@@ -53,6 +71,32 @@ export class AppComponent {
   
   public navigate(route: string): void {
     this.router.navigate([route], { relativeTo: this.route });
+  }
+
+  private getInitialsFromAccountData(account: any): string {
+    let initials: string = ""
+
+    if (account.FirstName && account.LastName) {
+      const fullName: string[] = `${account.FirstName} ${account.LastName}`.split(" ")
+      initials = `${fullName[0][0]}${fullName[1][0]}`
+      return initials;
+    }
+    else {
+      initials = account.UserName[0]
+    }
+
+
+    return initials
+  }
+
+
+  private observeBreakpointChanges(): void {
+    this.breakpointObserver
+      .observe(['(max-width: 350px'])
+      // .pipe(
+      //   takeUntil(this.authState$)
+      // )
+      .subscribe((result: BreakpointState) => this.isXS = result.matches)
   }
 
 }

@@ -28,10 +28,10 @@ export class UploadEffects {
     @Effect()
     public uploadFile$: Observable<Action> = this.actions$.pipe(
         ofType(fromFileUploadActions.ActionTypes.UPLOAD_REQUEST),
-        // tap((action: any) => {
-        //     this.store$.dispatch(new fromNotificationActionTypes.CreateNewNotification({ createdDate: new Date(), type: NotificationTypes.Upload, options: { count: action.payload.files.length } }))
-        //     return action;
-        // }),
+        tap((action: any) => {
+            this.generateNotification(action.payload)
+            return action;
+        }),
         mergeMap((action: any) => {      
             
             let path = action.payload.path;
@@ -103,7 +103,7 @@ export class UploadEffects {
     )
 
     constructor(private repoService: HttpRepoService, private actions$: Actions<fromFileUploadActions.UploadActions>, private store$: Store<AppState>) { }
-
+    
     private getActionFromHttpEvent(mode: any, result: any, index: number, loaded: number, total: number, action: UploadActions) {
         // the current execution context is based on one file, 
         // however we still need to calculate the total progress 
@@ -158,7 +158,6 @@ export class UploadEffects {
     private handleError(error: any): Action {
         const friendlyErrorMessage = serializeError(error).message;
         return new fromFileUploadActions.UploadFailureAction({ error: friendlyErrorMessage });
-
     }
 
     private updateFileUploadState(state: any, event: any, index: number, action: any): any {
@@ -167,7 +166,6 @@ export class UploadEffects {
         let loaded: number = 0
         let progress: number = 0
 
-        
         // if (state.status === 'Paused') return state
 
         let clone = _.cloneDeep(state)
@@ -201,57 +199,40 @@ export class UploadEffects {
 
     }
 
-    /**
-     * Progress state can be in one of five states. 
-     * Tracked on a per file basis, however the global progress state 
-     * must be updated when canceled, becuase the size of the upload decreases:
-     * 
-     *      - Ongoing:      The file is being uploaded
-     *          * Action:       UPLOAD_REQUEST
-     * 
-     *      - Error:        An error occured while the file was being uploaded
-     *          * Action:       UPLOAD_FAILURE
-     * 
-     *      - Paused:       The file upload has been paused,
-     *          * Action:       SINGLE_FILE_UPLOAD_PAUSED
-     * 
-     *      - Cancelled:    The file upload has been cancelled
-     *          * Action:       SINGLE_FILE_UPLOAD_CANCELLED
-     * 
-     *      - Completed:    The file upload has completed 
-     *          * Action:       SINGLE_FILE_UPLOAD_COMPLETED
-     * 
-     * The information we will be tracking consists of the following:
-     *      - Loading Bar color
-     */
-
     private setProgressState(action: UploadActions): any {
 
         let state: any = {};
 
         switch (action.type) {
-            case ActionTypes.UPLOAD_REQUEST: {
+            case ActionTypes.UPLOAD_REQUEST:
                 state.color = 'primary'
-            }
             break;
-            case ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED: {
+            case ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED: 
                 state.color = 'warm'
-            }
             break;
-            case ActionTypes.SINGLE_FILE_UPLOAD_PAUSED: {
+            case ActionTypes.SINGLE_FILE_UPLOAD_PAUSED:
                 state.color = 'yellow'
-            }
             break
-            case ActionTypes.SINGLE_FILE_UPLOAD_COMPLETED: {
+            case ActionTypes.SINGLE_FILE_UPLOAD_COMPLETED:
                 state.color = 'accent'
-            }
             break;
-            case ActionTypes.UPLOAD_FAILURE: {
+            case ActionTypes.UPLOAD_FAILURE:
                 state.color = 'warm'
-            }
             break;
         }
 
         return state;
+    }
+
+    private generateNotification(payload: any): void {
+        const result = {
+            type: NotificationTypes.Upload,
+            createdOn: new Date(),
+            title: 'file uploaded',
+            userId: payload.userId,
+            files: Object.values<File>(payload.files)
+        }
+
+        this.store$.dispatch(new fromNotificationActionTypes.CreateNewNotification(result))
     }
 }

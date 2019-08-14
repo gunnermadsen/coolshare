@@ -22,7 +22,7 @@
     <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" >
       <ng-container *ngTemplateOutlet="actionCard"></ng-container>
     </div> -->
-    <div class="col-lg-9 col-md-9 col-sm-12 col-12">
+    <div class="col-lg-10 col-md-10 col-sm-12 col-12">
       <mat-accordion class="example-headers-align" [multi]="true">
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
@@ -36,13 +36,13 @@
           </mat-expansion-panel-header>
 
           <div class="row">
-            <div class="col-2" *ngFor="let file of (files$ | async); index as i">
-              <div *ngIf="i < 6">
-                file name
+            <div class="col-lg-2 col-md-2 col-sm-3 col-3" *ngFor="let file of (files$ | async); index as i">
+              <div *ngIf="i < 6" class="thumbnail">
+                <img [src]="file.thumbnail">
+                <p class="thumbnail-title">{{ file.name }}</p>
               </div>
             </div>
           </div>
-
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="true">
@@ -94,7 +94,7 @@
 
       </mat-accordion>
     </div>
-    <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3 pl-0" *ngIf="!isXS">
+    <div class="col-lg-2 col-md-2 col-sm-12 col-12 mb-3 pl-0" *ngIf="!isXS">
       <file-actions 
         [cwd]="cwd" 
         [rowSelected]="rowSelected" 

@@ -50,7 +50,7 @@ export class CreateFolder implements Action {
 
 export class DownloadItem implements Action {
     readonly type = FileSystemActionTypes.FS_DOWNLOAD_ITEM;
-    constructor(public payload: { path: string, name: string, id: string }) {}
+    constructor(public payload: { path: string, name: string, userId: string }) {}
 }
 
 export class DownloadItemCancelled implements Action {

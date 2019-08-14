@@ -1,17 +1,19 @@
 import { Injectable } from '@angular/core';
-import { Observable, of, throwError, from } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import * as filesystem from '../actions/filesystem.actions';
-import { saveAs } from 'file-saver'
 
-import { FileSystemActionTypes, RetrieveFolderContents, SaveRetrievedFolderContents, FileUpload, CreateFolder, DownloadItem, DownloadItemCancelled, DeleteFolderItem, DeleteFolderItems } from '../actions/filesystem.actions';
-import { exhaustMap, map, mergeMap, catchError, concatMap, takeUntil, tap } from 'rxjs/operators';
+import { exhaustMap, map, mergeMap, catchError, tap } from 'rxjs/operators';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 import { ToastrService } from 'ngx-toastr';
-import { DomSanitizer } from '@angular/platform-browser';
+
 import * as mime from 'mime';
+import * as fileSaver from 'file-saver';
+import { saveAs } from 'file-saver'
+
+
 import { FileSaverService } from 'ngx-filesaver';
 
 import * as fromNotificationActionTypes from '@/modules/notifications/store/actions/notification.actions';
@@ -23,7 +25,7 @@ import { NotificationTypes } from '@/modules/notifications/store/state';
 @Injectable()
 export class FileSystemEffects {
 
-    constructor(private store$: Store<AppState>, private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService, private fileSaver: FileSaverService) { }
+    constructor(private store$: Store<AppState>, private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService) { }
 
     @Effect() 
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
@@ -66,7 +68,7 @@ export class FileSystemEffects {
 
     @Effect()
     public deleteFile$ = this.actions$.pipe(
-        ofType<DeleteFolderItem>(FileSystemActionTypes.FS_DELETE_FOLDER_ITEM),
+        ofType(filesystem.FileSystemActionTypes.FS_DELETE_FOLDER_ITEM),
         tap((action: any) => {
             this.generateNotification(action.payload, 1);
             return action;
@@ -89,7 +91,7 @@ export class FileSystemEffects {
 
     @Effect()
     public deleteFiles$ = this.actions$.pipe(
-        ofType<DeleteFolderItems>(FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS),
+        ofType(filesystem.FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS),
         tap((action: any) => {
             this.generateNotification(action.payload, 1);
             return action;
@@ -113,16 +115,23 @@ export class FileSystemEffects {
 
     @Effect({ dispatch: false })
     public downloadItem$ = this.actions$.pipe(
-        ofType<DownloadItem>(filesystem.FileSystemActionTypes.FS_DOWNLOAD_ITEM),
+        ofType(filesystem.FileSystemActionTypes.FS_DOWNLOAD_ITEM),
+        tap((action: any) => {
+            this.generateNotification(action.payload, 2);
+            return action;
+        }),
         exhaustMap((action: any) => {
             return this.repoService.download(action.payload).pipe(
                 tap((response: Blob) => {
                     
-                    this.fileSaver.save(response, action.payload.name);
+                    const type = mime.getType(name);
+
+                    let blob = new Blob([response], { type: type });
+
+                    fileSaver.saveAs(blob, action.payload.name);
+
                 }),
-                catchError((error) => {
-                    return throwError(error)
-                })
+                catchError((error) => throwError(error))
             )
         })
     )
@@ -134,7 +143,10 @@ export class FileSystemEffects {
 
         switch (mode) {
             case 0: {
-                type = payload.data.Accessibility === 0 ? NotificationTypes.CreateNewFolder : NotificationTypes.CreateNewSharedFolder
+                type = payload.data.Accessibility === 0 
+                    ? NotificationTypes.CreateNewFolder 
+                    : NotificationTypes.CreateNewSharedFolder
+
                 title = `${payload.data.Accessibility === 0 ? "" : "shared "}folder created`
                 options = {
                     folderName: payload.data.FolderName
@@ -142,10 +154,21 @@ export class FileSystemEffects {
             }
             break;
             case 1: {
-                type = payload.items.length === 1 ? NotificationTypes.DeleteFile : NotificationTypes.DeleteFiles
+                type = payload.items.length === 1 
+                    ? NotificationTypes.DeleteFile 
+                    : NotificationTypes.DeleteFiles
+                    
                 title = `${payload.items.length === 1 ? "file" : "files"} deleted`
                 options = {
                     deleteContext: payload.items
+                }
+            }
+            break;
+            case 2: {
+                type = NotificationTypes.FileDownloaded
+                title = 'file downloaded'
+                options = {
+                    fileName: payload.name
                 }
             }
             break;

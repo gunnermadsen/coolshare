@@ -9,7 +9,8 @@ export enum NotificationActionTypes {
     CREATE_NOTIFICATION = '[Notifications API] Create Notification From Event',
     FETCH_NOTIFICATIONS = '[Get Notifications API] Get Notifications',
     SAVE_NOTIFICATIONS = '[Notifications Client] Save Retrieved Notifications',
-    DELETE_ALL_NOTIFICATIONS = '[Notifications API] Delete All Notifications'
+    DELETE_ALL_NOTIFICATIONS = '[Notifications API] Delete All Notifications',
+    SET_NOTIFICATION_VIEW_STATE = '[Notifications API] Set Notification View State'
 };
 
 /**
@@ -49,4 +50,4 @@ export type NotificationActions
     = CreateNewNotification
     | FetchNotifications
     | SaveNotifications
-    | DeleteAllNotifications;
+    | DeleteAllNotifications

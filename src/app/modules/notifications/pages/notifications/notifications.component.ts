@@ -4,9 +4,11 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 
 import * as notifications from '../../store/selectors/notification.selectors';
-import * as notificationActions from '../../store/actions/notification.actions';
 
-import { map } from 'rxjs/operators';
+import * as notificationActions from '../../store/actions/notification.actions';
+import * as notificationSettingsActions from '../../store/actions/settings.actions';
+
+import { map, tap } from 'rxjs/operators';
 import { NotificationTypes } from '../../store/state';
 
 @Component({
@@ -15,15 +17,24 @@ import { NotificationTypes } from '../../store/state';
   styleUrls: ['./notifications.component.less']
 })
 export class NotificationsComponent implements OnInit {
-  public notifications$: Observable<any>;
-  public notificationState: boolean = true;
-
+  public notifications$: Observable<any>
+  public viewState$: Observable<boolean>
+  private viewState: boolean
   private id: string;
+
   constructor(private store$: Store<AppState>) {
    this.id = JSON.parse(localStorage.getItem('Account')).Id;
   }
 
-  ngOnInit() {
+  public ngOnInit() {
+    this.viewState$ = this.store$.pipe(
+      select(notifications.selectViewState),
+      tap((result: any) => {
+        this.viewState = result
+        return result;
+      })
+    )
+
     this.notifications$ = this.store$.pipe(
       select(notifications.selectAllNotifications),
       map((state: any) => {
@@ -33,7 +44,6 @@ export class NotificationsComponent implements OnInit {
             type: NotificationTypes.Default
           }]
         }
-        this.notificationState = false
         return state
       })
     )
@@ -44,7 +54,18 @@ export class NotificationsComponent implements OnInit {
     event.stopPropagation()
     event.preventDefault()
     this.store$.dispatch(new notificationActions.DeleteAllNotifications({ id: this.id }))
-    this.notificationState = true
+  }
+
+  public refreshNotifications(event: MouseEvent): void {
+    event.stopPropagation()
+    event.preventDefault()
+    this.store$.dispatch(new notificationActions.FetchNotifications({ id: this.id }))
+  }
+
+  public setNotificationViewState(event: MouseEvent): void {
+    if (!this.viewState) {
+      this.store$.dispatch(new notificationSettingsActions.SetNotificationSettingsViewState({ id: this.id, notificationBadgeHidden: true }))
+    }
   }
 
 }
