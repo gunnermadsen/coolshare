@@ -20,7 +20,8 @@ export class NotificationsComponent implements OnInit {
   public notifications$: Observable<any>
   public viewState$: Observable<boolean>
   private viewState: boolean
-  private id: string;
+  public isEmpty: boolean = true
+  private id: string
 
   constructor(private store$: Store<AppState>) {
    this.id = JSON.parse(localStorage.getItem('Account')).Id;
@@ -44,6 +45,7 @@ export class NotificationsComponent implements OnInit {
             type: NotificationTypes.Default
           }]
         }
+        this.isEmpty = false
         return state
       })
     )
@@ -54,6 +56,7 @@ export class NotificationsComponent implements OnInit {
     event.stopPropagation()
     event.preventDefault()
     this.store$.dispatch(new notificationActions.DeleteAllNotifications({ id: this.id }))
+    this.isEmpty = true;
   }
 
   public refreshNotifications(event: MouseEvent): void {

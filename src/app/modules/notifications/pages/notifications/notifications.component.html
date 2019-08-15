@@ -82,7 +82,7 @@
                 
             </div>
         </div>
-        <div class="row mt-2 notification-actions" *ngIf="!notificationState">
+        <div class="row mt-2 notification-actions" *ngIf="!isEmpty">
             <div class="col">
                 <!-- <mat-divider class="mx-2" *ngIf="!notificationState"></mat-divider> -->
                 <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)"><mat-icon class="mr-2">clear</mat-icon>Clear</button>
