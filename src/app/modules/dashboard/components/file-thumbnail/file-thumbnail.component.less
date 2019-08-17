@@ -1,0 +1,75 @@
+.tb-button {
+    width: 35px !important;
+    height: 35px !important;
+    margin-left: auto;
+}
+
+.ghost-button {
+    display: none
+}
+
+::ng-deep .mat-icon {
+    height: 30px !important;
+    width: 30px !important;
+    font-size: 30px !important;
+}
+
+.thumbnail {
+    display: flex;
+    height: 150px;
+    max-width: 150px;
+    object-fit: fill;
+    background-size: cover;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.thumbnail:hover {
+    cursor: pointer;
+
+    .ghost-button {
+        display: inline-block;
+    }
+
+    .tn-title > .tn-name {
+        color: rgb(0, 96, 252)
+    }
+
+}
+
+
+.tb-action-row {
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+}
+
+.tb-checkbox {
+  justify-content: flex-end;
+}
+
+.tb-button {
+  justify-content: flex-end;
+}
+
+.thumbnail-menu {
+    font-size: 20px;
+}
+
+.tn-name {
+    // word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    justify-content: center;
+}
+
+.tn-title {
+    display: flex;
+    width: 150px;
+    margin-right: 10px;
+    margin-left: 10px;
+}
+
+.tb-container {
+    padding: 20px;
+}

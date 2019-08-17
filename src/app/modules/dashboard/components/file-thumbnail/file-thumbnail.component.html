@@ -1,0 +1,34 @@
+<div [ngStyle]="mode === 0 ? thumbnailGrid : thumbnailRow" class="tb-container">
+    <div *ngFor="let file of files; index as i" >
+        <div class="thumbnail" 
+            [ngStyle]="{ 
+                'background-image': getUrl(file.thumbnail),
+                'flex': setFlexItemState()
+            }">
+            <div class="tb-action-row">
+                <mat-checkbox color="primary" class="ghost-button m-2"></mat-checkbox>
+                <button class="ghost-button tb-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu">
+                    <mat-icon class="thumbnail-menu">more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu" xPosition="before">
+                    <button mat-menu-item>
+                        <mat-icon>dialpad</mat-icon>
+                        <span>Redial</span>
+                    </button>
+                    <button mat-menu-item disabled>
+                        <mat-icon>voicemail</mat-icon>
+                        <span>Check voice mail</span>
+                    </button>
+                    <button mat-menu-item>
+                        <mat-icon>notifications_off</mat-icon>
+                        <span>Disable alerts</span>
+                    </button>
+                </mat-menu>
+            </div>
+            <!-- <img [src]="file.thumbnail" width="110" height="140" style="object-fit: contain;"> -->
+        </div>
+        <div class="tn-title">
+            <p class="tn-name">{{ file.name }}</p>
+        </div>
+    </div>
+</div>

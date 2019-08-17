@@ -16,12 +16,11 @@ mat-form-field {
   font-size: 45px;
 }
 
-.thumbnail {
-  width: 120px;
-}
 
-.thumbnail-title {
-  // word-wrap: break-word;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.thumbnail-container {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; 
+  -ms-overflow-style: -ms-autohiding-scrollbar;
 }

@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges, OnDestro
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
-import { Observable, of as observableOf, Subject } from 'rxjs';
+import { Observable, of as observableOf, Subject, of } from 'rxjs';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
 import { catchError, tap, take, takeUntil } from 'rxjs/operators';
 import { IContents } from '@/shared/models/contents.model';
@@ -23,18 +23,19 @@ import * as fromAccount from '@/modules/account/store/selectors/account.selector
   styleUrls: ['./repository.component.less']
 })
 export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
-  public dataSource: MatTableDataSource<IContents>;
-  public displayMode: number = 0;
-  public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action'];
-  public isXS: boolean = true;
-  public rowSelected: boolean = false;
-  public resultsLength: number;
-  public path: string[] = [];
-  public cwd: string;
-  public userName$: Observable<string>;
-  @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator;
-  @ViewChild(MatSort, { static: true }) public sort: MatSort;
-  @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent;
+  public dataSource: MatTableDataSource<IContents>
+  public displayMode: number = 1
+  public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action']
+  public isXS: boolean = true
+  public rowSelected: boolean = false
+  public resultsLength: number
+  public path: string[] = []
+  public cwd: string
+  public userName$: Observable<string>
+  public files$: Observable<any>
+  @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator
+  @ViewChild(MatSort, { static: true }) public sort: MatSort
+  @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent
   @Input() public mode: number = 0;
   @Input() public userId: string;
   @Input() public userName: string;
@@ -136,6 +137,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
         this.dataSource = new MatTableDataSource(data);
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
+        this.files$ = of(this.dataSource.data)
       }
     });
   }

@@ -14,6 +14,7 @@ import { UploadModule } from '../upload-file/upload.module';
 import { FileActionsComponent } from './components/file-actions/file-actions.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbnail.component';
 
 @NgModule({
     declarations: [
@@ -21,8 +22,9 @@ import { NotificationsModule } from '../notifications/notifications.module';
         MainComponent,
         RepositoryComponent,
         NewFolderComponent,
-        FileActionsComponent
-
+        FileActionsComponent,
+        FileThumbnailComponent
+        
     ],
     imports: [
         CommonModule,

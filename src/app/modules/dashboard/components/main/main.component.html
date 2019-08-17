@@ -27,7 +27,7 @@
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              Unread
+              Recent Items
             </mat-panel-title>
             <mat-panel-description>
               <!-- Type your name and age
@@ -35,14 +35,13 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="row">
-            <div class="col-lg-2 col-md-2 col-sm-3 col-3" *ngFor="let file of (files$ | async); index as i">
-              <div *ngIf="i < 6" class="thumbnail">
-                <img [src]="file.thumbnail">
-                <p class="thumbnail-title">{{ file.name }}</p>
-              </div>
-            </div>
+          <div class="thumbnail-container">
+            <file-thumbnail
+              [mode]="1"
+              [files]="files$ | async" 
+            ></file-thumbnail>
           </div>
+
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="true">

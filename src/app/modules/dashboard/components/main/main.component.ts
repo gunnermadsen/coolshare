@@ -30,7 +30,7 @@ export class MainComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.breakpointObserver.observe(['(max-width: 768px']).subscribe((state: BreakpointState) => {
+    this.breakpointObserver.observe(['(max-width: 768px)']).subscribe((state: BreakpointState) => {
       return state.matches ? this.isXS = true : this.isXS = false;
     })
 
@@ -48,14 +48,6 @@ export class MainComponent implements OnInit {
     )
   }
 
-  public getIcon(row: any): any {
-    if (row.type === 'Folder') {
-      return;
-    }
+  
 
-    let result = row.name.split('.');
-    const extension = result[result.length];
-    const icon = icons.getIcon(extension);
-    return 'svg/' + icon + '.svg';
-  }
 }

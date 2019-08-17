@@ -1,15 +1,15 @@
 /* Structure */
-.example-container {
-  position: relative;
-  min-height: 200px;
-}
+// .example-container {
+//   position: relative;
+//   min-height: 200px;
+// }
 
-.table-container {
-  margin: auto;
-  width: 100%;
-  position: relative;
-  overflow: auto;
-}
+// .table-container {
+//   margin: auto;
+//   width: 100%;
+//   position: relative;
+//   overflow: auto;
+// }
 
 table {
   width: 100%;
@@ -159,8 +159,17 @@ a.folder-node {
 //   word-wrap: break-word;
 // }
 
-.thumbnail-title {
-  // word-wrap: break-word;
-  overflow: hidden;
-  text-overflow: ellipsis;
+// .thumbnail-title {
+//   // word-wrap: break-word;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+// }
+
+
+.thumbnail-container {
+  display: flex;
+  flex-wrap: wrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch; 
+  -ms-overflow-style: -ms-autohiding-scrollbar;
 }

@@ -1,6 +1,9 @@
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col mb-3">
+      <div class="example-loading-shade" *ngIf="isLoadingResults">
+        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+      </div>
       <mat-card class="mat-elevation-z2 path-card">
         <nav aria-label="breadcrumb">
           <ol class="breadcrumb mb-0">
@@ -19,26 +22,18 @@
   <div class="row">
     <div class="col-lg-10 col-md-10 col-sm-12 col-12">
       <div class="example-container mat-elevation-z2">
-        <div class="example-loading-shade" *ngIf="isLoadingResults">
-          <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-        </div>
+        
       
-        <div class="table-container">
-      
-          <!-- <div *ngIf="displayMode; then list; else grid"></div> -->
-
-          <div [ngSwitch]="displayMode">
-            <div *ngSwitchCase="0">
-              <ng-container *ngTemplateOutlet="list"></ng-container>
-            </div>
-            <div *ngSwitchCase="1">
-              <ng-container *ngTemplateOutlet="grid"></ng-container>
-            </div>
-            <!-- <div *ngSwitchCase="2">
-              <ng-container *ngTemplateOutlet="list"></ng-container>
-            </div> -->
+        <!-- <div class="table-container">
+          <div *ngIf="displayMode; then list; else grid"></div>
+        </div> -->
+        <div [ngSwitch]="displayMode">
+          <div *ngSwitchCase="0">
+            <ng-container *ngTemplateOutlet="list"></ng-container>
           </div>
-
+          <div *ngSwitchCase="1">
+            <ng-container *ngTemplateOutlet="grid"></ng-container>
+          </div>
         </div>
       </div>
     </div>
@@ -79,7 +74,14 @@
       <mat-divider></mat-divider>
     </div>
   </div>
-  <div class="container-fluid m-3">
+  <div class="thumbnail-container">
+    <file-thumbnail flexboxFiles
+      [mode]="0"
+      [files]="files$ | async"
+    ></file-thumbnail>
+  </div>
+
+  <!-- <div class="container-fluid m-3">
     <div class="row">
       <div class="col-lg-2 col-md-2 col-sm-3 col-3" *ngFor="let item of dataSource.data; index as i">
         <div class="thumbnail">
@@ -88,7 +90,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </div> -->
 </ng-template>
 
 
