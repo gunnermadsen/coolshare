@@ -4,8 +4,9 @@ import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
 
 import * as filesystem from '../actions/filesystem.actions';
+import * as filesystemSettings from '../actions/settings.actions';
 
-import { exhaustMap, map, mergeMap, catchError, tap } from 'rxjs/operators';
+import { exhaustMap, map, mergeMap, catchError, tap, switchMap } from 'rxjs/operators';
 import { HttpRepoService } from '@/core/http/repo.http.service';
 import { ToastrService } from 'ngx-toastr';
 
@@ -31,10 +32,11 @@ export class FileSystemEffects {
     public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_READ_FOLDER),
         exhaustMap((action: any) => {
-            return this.repoService.getFolderContents(action.payload.folder).pipe(
-                map((folder: any) => {
-                    return new filesystem.SaveRetrievedFolderContents({ contents: folder.content });
-                }),
+            return this.repoService.getFolderContents(action.payload.folder, action.payload.id).pipe(
+                switchMap((folder: any) => [
+                    new filesystem.SaveRetrievedFolderContents({ contents: folder.result }),
+                    new filesystemSettings.SaveRetrievedFolderSettings({ settings: folder.settings })
+                ]),
                 catchError(error => {
                     return throwError(error)
                 })
@@ -78,7 +80,7 @@ export class FileSystemEffects {
 
                 tap(() => this.toastrService.success("Delete operation successful")),
 
-                map(() => new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})),
+                map(() => new filesystem.RetrieveFolderContents({ folder: action.payload.path, id: action.payload.id })),
 
                 catchError(error => {
                     this.toastrService.error(error);
@@ -102,7 +104,7 @@ export class FileSystemEffects {
 
                 tap(() => this.toastrService.success("Delete operation successful")),
 
-                map(() => new filesystem.RetrieveFolderContents({ folder: { path: action.payload.path }})),
+                map(() => new filesystem.RetrieveFolderContents({ folder: action.payload.path, id: action.payload.id })),
                 
                 catchError(error => {
                     this.toastrService.error(error);

@@ -1,12 +1,11 @@
 import { createFeatureSelector, createSelector, MemoizedSelector } from '@ngrx/store';
-import { IContents } from '@/shared/models/contents.model';
 
-export const selectRepositoryState = createFeatureSelector<any>('fs');
+export const selectRepositoryState = createFeatureSelector<any>('FileSystem');
 
 
-export const getRepoData: MemoizedSelector<object, any> = createSelector(
+export const getRepoData = createSelector(
     selectRepositoryState,
     repoState => {
-        return Object.values(repoState.entities);
+        return Object.values(repoState.Content.entities);
     }
 )

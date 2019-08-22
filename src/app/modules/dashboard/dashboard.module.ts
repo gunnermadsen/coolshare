@@ -5,8 +5,8 @@ import { MainComponent } from './components/main/main.component';
 import { RepositoryComponent } from './components/repository/repository.component';
 import { DashboardRouter } from './dashboard.router.module';
 import { SharedModule } from '@/shared/shared.module';
-import { StoreModule } from '@ngrx/store';
-import { fileSystemReducer } from './store/reducer/dashboard.reducer';
+import { StoreModule, ActionReducerMap } from '@ngrx/store';
+import { FileSystemReducer } from './store/reducer/repository.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { FileSystemEffects } from './store/effects/filesystem.effects';
 import { NewFolderComponent } from './components/new-folder/new-folder.component';
@@ -15,6 +15,13 @@ import { FileActionsComponent } from './components/file-actions/file-actions.com
 import { FileSaverModule } from 'ngx-filesaver';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbnail.component';
+import { AppState } from '@/reducers';
+import { FileSystemSettingsReducer } from './store/reducer/settings.reducer';
+
+export const FileSystemReducerMap: ActionReducerMap<AppState> = {
+    Content: FileSystemReducer,
+    Settings: FileSystemSettingsReducer
+}
 
 @NgModule({
     declarations: [
@@ -31,7 +38,7 @@ import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbna
         SharedModule,
         DashboardRouter,
         UploadModule,
-        StoreModule.forFeature('fs', fileSystemReducer),
+        StoreModule.forFeature('FileSystem', FileSystemReducerMap),
         EffectsModule.forFeature([FileSystemEffects]),
 
         FileSaverModule,

@@ -1,10 +1,11 @@
 <div [ngStyle]="mode === 0 ? thumbnailGrid : thumbnailRow" class="tb-container">
-    <div *ngFor="let file of files; index as i" >
-        <div class="thumbnail" 
+    <div *ngFor="let file of files; index as i; trackBy: trackByFn" >
+        <div class="thumbnail" *ngIf="files.length"
             [ngStyle]="{ 
-                'background-image': getUrl(file.thumbnail),
+                'background-image': getUrl(file.ThumbnailPath),
                 'flex': setFlexItemState()
             }">
+
             <div class="tb-action-row">
                 <mat-checkbox color="primary" class="ghost-button m-2"></mat-checkbox>
                 <button class="ghost-button tb-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu">
@@ -27,8 +28,11 @@
             </div>
             <!-- <img [src]="file.thumbnail" width="110" height="140" style="object-fit: contain;"> -->
         </div>
-        <div class="tn-title">
-            <p class="tn-name">{{ file.name }}</p>
+        <div class="tn-title" *ngIf="files.length">
+            <p class="tn-name">{{ file.Name }}</p>
+        </div>
+        <div *ngIf="!files.length">
+            <h4>Files that you upload will appear here</h4>
         </div>
     </div>
 </div>

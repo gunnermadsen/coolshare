@@ -1,6 +1,7 @@
-import { Component, OnInit, Input, ViewEncapsulation, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, ViewEncapsulation, OnChanges, SimpleChanges, ChangeDetectorRef, isDevMode } from '@angular/core';
 import { Store } from '@ngrx/store';
 import { AppState } from '@/reducers';
+import { Observable, of } from 'rxjs';
 
 
 @Component({
@@ -12,20 +13,22 @@ import { AppState } from '@/reducers';
 export class FileThumbnailComponent implements OnInit, OnChanges {
 
   @Input() 
-  public files: any;
+  public files: any
 
   @Input() 
-  public mode: number;
+  public mode: number
 
   public thumbnailGrid: object
   public thumbnailRow: object
   public gridItem: object
+  public server: string
 
-  constructor(public store$: Store<AppState>) {
+  constructor(public store$: Store<AppState>, private cdr: ChangeDetectorRef) {
     
   }
 
   ngOnChanges(changes: SimpleChanges) {
+
     this.thumbnailRow = {
       'display': 'flex',
       'flex-wrap': 'nowrap',
@@ -39,20 +42,26 @@ export class FileThumbnailComponent implements OnInit, OnChanges {
       'flex-wrap': 'wrap'
     }
 
+    this.cdr.detectChanges()
+
   }
 
   ngOnInit() {
-    
+    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
   }
 
 
-  public getUrl(url: string): string {
-    return `url('${url}')`
+  public getUrl(uri: string): string {
+    return `url('${this.server}${uri}')`
   }
 
   public setFlexItemState(): string {
     let style: string = (this.mode === 0) ? '1' : 'none'
     return style
+  }
+
+  public trackByFn<V, I>(value: V, index: I): V | I {
+    return value
   }
 
 }

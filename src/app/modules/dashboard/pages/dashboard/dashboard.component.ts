@@ -20,12 +20,9 @@ export class DashboardComponent implements OnInit {
     const account = JSON.parse(localStorage.getItem('Account'));
     
     if (account) {
-      const data = {
-        id: account.Id,
-        path: '/'
-      };
   
-      this.store.dispatch(new RetrieveFolderContents({ folder: data }));
+      this.store.dispatch(new RetrieveFolderContents({ folder: '/', id: account.Id }));
+      
     } 
 
   }

@@ -35,12 +35,11 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="thumbnail-container">
-            <file-thumbnail
-              [mode]="1"
-              [files]="files$ | async" 
-            ></file-thumbnail>
-          </div>
+          <!-- <div class="thumbnail-container">
+            
+          </div> -->
+
+          <file-thumbnail [mode]="1" [files]="(files$ | async)"></file-thumbnail>
 
         </mat-expansion-panel>
 
@@ -55,9 +54,15 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <div class="row">
+          <!-- <div class="row" *ngIf="isFiles">
             <div class="col">
+              
+            </div>
+          </div> -->
 
+          <div class="row" *ngIf="!isFiles">
+            <div class="col">
+              <p class="empty-content">Files or folders that are starred will appear here</p>
             </div>
           </div>
 
@@ -74,7 +79,7 @@
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <mat-list>
+          <mat-list *ngIf="isFiles">
             <!-- <h3 mat-subheader>Folders</h3> -->
             <mat-divider></mat-divider>
 
@@ -85,6 +90,18 @@
               <mat-icon mat-list-icon *ngIf="file.type === 'Folder' && file.isShared">folder_shared</mat-icon>
               <h4 mat-line>{{ file.name }}</h4>
               <p mat-line> Added {{ file.creationDate | date }}</p>
+            </mat-list-item>
+
+          </mat-list>
+
+          <mat-list *ngIf="!isFiles">
+            <!-- <h3 mat-subheader>Folders</h3> -->
+            <mat-divider></mat-divider>
+
+            <mat-list-item>
+              <mat-icon mat-list-icon>insert_drive_file</mat-icon>
+              <h4 mat-line>You have no recent files to display</h4>
+              <p mat-line>Files that have been edited recently will appear here</p>
             </mat-list-item>
 
           </mat-list>

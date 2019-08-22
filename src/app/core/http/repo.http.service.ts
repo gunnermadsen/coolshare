@@ -10,9 +10,11 @@ import { map, catchError } from 'rxjs/operators';
 export class HttpRepoService {
     constructor(private http: HttpClient) {}
 
-    public getFolderContents(directory: { path: string }): Observable<any> {
+    public getFolderContents(path: string, id: string): Observable<any> {
+
+        let query = `id=${id}&path=${path}`.replace(/ /g, '%20').replace(/\//g, '%2F')
         
-        return this.http.post<any>('/api/repo', directory)
+        return this.http.get<any>(`/api/repo?${query}`)
     }
 
     public uploadFile(file: File, path: string, index: number, userId: string): Observable<HttpEvent<{}> | any> {

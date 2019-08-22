@@ -55,7 +55,7 @@ export class FileActionsComponent implements OnInit {
       path: this.cwd
     }
 
-    this.store$.dispatch(new fromFolderActions.RetrieveFolderContents({ folder: data }))
+    this.store$.dispatch(new fromFolderActions.RetrieveFolderContents({ folder: this.cwd, id: this.userId }))
   }
 
 

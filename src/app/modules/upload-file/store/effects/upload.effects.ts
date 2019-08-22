@@ -83,7 +83,9 @@ export class UploadEffects {
                 )
             })
             return forkJoin(requests$).pipe(
-                map((action: any) => [ action, path ]),
+                map((action: any) => {
+                    return [action, path];
+                }),
 
                 catchError((error: any) => throwError(this.handleError(error)))
             )
@@ -91,7 +93,7 @@ export class UploadEffects {
         mergeMap((action: any) => {
             return [
                 new fromFileUploadActions.UploadCompletedAction(),
-                new RetrieveFolderContents({ folder: { path: action[1] } }),
+                new RetrieveFolderContents({ folder: action[1], id: action.payload.id }),
             ]
         }),
     )

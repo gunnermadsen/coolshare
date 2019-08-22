@@ -1,17 +1,22 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { FileSystemActions, FileSystemActionTypes } from '../actions/filesystem.actions';
 
+import * as uuid from 'uuid'
+
 export interface FileSystemState extends EntityState<any> {}
 
 export const adapter: EntityAdapter<any> = createEntityAdapter<any>({
-    selectId: share => {
-        return share.id;
+    selectId: () => {
+
+        const id = uuid.v4();
+
+        return id
     }
 });
 
 export const initialFileSystemState: FileSystemState = adapter.getInitialState()
 
-export function fileSystemReducer(state = initialFileSystemState, action: FileSystemActions): FileSystemState {
+export function FileSystemReducer(state = initialFileSystemState, action: FileSystemActions): FileSystemState {
     switch (action.type) {
         // case FileSystemActionTypes.CreateNode:
         //     return adapter.addOne(action.payload.node, state);

@@ -26,32 +26,26 @@ export class AuthenticationEffects {
 
             return this.authService.register(action.payload.user).pipe(
 
-                map((payload: any): Action => {
-                    return new auth.RegistrationSuccessful(payload);
-                }),
+                map((payload: any): Action => new auth.RegistrationSuccessful(payload)),
 
-                catchError((err: any): Observable<Action> => {
-                    return of(new auth.RegistrationUnsuccessful({ error: err.error.message }));
-                })
+                catchError((error: any): Observable<Action> => of(new auth.RegistrationUnsuccessful({ error: error })))
 
             )
         })
     );
 
     @Effect()
-    public authenticateUserRequested$ = this.actions$.pipe(
+    public authenticateUserRequested$: Observable<Action> = this.actions$.pipe(
         ofType(auth.AuthenticationActionTypes.AuthenticateUserRequested),
         exhaustMap((action: any) => {
             return this.authService.login(action.payload.account).pipe(
-                map((payload: any) => {
-                    return new auth.AuthenticateUserSuccessful({ token: payload });
-                }),
-                tap((user: any) => {
-                    this.router.navigateByUrl('/dashboard/main');
-                }),
-                catchError((err: any) => {
-                    return of(new auth.AuthenticateUserUnsuccessful({ error: err }));
-                })
+
+                map((payload: any) => new auth.AuthenticateUserSuccessful({ token: payload })),
+
+                tap((user: any) => this.router.navigateByUrl('/dashboard/main')),
+
+                catchError((err: any) => of(new auth.AuthenticateUserUnsuccessful({ error: err })))
+
             )
         })
 

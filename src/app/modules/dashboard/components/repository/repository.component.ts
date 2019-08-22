@@ -114,13 +114,12 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
       takeUntil(this.destroy$),
       tap((result: any) => {
         if (result.length) {
-          this.cwd = result[0].cwd;
+          this.cwd = result[0].Location;
           this.path = [];
 
-          if (result[0].cwd != "/") {
-            this.path = result[0].cwd.split('/');
+          if (result[0].Location != "/") {
+            this.path = result[0].Location.split('/');
             this.path.splice(0, 1);
-            //this.path = result[0].cwd.split(/<br \/>(?=&#?[a-zA-Z0-9]+;)/g);
           }
 
         }
@@ -138,7 +137,8 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
         this.dataSource.paginator = this.paginator;
         this.dataSource.sort = this.sort;
         this.files$ = of(this.dataSource.data)
-      }
+      } 
+      this.isLoadingResults = false;
     });
   }
 
@@ -163,7 +163,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
 
     const folder = { path: row.path, id: this.userId }
 
-    this.store$.dispatch(new RetrieveFolderContents({ folder: folder }))
+    this.store$.dispatch(new RetrieveFolderContents({ folder: folder, id: this.userId }))
 
   }
 
@@ -189,7 +189,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
       path: dir
     }
 
-    this.store$.dispatch(new RetrieveFolderContents({ folder: data }))
+    this.store$.dispatch(new RetrieveFolderContents({ folder: data, id: this.userId }))
 
   }
 

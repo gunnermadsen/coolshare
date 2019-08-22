@@ -26,7 +26,7 @@ export enum FileSystemActionTypes {
 
 export class RetrieveFolderContents implements Action {
     readonly type = FileSystemActionTypes.FS_READ_FOLDER;
-    constructor(public payload: { folder: any }) {}
+    constructor(public payload: { folder: any, id: string }) {}
 
 }
 
