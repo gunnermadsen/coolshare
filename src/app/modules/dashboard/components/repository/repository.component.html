@@ -1,32 +1,39 @@
+<mat-menu #menu="matMenu">
+  <button *ngIf="!rowSelected" mat-menu-item (click)="uploader.click()">
+    <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
+  </button>
+  <button *ngIf="!rowSelected" mat-menu-item (click)="createNewFolder()">
+    <mat-icon class="mr-2">create_new_folder</mat-icon>New Folder
+  </button>
+  <button *ngIf="rowSelected" mat-menu-item (click)="setFavoriteState(row)">Star</button>
+  <button *ngIf="rowSelected" mat-menu-item>Rename</button>
+  <button *ngIf="rowSelected" mat-menu-item>Move</button>
+  <button *ngIf="rowSelected" mat-menu-item>Copy</button>
+  <button *ngIf="rowSelected" mat-menu-item (click)="deleteItem(1, row)">Delete</button>
+</mat-menu>
+
+
+
 <div class="container-fluid mt-3">
-  <div class="row">
+  <div class="row" *ngIf="displayMode === 0">
     <div class="col mb-3">
-      <div class="example-loading-shade" *ngIf="isLoadingResults">
+      <!-- <div class="example-loading-shade" *ngIf="isLoadingResults">
         <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-      </div>
+      </div> -->
       <mat-card class="mat-elevation-z2 path-card">
-        <nav aria-label="breadcrumb">
-          <ol class="breadcrumb mb-0">
-            <li class="breadcrumb-item active" aria-current="page" *ngIf="mode === 0"><a class="folder-node" (click)="navigateToNode(0)">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page" *ngFor="let node of path; index as i"><a class="folder-node" (click)="navigateToNode(i + 1)">{{ node }}</a></li>
-          </ol>
-        </nav>
+        <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
       </mat-card>
     </div>
   </div>
 
-  <div hidden>
-    <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="userName$ | async"></file-actions>
+  <div *ngIf="isXS">
+    <file-actions [mode]="1" [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="userName$ | async"></file-actions>
   </div>
   
-  <div class="row">
+  <div class="row repository-wrapper">
     <div class="col-lg-10 col-md-10 col-sm-12 col-12">
-      <div class="example-container mat-elevation-z2">
+      <div class="repository-container mat-elevation-z2">
         
-      
-        <!-- <div class="table-container">
-          <div *ngIf="displayMode; then list; else grid"></div>
-        </div> -->
         <div [ngSwitch]="displayMode">
           <div *ngSwitchCase="0">
             <ng-container *ngTemplateOutlet="list"></ng-container>
@@ -40,22 +47,23 @@
     <!-- right side column: Appears when the viewport size is medium or large -->
 
     <div class="col-lg-2 col-md-2 col-sm-12 col-12 pl-0" *ngIf="!isXS">
-      <file-actions [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="(userName$ | async)"></file-actions>
+      <file-actions [mode]="0" [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="(userName$ | async)"></file-actions>
     </div>
   </div>
 </div>
 
 
+
+<!-- Grid View -->
+
 <ng-template #grid>
   
-  <div class="row grid-row">
-    <div class="col">
-      <h5 class="grid-view-title">Name</h5>
+  <div class="grid-header">
+    <div *ngIf="displayMode === 1" class="folder-path">
+      <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
     </div>
-    <div class="col-auto ml-auto">
-      <button mat-icon-button class="grid-view-btn" [matMenuTriggerFor]="displayMenu">
-        <mat-icon>list</mat-icon>
-      </button>
+    <div class="view-mode-toggle">
+      <button mat-icon-button class="grid-view-btn" [matMenuTriggerFor]="displayMenu"><mat-icon>list</mat-icon></button>
       <mat-menu #displayMenu="matMenu">
         <button (click)="setTableViewState($event, 0)" mat-menu-item>
           <mat-icon class="mr-2">list</mat-icon>List
@@ -63,41 +71,55 @@
         <button (click)="setTableViewState($event, 1)" mat-menu-item>
           <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
         </button>
-        <!-- <button (click)="setTableViewState($event, 2)" mat-menu-item>
-          <mat-icon class="mr-2 small-grid">grid_on</mat-icon>Small
-        </button> -->
       </mat-menu>
     </div>
   </div>
-  <div class="row">
-    <div class="col">
-      <mat-divider></mat-divider>
-    </div>
-  </div>
-  <div class="thumbnail-container">
-    <file-thumbnail
-      [mode]="0"
-      [files]="files$ | async"
-    ></file-thumbnail>
-  </div>
 
-  <!-- <div class="container-fluid m-3">
-    <div class="row">
-      <div class="col-lg-2 col-md-2 col-sm-3 col-3" *ngFor="let item of dataSource.data; index as i">
-        <div class="thumbnail">
-          <img [src]="item.thumbnail">
-          <p class="thumbnail-title">{{ item.name }}</p>
+  <mat-divider></mat-divider>
+
+  <div class="grid-body" *ngIf="!isFolderEmpty">
+    <div class="loading-shade" *ngIf="isLoadingResults">
+      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    </div>
+    <div class="thumbnail-wrapper" [id]="i" (click)="getFolderContents(file)" *ngFor="let file of (files$ | async); index as i; trackBy: trackByFn">
+      <div class="thumbnail" [ngStyle]="{ 'background-image': getUrl(file.ThumbnailPath) }">
+        <div class="tn-top-row">
+          <mat-checkbox color="primary" class="ghost-button m-2" (click)="$event.stopPropagation()"></mat-checkbox>
+          <button class="ghost-button tb-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+            <mat-icon class="thumbnail-menu">more_vert</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>Share</button>
+            <button mat-menu-item (click)="downloadItem(file.Name)" download>Download</button>
+            <button mat-menu-item (click)="setFavoriteState(file)">Star</button>
+            <button mat-menu-item (click)="renameEntity(file)">Rename</button>
+            <button mat-menu-item>Move</button>
+            <button mat-menu-item>Copy</button>
+            <button mat-menu-item (click)="deleteItem(0, file)">Delete</button>
+          </mat-menu>
+        </div>
+        <div class="tn-bottom-row">
+          <button mat-icon-button color="primary" class="ghost-button" (click)="editFavoriteStatus($event, file)">
+            <div *ngIf="file.IsFavorite; then star; else starOutline"></div>
+          </button>
         </div>
       </div>
+      <div class="tn-title" >
+        <p class="tn-name">{{ file.Name }}</p>
+      </div>
     </div>
-  </div> -->
+  </div>
+  <div class="empty-folder" *ngIf="isFolderEmpty">
+    <h4 class="empty-folder-title">Upload files, or create a new folder to get started!</h4>
+  </div>
 </ng-template>
 
 
 
+<!-- Material Data Table List View -->
+
 <ng-template #list>
   <table mat-table [dataSource]="dataSource" class="example-table" matSort>
-    <!-- matSortActive="createdDate" matSortDirection="desc" -->
     <!-- Checkbox Column -->
     <ng-container matColumnDef="select">
       <th mat-header-cell *matHeaderCellDef>
@@ -117,19 +139,19 @@
     <!-- Name Column -->
     <ng-container matColumnDef="name">
       <th mat-header-cell mat-sort-header *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let row" class="text-truncate">{{ row.name }}</td>
+      <td mat-cell *matCellDef="let row" class="text-truncate">{{ row.Name }}</td>
     </ng-container>
   
     <!-- Date Created Column -->
     <ng-container matColumnDef="createdDate">
       <th mat-header-cell mat-sort-header arrowPosition="before" class="text-left" *matHeaderCellDef>Date Created</th>
-      <td mat-cell *matCellDef="let row">{{ row.creationDate | date : "short" }}</td>
+      <td mat-cell *matCellDef="let row">{{ row.CreatedOn | date : "short" }}</td>
     </ng-container>
   
     <!-- Members Column -->
     <ng-container matColumnDef="members">
       <th mat-header-cell mat-sort-header arrowPosition="before" *matHeaderCellDef>Members</th>
-      <td mat-cell *matCellDef="let row">{{ row.isShared ? "Members" : "Only Me" }}</td>
+      <td mat-cell *matCellDef="let row">{{ row.IsShared ? "Members" : "Only Me" }}</td>
     </ng-container>
   
     <!-- Action Column -->
@@ -146,20 +168,8 @@
           <mat-icon>more_vert</mat-icon>
         </button>
   
-        <mat-menu #menu="matMenu">
-          <button *ngIf="!rowSelected" mat-menu-item (click)="uploader.click()">
-            <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
-          </button>
-          <button *ngIf="!rowSelected" mat-menu-item (click)="createNewFolder()">
-            <mat-icon class="mr-2">create_new_folder</mat-icon>New Folder
-          </button>
-          <button *ngIf="rowSelected" mat-menu-item>Star</button>
-          <button *ngIf="rowSelected" mat-menu-item>Rename</button>
-          <button *ngIf="rowSelected" mat-menu-item>Move</button>
-          <button *ngIf="rowSelected" mat-menu-item>Copy</button>
-          <button *ngIf="rowSelected" mat-menu-item (click)="deleteItem(1, row)">Delete</button>
-        </mat-menu>
-  
+        <!-- View Mode Menu -->
+
         <mat-menu #displayMenu="matMenu">
           <button (click)="setTableViewState($event, 0)" mat-menu-item>
             <mat-icon class="mr-2">list</mat-icon>List
@@ -167,9 +177,6 @@
           <button (click)="setTableViewState($event, 1)" mat-menu-item>
             <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
           </button>
-          <!-- <button (click)="setTableViewState($event, 2)" mat-menu-item>
-            <mat-icon class="mr-2 small-grid">grid_on</mat-icon>Small
-          </button> -->
         </mat-menu>
   
       </th>
@@ -179,8 +186,8 @@
         </button>
         <mat-menu #menu="matMenu">
           <button mat-menu-item>Share</button>
-          <button mat-menu-item (click)="downloadItem(row.name)" download>Download</button>
-          <button mat-menu-item>Star</button>
+          <button mat-menu-item (click)="downloadItem(row.Name)" download>Download</button>
+          <button mat-menu-item (click)="setFavoriteState(row)">Star</button>
           <button mat-menu-item>Rename</button>
           <button mat-menu-item>Move</button>
           <button mat-menu-item>Copy</button>
@@ -194,4 +201,24 @@
   
   </table>
   <mat-paginator [pageSizeOptions]="[5, 10, 15, 20]"></mat-paginator> <!-- [length]="resultsLength" [pageSize]="30" -->
+</ng-template>
+
+
+<ng-template #star>
+  <mat-icon class="favorite-star">star</mat-icon>
+</ng-template>
+
+<ng-template #starOutline>
+  <mat-icon class="favorite-star">star_border</mat-icon>
+</ng-template>
+
+<ng-template #breadCrumbs let-path="path" let-mode="mode">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb mb-0">
+      <li class="breadcrumb-item active" aria-current="page" *ngIf="mode === 0"><a class="folder-node"
+          (click)="navigateToNode(0)">Home</a></li>
+      <li class="breadcrumb-item active" aria-current="page" *ngFor="let node of path; index as i"><a class="folder-node"
+          (click)="navigateToNode(i + 1)">{{ node }}</a></li>
+    </ol>
+  </nav>
 </ng-template>

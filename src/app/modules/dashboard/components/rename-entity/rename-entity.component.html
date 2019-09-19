@@ -1,0 +1,23 @@
+
+<div class="container-fluid" [formGroup]="renameFileForm">
+    <div class="row">
+        <div class="col">
+            <h3>Enter a new name</h3>
+            <mat-divider></mat-divider>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <mat-form-field appearance="outline">
+                <mat-label>File Name</mat-label>
+                <input formControlName="FileName" matInput>
+            </mat-form-field>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <button mat-raised-button color="primary">Save</button>
+            <button mat-raised-button>Cancel</button>
+        </div>
+    </div>
+</div>

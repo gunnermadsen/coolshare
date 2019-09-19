@@ -83,30 +83,30 @@ export class UploadEffects {
                 )
             })
             return forkJoin(requests$).pipe(
-                map((action: any) => {
-                    return [action, path];
+                map(() => {
+                    return { folder: path, id: userId }
                 }),
 
                 catchError((error: any) => throwError(this.handleError(error)))
             )
         }),
-        mergeMap((action: any) => {
+        switchMap((action: any) => {
             return [
                 new fromFileUploadActions.UploadCompletedAction(),
-                new RetrieveFolderContents({ folder: action[1], id: action.payload.id }),
+                new RetrieveFolderContents({ ...action }),
             ]
         }),
     )
 
-    @Effect()
-    public getFolderContents$: Observable<Action> = this.actions$.pipe(
-        ofType(fromFileUploadActions.ActionTypes.UPLOAD_FINISHED),
-        map((action) => new SaveRetrievedFolderContents({ contents: action.payload.files })),
-    )
+    // @Effect()
+    // public getFolderContents$: Observable<Action> = this.actions$.pipe(
+    //     ofType(fromFileUploadActions.ActionTypes.UPLOAD_FINISHED),
+    //     map((action) => new SaveRetrievedFolderContents({ contents: action.payload.files })),
+    // )
 
     constructor(private repoService: HttpRepoService, private actions$: Actions<fromFileUploadActions.UploadActions>, private store$: Store<AppState>) { }
     
-    private getActionFromHttpEvent(mode: any, result: any, index: number, loaded: number, total: number, action: UploadActions) {
+    private getActionFromHttpEvent(mode: any, result: any, index: number, loaded: number, total: number, action: UploadActions): Observable<void> | any {
         // the current execution context is based on one file, 
         // however we still need to calculate the total progress 
         // for all files (even just for one file). 
@@ -146,7 +146,7 @@ export class UploadEffects {
         }
     }
 
-    private updateFileProgress(index: number, files: any, loaded: number, total: number, action: UploadActions): any {
+    private updateFileProgress(index: number, files: any, loaded: number, total: number, action: UploadActions): Observable<void> {
         const totalProgress = Math.round(loaded / total * 100);
         console.log(`Progress of file ${index}: ${totalProgress}%`);
         return of(this.store$.dispatch(new fromFileUploadActions.UploadProgressAction({

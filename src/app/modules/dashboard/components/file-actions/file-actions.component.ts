@@ -1,13 +1,15 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core';
 import { AppState } from '@/reducers';
 import { Store } from '@ngrx/store';
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 import { MatDialogConfig, MatDialog } from '@angular/material';
 import { NewFolderComponent } from '../new-folder/new-folder.component';
-import { take } from 'rxjs/operators';
+import { take, takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 
 import * as fromFolderActions from '../../store/actions/filesystem.actions'
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
+import { Subject } from 'rxjs';
 
 
 @Component({
@@ -15,16 +17,24 @@ import * as fromFolderActions from '../../store/actions/filesystem.actions'
   templateUrl: './file-actions.component.html',
   styleUrls: ['./file-actions.component.less']
 })
-export class FileActionsComponent implements OnInit {
+export class FileActionsComponent implements OnInit, OnDestroy {
 
   @Input() public userId: string;
+  @Input() public mode: number;
   @Input() public cwd: string;
   @Input() public rowSelected: boolean;
   @Input() public selection: SelectionModel<any>;
   @Input() public userName: string;
+  public isSM: boolean = false
+  private destroy$: Subject<boolean> = new Subject<boolean>()
 
-  constructor(private store$: Store<AppState>, public dialog: MatDialog) {
+  constructor(private store$: Store<AppState>, public dialog: MatDialog, private breakpointObserver: BreakpointObserver) {
     // this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    
+    this.breakpointObserver.observe(['(min-width: 475px)']).pipe(
+      takeUntil(this.destroy$)
+    )
+    .subscribe((state: BreakpointState) => state.matches ? this.isSM = true : this.isSM = false)
   }
 
   ngOnInit() {
@@ -73,39 +83,42 @@ export class FileActionsComponent implements OnInit {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
-        this.store$.dispatch(new fromFolderActions.CreateFolder({ userId: this.userId, path: this.cwd, data: result, userName: this.userName }))
+        this.store$.dispatch(new fromFolderActions.CreateFolder({ 
+          userId: this.userId, 
+          path: this.cwd, 
+          data: result, 
+          userName: this.userName 
+        }))
       }
     });
   }
 
   public deleteItem(mode: number, value?: any): void {
 
-    let items: string[] = [];
+    let entities: { name: string, path: string, type: string}[] = [];
     let ids: string[] = [];
-    let id: string = "";
+    let id: string = ""
 
     switch (mode) {
-      case 0: {
-        items.push(value.name);
-        id = value.id;
-        break;
-      }
-      case 1: {
-        this.selection.selected.map((item: any) => {
-          items.push(item.name);
-          ids.push(item.id);
-        });
-        break;
-      }
+      case 0: 
+        entities.push({ name: value.Name, path: value.Path, type: value.Type })
+        id = value.Id
+      break;
+      case 1: 
+        this.selection.selected.map((entity: any) => {
+          entities.push({ name: entity.Name, path: entity.Path, type: entity.Type })
+          ids.push(entity.Id)
+        })
+      break;
+      
     }
 
     const result = {
       path: this.cwd,
-      items: items,
+      entities: entities,
       userId: this.userId,
       id: id,
-      ids: ids,
-      mode: mode
+      ids: ids
     }
 
     if (mode === 0) {
@@ -118,6 +131,11 @@ export class FileActionsComponent implements OnInit {
     this.selection.clear();
     this.rowSelected = false;
 
+  }
+
+  public ngOnDestroy(): void {
+    this.destroy$.next(true)
+    this.destroy$.unsubscribe()
   }
 
 }

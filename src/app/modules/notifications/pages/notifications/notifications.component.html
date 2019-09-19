@@ -76,6 +76,17 @@
                         </div>
                     </div>
                 </div>
+                <div class="notification m-2" *ngSwitchCase="'Is Favorite'">
+                    <div class="row">
+                        <div class="col-auto pr-1">
+                            <mat-icon class="mr-2" color="primary">star</mat-icon>
+                        </div>
+                        <div class="pl-0 col">
+                            <h4>{{ notification.title }}</h4>
+                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                        </div>
+                    </div>
+                </div>
                 <div class="m-2 no-new-notification" *ngSwitchCase="'Default'">
                     <h4 class="mb-0">{{ notification.title }}</h4>
                 </div>

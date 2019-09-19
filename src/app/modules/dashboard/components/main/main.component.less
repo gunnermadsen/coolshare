@@ -1,3 +1,5 @@
+/* Material Expansion Panel Styles */
+
 .example-headers-align .mat-expansion-panel-header-title,
 .example-headers-align .mat-expansion-panel-header-description {
   flex-basis: 0;
@@ -8,14 +10,135 @@
   align-items: center;
 }
 
-mat-form-field {
-  margin-right: 12px;
+.example-headers-align {
+  max-height: auto;
 }
 
-.mat-icon {
-  font-size: 45px;
+.mat-expansion-panel {
+  height: auto !important;
+  overflow-y: hidden;
 }
 
-.empty-content {
+/* END Material Expansion Panel Styles */
+
+
+/* General Styles */
+
+.default-message {
   padding-left: 20px;
 }
+
+
+html {
+  height: 100%;
+}
+
+body {
+  max-height: 100%;
+  overflow-y: hidden;
+}
+
+.favorite-star {
+  font-size: 30px; 
+}
+
+.ghost-toggle {
+  display: none;
+}
+
+.settings {
+  margin-left: auto;
+}
+
+.favorite:hover, .recent:hover {
+
+  cursor: pointer;
+
+  .ghost-toggle {
+    display: inline-block;
+  }
+
+  .settings {
+    border: 1px solid blue;
+  }
+
+}
+
+/* Material List Styles */
+
+.mat-list-base .mat-list-item .mat-list-avatar {
+  border-radius: 0 !important;
+  height: 70px;
+  max-width: 75px;
+}
+
+/* END Material List Styles */
+
+
+/* Favorites Section Styles */
+
+.favorites {
+  display: flex;
+  flex-direction: column;
+}
+
+.favorite-toggle {
+  display: none;
+}
+
+.favorite-icon {
+  height: 50px;
+  max-width: 80px;
+}
+
+.favorite-title {
+  margin: 10px 5px 10px 15px;
+}
+
+.favorite {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px
+}
+
+/* END Favorites Section Styles */
+
+
+
+/* Recents Section Styles */
+
+.recents {
+  display: flex;
+  flex-direction: column;
+}
+
+.recent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8px 16px;
+}
+
+.recent-icon {
+  height: 50px;
+  max-width: 80px;
+}
+
+.recent-list {
+  list-style-type: none;
+  padding-left: 10px;
+  // margin-bottom: 0;
+  // margin-left: 10px;
+  // margin-right: 10px;
+
+  margin: 0 10px;
+}
+
+p.list-info {
+  margin-bottom: 0;
+}
+
+
+
+/* END Recents Section Styles */

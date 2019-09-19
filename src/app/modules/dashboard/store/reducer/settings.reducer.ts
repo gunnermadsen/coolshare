@@ -6,7 +6,7 @@ export function FileSystemSettingsReducer(state = initialFileSystemSettingsState
         case FileSystemSettingsActionTypes.SAVE_SETTINGS: {
             return {
                 ...action.payload.settings
-            };
+            }
         }
 
         default: {

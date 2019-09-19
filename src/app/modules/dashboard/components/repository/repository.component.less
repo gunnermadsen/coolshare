@@ -1,15 +1,11 @@
 /* Structure */
-// .example-container {
-//   position: relative;
-//   min-height: 200px;
-// }
 
-// .table-container {
-//   margin: auto;
-//   width: 100%;
-//   position: relative;
-//   overflow: auto;
-// }
+
+
+.repository-container, .repository-wrapper {
+  height: 100%;
+  margin-bottom: 15px;
+}
 
 table {
   width: 100%;
@@ -26,17 +22,19 @@ th, td {
   flex: 0 0 30px;
 }
 
-.example-loading-shade {
+.loading-shade {
+  height: 100%;
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 56px;
+  bottom: 0;
   right: 0;
   background: rgba(0, 0, 0, 0.15);
-  z-index: 1;
+  z-index: 5;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin: 15px;
 }
 
 
@@ -64,7 +62,7 @@ th, td {
 }
 
 
-// Css Styles for row action checkboxes
+/*  Row Actio Checkbox Styles */
 
 // .mat-column-select:hover {
 //   .mat-checkbox {
@@ -82,22 +80,23 @@ th, td {
 }
 
 
-/* Styles for Angular Material Cards */
-
-
+/* Angular Material Card Styles */
 
 .path-card {
   padding: 8px 18px;
 }
 
-/* Styles for the action sidebar */
+
+/* Action Sidebar Styles */
 
 // .action-sidebar {
 //   display: flex;
 //   height: 100%;
 // }
 
-/* Breadcrumb styles*/
+
+
+/* Breadcrumb (Folder Hierarchy View) Styles */
 
 .breadcrumb {
   background-color: transparent !important;
@@ -123,10 +122,6 @@ a.folder-node {
 .mat-row:hover {
   cursor: pointer;
 
-  // .mat-checkbox {
-  //   display: inline;
-  // }
-
   td.mat-cell.mat-column-name {
     color: blue;
   }
@@ -136,40 +131,138 @@ a.folder-node {
   height: 40px;
 }
 
-// grid mode styles
-
-.grid-row {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  height: 78px;
+.folder-path {
+  margin-left: 15px;
+  margin-right: 15px;
+  width: auto;
 }
+
+/* Grid View Menu Styles */
+
+
 
 .grid-view-btn {
   margin-right: 10px;
 }
 
 .grid-view-title {
-  margin-left: 50px;
+  margin-left: 23px;
   margin-bottom: 0;
 }
 
-// .grid-file-title {
-//   word-wrap: break-word;
-// }
-
-// .thumbnail-title {
-//   // word-wrap: break-word;
-//   overflow: hidden;
-//   text-overflow: ellipsis;
-// }
 
 
-.thumbnail-container {
+
+/* Grid View Styles */
+
+.grid-header {
   display: flex;
-  flex-wrap: wrap;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch; 
-  -ms-overflow-style: -ms-autohiding-scrollbar;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 78px;
+}
+
+.grid-body {
+    padding: 15px 15px;
+    height: auto;
+    display: grid;
+    column-gap: 5px;
+    row-gap: 5px;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+}
+
+.tn-top-row {
+    width: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tn-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+
+.tb-button {
+    width: 35px !important;
+    height: 35px !important;
+    margin-left: auto;
+}
+
+.ghost-button {
+    display: none
+}
+
+::ng-deep .mat-icon {
+    height: 30px !important;
+    width: 30px !important;
+    font-size: 30px !important;
+}
+
+.thumbnail {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 140px;
+  max-width: 130px;
+  object-fit: contain;
+  background-size: cover;
+  background-position: center;
+  margin: auto;
+}
+
+.thumbnail-wrapper {
+  border-radius: 4px;
+}
+
+.thumbnail-wrapper:hover {
+  cursor: pointer;
+
+  .ghost-button {
+      display: inline-block;
+  }
+
+  p.tn-name {
+      color: rgb(0, 96, 252)
+  }
+
+  p.tn-name:hover {
+    text-decoration: underline;
+  }
+
+}
+
+.thumbnail-menu {
+    font-size: 20px;
+}
+
+.tn-name {
+    // word-wrap: break-word;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0 5px;
+}
+
+.tn-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+}
+
+.empty-folder {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100px;
+}
+
+.empty-folder-title {
+  margin: 20px;
 }

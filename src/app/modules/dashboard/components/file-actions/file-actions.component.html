@@ -1,25 +1,86 @@
 <div *ngIf="rowSelected; then selectedActionCard; else actionCard"></div>
 
 <ng-template #actionCard>
-    <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
+    <input multiple type="file" hidden (change)="uploadData($event)" #uploader>
 
-    <mat-card class="mat-elevation-z2 px-0">
+    <mat-card class="mat-elevation-z2 px-0" *ngIf="mode === 0">
         <mat-action-list>
             <!-- <button mat-list-item class="px-3" color="primary">Create new file</button> -->
-            <button mat-list-item (click)="uploader.click()"> <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files</button>
+            <button mat-list-item (click)="uploader.click()">
+                <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
+            </button>
             <!-- <button mat-list-item class="px-3" >Upload folder</button> -->
-            <button mat-list-item (click)="refreshFiles()"><mat-icon class="mr-2">refresh</mat-icon>Refresh</button>
-            <button mat-list-item (click)="createNewFolder()"><mat-icon class="mr-2">create_new_folder</mat-icon>New folder</button>
+            <button mat-list-item (click)="refreshFiles()">
+                <mat-icon class="mr-2">refresh</mat-icon>Refresh
+            </button>
+            <button mat-list-item (click)="createNewFolder()">
+                <mat-icon class="mr-2">create_new_folder</mat-icon>New folder
+            </button>
         </mat-action-list>
     </mat-card>
+
+    <mat-toolbar class="mat-elevation-z2 m-toolbar action-toolbar" *ngIf="mode === 1">
+        <button mat-button (click)="uploader.click()">
+            <mat-icon class="m-icon" color="primary">cloud_upload</mat-icon> 
+            <span *ngIf="isSM">Upload Files</span>
+        </button>
+        <button mat-button (click)="createNewFolder()">
+            <mat-icon class="m-icon" color="primary">create_new_folder</mat-icon>
+            <span *ngIf="isSM">New Folder</span>
+        </button>
+        <button mat-button (click)="refreshFiles()">
+            <mat-icon class="m-icon" color="primary">refresh</mat-icon>
+            <span *ngIf="isSM">Refresh</span>
+        </button>
+        <!-- <button mat-button class="list-icon" [matMenuTriggerFor]="displayMenu">
+            <mat-icon color="primary">list</mat-icon>
+        </button> -->
+    </mat-toolbar>
+
+    <mat-menu #displayMenu="matMenu">
+        <button (click)="setTableViewState($event, 0)" mat-menu-item>
+            <mat-icon class="mr-2">list</mat-icon>List
+        </button>
+        <button (click)="setTableViewState($event, 1)" mat-menu-item>
+            <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
+        </button>
+        <!-- <button (click)="setTableViewState($event, 2)" mat-menu-item>
+            <mat-icon class="mr-2 small-grid">grid_on</mat-icon>Small
+        </button> -->
+    </mat-menu>
 </ng-template>
 
 <ng-template #selectedActionCard>
-    <mat-card class="mat-elevation-z2 px-0">
+    <mat-card class="mat-elevation-z2 px-0" *ngIf="mode === 0">
         <mat-action-list>
-            <button mat-list-item><mat-icon class="mr-2">cloud_download</mat-icon>Download</button>
-            <button mat-list-item><mat-icon class="mr-2">text_format</mat-icon>Rename</button>
-            <button mat-list-item (click)="deleteItem(1, row)"><mat-icon class="mr-2">close</mat-icon>Delete</button>
+            <button mat-list-item>
+                <mat-icon class="mr-2">cloud_download</mat-icon>Download
+            </button>
+            <button mat-list-item>
+                <mat-icon class="mr-2">text_format</mat-icon>Rename
+            </button>
+            <button mat-list-item (click)="deleteItem(1, row)">
+                <mat-icon class="mr-2">close</mat-icon>Delete
+            </button>
         </mat-action-list>
     </mat-card>
+
+    <mat-toolbar class="mat-elevation-z2 m-toolbar action-toolbar" *ngIf="mode === 1">
+        <button mat-button (click)="uploader.click()">
+            <mat-icon class="m-icon" color="primary">cloud_download</mat-icon>
+            <span *ngIf="isSM">Download</span>
+        </button>
+        <button mat-button (click)="createNewFolder()">
+            <mat-icon class="m-icon" color="primary">text_format</mat-icon>
+            <span *ngIf="isSM">Rename</span>
+        </button>
+        <button mat-button (click)="refreshFiles()">
+            <mat-icon class="m-icon" color="primary">close</mat-icon>
+            <span *ngIf="isSM">Delete</span>
+        </button>
+        <!-- <button mat-button class="list-icon" [matMenuTriggerFor]="displayMenu">
+            <mat-icon color="primary">list</mat-icon>
+        </button> -->
+    </mat-toolbar>
+    
 </ng-template>

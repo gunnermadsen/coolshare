@@ -1,4 +1,5 @@
 import { Action } from '@ngrx/store';
+import { Update } from '@ngrx/entity';
 
 /**
  * For each action type in an action group, make a simple
@@ -14,7 +15,10 @@ export enum FileSystemActionTypes {
     FS_DELETE_FOLDER_ITEMS = '[Delete Items] Delete Items From Store',
     FS_DELETE_FOLDER_ITEM = '[Delete Item] Delete Item From Store',
     FS_DOWNLOAD_ITEM = '[Download Item] Download Item From Folder',
-    FS_DOWNLOAD_ITEM_CANCELLED = '[Download Item] Download Item Cancelled'
+    FS_DOWNLOAD_ITEM_CANCELLED = '[Download Item] Download Item Cancelled',
+    FS_ADD_TO_FAVORITES = '[Star Item] Add To Favorites',
+    FS_MODIFY_FAVORITE_STATUS = '[Modify Item] Modify Favorite State',
+    FS_RENAME_ENTITY = '[Filesystem API] Rename Entity'
 
 };
 
@@ -60,12 +64,21 @@ export class DownloadItemCancelled implements Action {
 
 export class DeleteFolderItems implements Action {
     readonly type = FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS;
-    constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string, mode: number }) {}
+    constructor(public payload: any) {}
 }
 
 export class DeleteFolderItem implements Action {
     readonly type = FileSystemActionTypes.FS_DELETE_FOLDER_ITEM;
-    constructor(public payload: { userId: string, path: string, items: string[], ids?: string[], id?: string, mode: number }) {}
+    constructor(public payload: any) {}
+}
+export class ModifyFavorites implements Action {
+    readonly type = FileSystemActionTypes.FS_MODIFY_FAVORITE_STATUS;
+    constructor(public payload: { entity: Update<any>, userId: string }) {}
+}
+
+export class RenameEntity implements Action {
+    readonly type = FileSystemActionTypes.FS_RENAME_ENTITY;
+    constructor(public payload: { entity: Update<any>, userId: string }) {}
 }
 
 
@@ -81,4 +94,6 @@ export type FileSystemActions
     | DeleteFolderItems
     | DeleteFolderItem
     | DownloadItem
-    | DownloadItemCancelled;
+    | DownloadItemCancelled
+    | ModifyFavorites
+    | RenameEntity;

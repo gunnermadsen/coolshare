@@ -14,9 +14,9 @@ import { UploadModule } from '../upload-file/upload.module';
 import { FileActionsComponent } from './components/file-actions/file-actions.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import { NotificationsModule } from '../notifications/notifications.module';
-import { FileThumbnailComponent } from './components/file-thumbnail/file-thumbnail.component';
 import { AppState } from '@/reducers';
 import { FileSystemSettingsReducer } from './store/reducer/settings.reducer';
+import { RenameEntityComponent } from './components/rename-entity/rename-entity.component';
 
 export const FileSystemReducerMap: ActionReducerMap<AppState> = {
     Content: FileSystemReducer,
@@ -30,7 +30,8 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
         RepositoryComponent,
         NewFolderComponent,
         FileActionsComponent,
-        FileThumbnailComponent
+        RenameEntityComponent,
+        
         
     ],
     imports: [
@@ -53,6 +54,7 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
     ],
     entryComponents: [
         NewFolderComponent,
+        RenameEntityComponent
         // UploadDetailsComponent
     ],
     providers: [],

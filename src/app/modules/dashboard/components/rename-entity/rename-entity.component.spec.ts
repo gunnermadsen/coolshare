@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { FileThumbnailComponent } from './file-thumbnail.component';
+import { RenameEntityComponent } from './rename-entity.component';
 
-describe('FileThumbnailComponent', () => {
-  let component: FileThumbnailComponent;
-  let fixture: ComponentFixture<FileThumbnailComponent>;
+describe('RenameEntityComponent', () => {
+  let component: RenameEntityComponent;
+  let fixture: ComponentFixture<RenameEntityComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ FileThumbnailComponent ]
+      declarations: [ RenameEntityComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(FileThumbnailComponent);
+    fixture = TestBed.createComponent(RenameEntityComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

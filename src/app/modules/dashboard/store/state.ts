@@ -1,7 +1,9 @@
 export interface FileSystemSettingsState {
-    isEmpty: boolean | null
+    isEmpty: boolean | null,
+    cwd: string | null
 }
 
 export const initialFileSystemSettingsState: FileSystemSettingsState = {
-    isEmpty: null
+    isEmpty: null,
+    cwd: null
 }

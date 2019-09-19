@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, throwError } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, Effect, ofType, createEffect } from '@ngrx/effects';
 
 import * as filesystem from '../actions/filesystem.actions';
 import * as filesystemSettings from '../actions/settings.actions';
@@ -28,25 +28,25 @@ export class FileSystemEffects {
 
     constructor(private store$: Store<AppState>, private actions$: Actions, private repoService: HttpRepoService, private toastrService: ToastrService) { }
 
-    @Effect() 
-    public retrieveFolderContents$: Observable<Action> = this.actions$.pipe(
+    public retrieveFolderContents$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_READ_FOLDER),
         exhaustMap((action: any) => {
             return this.repoService.getFolderContents(action.payload.folder, action.payload.id).pipe(
-                switchMap((folder: any) => [
-                    new filesystem.SaveRetrievedFolderContents({ contents: folder.result }),
-                    new filesystemSettings.SaveRetrievedFolderSettings({ settings: folder.settings })
-                ]),
+                switchMap((folder: any) => {
+                    return [
+                        new filesystem.SaveRetrievedFolderContents({ contents: folder.result }),
+                        new filesystemSettings.SaveRetrievedFolderSettings({ settings: folder.settings })
+                    ]
+                }),
                 catchError(error => {
                     return throwError(error)
                 })
             )
         })
-    )
+    ))
 
 
-    @Effect()
-    public createFolder$: Observable<Action> = this.actions$.pipe(
+    public createFolder$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_CREATE_FOLDER),
         tap((action: any) => {
             this.generateNotification(action.payload, 0);
@@ -54,8 +54,8 @@ export class FileSystemEffects {
         }),
         mergeMap((action: any) => {
             return this.repoService.createFolder(action.payload).pipe(
-                map((payload: any) => {
-                    return new filesystem.SaveRetrievedFolderContents({ contents: payload.content })
+                map(() => {
+                    return new filesystem.RetrieveFolderContents({ folder: action.payload.path, id: action.payload.userId  })
                 }),
                 tap(() => {
                     this.toastrService.success("Your folder was created successfully!");
@@ -65,22 +65,28 @@ export class FileSystemEffects {
                 })
             )
         })
-    )
+    ))
 
-
-    @Effect()
-    public deleteFile$ = this.actions$.pipe(
+    public deleteFile$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_DELETE_FOLDER_ITEM),
         tap((action: any) => {
             this.generateNotification(action.payload, 1);
             return action;
         }),
-        mergeMap((action: any) => {
-            return this.repoService.delete(action.payload).pipe(
+        map((action: any) => {
+            return { 
+                path: action.payload.path, 
+                id: action.payload.userId, 
+                entities: action.payload.entities 
+            }
+        }),
+        mergeMap((payload: any) => {
+
+            return this.repoService.delete(payload).pipe(
 
                 tap(() => this.toastrService.success("Delete operation successful")),
 
-                map(() => new filesystem.RetrieveFolderContents({ folder: action.payload.path, id: action.payload.id })),
+                map(() => new filesystem.RetrieveFolderContents({ folder: payload.path, id: payload.id })),
 
                 catchError(error => {
                     this.toastrService.error(error);
@@ -88,11 +94,9 @@ export class FileSystemEffects {
                 })
             )
         })
-    )
+    ))
 
-
-    @Effect()
-    public deleteFiles$ = this.actions$.pipe(
+    public deleteFiles$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS),
         tap((action: any) => {
             this.generateNotification(action.payload, 1);
@@ -112,11 +116,9 @@ export class FileSystemEffects {
                 })
             )
         })
-    )
+    ))
 
-
-    @Effect({ dispatch: false })
-    public downloadItem$ = this.actions$.pipe(
+    public downloadItem$: Observable<Blob> = createEffect(() =>  this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_DOWNLOAD_ITEM),
         tap((action: any) => {
             this.generateNotification(action.payload, 2);
@@ -136,7 +138,48 @@ export class FileSystemEffects {
                 catchError((error) => throwError(error))
             )
         })
-    )
+    ), { dispatch: false })
+
+    
+    public modifyFavoriteStatus$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(filesystem.FileSystemActionTypes.FS_MODIFY_FAVORITE_STATUS),
+        tap((action: any) => {
+            this.generateNotification(action.payload, 3)
+            return action
+        }),
+        exhaustMap((action: any) => {
+            return this.repoService.updateFavoriteState(action.payload).pipe(
+
+                tap(() => this.toastrService.success("File added to favorites")), 
+
+                catchError((error: any) => {
+                    this.toastrService.error(error);
+                    return throwError(error);
+                })
+                
+            );
+        })
+    ), { dispatch: false })
+
+    public renameEntity$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(filesystem.FileSystemActionTypes.FS_RENAME_ENTITY),
+        tap((action: any) => {
+            this.generateNotification(action.payload, 4)
+            return action
+        }),
+        exhaustMap((action: any) => {
+            return this.repoService.renameEntity(action.payload).pipe(
+
+                tap(() => this.toastrService.success("File has been renamed successfully")),
+
+                catchError((error: any) => {
+                    this.toastrService.error(error);
+                    return throwError(error)
+                })
+            )
+        })
+
+    ), { dispatch: false })
 
     public generateNotification(payload: any, mode: number): void {
         let type: NotificationTypes
@@ -156,19 +199,27 @@ export class FileSystemEffects {
             }
             break;
             case 1: {
-                type = payload.items.length === 1 
+                type = payload.entities.length === 1 
                     ? NotificationTypes.DeleteFile 
                     : NotificationTypes.DeleteFiles
                     
-                title = `${payload.items.length === 1 ? "file" : "files"} deleted`
+                title = `${payload.entities.length === 1 ? "file" : "files"} deleted`
                 options = {
-                    deleteContext: payload.items
+                    deleteContext: payload.entities
                 }
             }
             break;
             case 2: {
                 type = NotificationTypes.FileDownloaded
                 title = 'file downloaded'
+                options = {
+                    fileName: payload.name
+                }
+            }
+            break;
+            case 3: {
+                type = NotificationTypes.AddToFavorites
+                title = 'file added to favorites'
                 options = {
                     fileName: payload.name
                 }

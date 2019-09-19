@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, throwError, of } from 'rxjs';
 import * as mime from 'mime';
 import { saveAs } from 'file-saver'
 import { map, catchError } from 'rxjs/operators';
@@ -34,7 +34,7 @@ export class HttpRepoService {
         return this.http.post<any>('/api/repo/create', payload)
     }
 
-    public delete(payload: any): Observable<any> {
+    public delete(payload: { id: string, path: string, entities: { name: string, path: string, type: string}[]}): Observable<any> {
         return this.http.post<any>('/api/repo/delete', payload)
     }
 
@@ -53,7 +53,22 @@ export class HttpRepoService {
     public verifyLink(linkDetails: any): Observable<any> {
         return this.http.post<any>('/api/repo/verify', linkDetails)
     }
+    
+    public updateFavoriteState(payload: any): Observable<any> {
+        
+        const entity = { 
+            fileId: payload.entity.id, 
+            state: payload.entity.changes.IsFavorite, 
+            userId: payload.userId 
+        }
 
+        return this.http.post<any>('/api/repo/favorite', entity)
+    }
+
+    public renameEntity(payload: any): Observable<any> {
+        return this.http.post<any>('/api/repo/rename', payload)
+    }
+    
     private generateQueryUri(payload: { userId: string, path: string, name: string }): string {
 
         let uri = `resource=${payload.name}&path=${payload.path}&id=${payload.userId}`

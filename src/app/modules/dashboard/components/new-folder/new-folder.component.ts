@@ -1,19 +1,22 @@
-import { Component, OnInit, Inject, isDevMode } from '@angular/core';
+import { Component, OnInit, Inject, isDevMode, OnDestroy } from '@angular/core';
 import { FormGroup, FormBuilder, FormArray, AbstractControl } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
+import { take, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 
 @Component({
   selector: 'new-folder',
   templateUrl: './new-folder.component.html',
   styleUrls: ['./new-folder.component.less']
 })
-export class NewFolderComponent implements OnInit {
+export class NewFolderComponent implements OnInit, OnDestroy {
 
   public newFolderForm: FormGroup;
   public inviteeFormArray: FormArray;
   public userName: string;
   public shareName: string;
   public mode: number = 0;
+  public destroy$: Subject<boolean> = new Subject<boolean>()
 
   public get inviteeControls(): any {
     return this.newFolderForm.controls['Invitees'].value;
@@ -33,7 +36,7 @@ export class NewFolderComponent implements OnInit {
   }
 
   private reactToControlChanges(control: AbstractControl): void {
-    control.valueChanges.subscribe((publicLink: string) => {
+    control.valueChanges.pipe(takeUntil(this.destroy$)).subscribe((publicLink: string) => {
       this.shareName = publicLink.replace(/[^a-zA-Z0-9]+/ig, '-').toLowerCase();
     })
   }
@@ -72,5 +75,12 @@ export class NewFolderComponent implements OnInit {
 
   public checkDevMode(): string {
     return isDevMode() ? 'http://localhost:4200' : 'https://shareily.com';
+  }
+
+  public ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.destroy$.next(true);
+    this.destroy$.unsubscribe();
   }
 }

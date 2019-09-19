@@ -6,6 +6,7 @@ export enum NotificationTypes {
     CreateNewSharedFolder = 'Create New Shared Folder',
     AccountModified = 'Account Modified',
     FileDownloaded = 'Download',
+    AddToFavorites = 'Is Favorite',
     Default = 'Default'
 }
 

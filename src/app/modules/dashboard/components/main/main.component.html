@@ -19,9 +19,6 @@
 
 <div class="container-fluid mt-3">
   <div class="row mb-3">
-    <!-- <div class="col-lg-3 col-md-3 col-sm-12 col-12 mb-3" >
-      <ng-container *ngTemplateOutlet="actionCard"></ng-container>
-    </div> -->
     <div class="col-lg-10 col-md-10 col-sm-12 col-12">
       <mat-accordion class="example-headers-align" [multi]="true">
         <mat-expansion-panel [expanded]="true">
@@ -34,35 +31,36 @@
             <mat-icon>account_circle</mat-icon> -->
             </mat-panel-description>
           </mat-expansion-panel-header>
-
-          <!-- <div class="thumbnail-container">
-            
-          </div> -->
-
-          <file-thumbnail [mode]="1" [files]="(files$ | async)"></file-thumbnail>
+          <mat-divider></mat-divider>
+          
+          <!-- <file-thumbnail [mode]="1" [files]="(files$ | async)"></file-thumbnail> -->
 
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              Favorites
-            </mat-panel-title>
+            <mat-panel-title>Favorites</mat-panel-title>
             <mat-panel-description>
               <!-- Type the country name
             <mat-icon>map</mat-icon> -->
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <!-- <div class="row" *ngIf="isFiles">
-            <div class="col">
-              
-            </div>
-          </div> -->
+          <mat-divider></mat-divider>
 
-          <div class="row" *ngIf="!isFiles">
-            <div class="col">
-              <p class="empty-content">Files or folders that are starred will appear here</p>
+          <div class="favorites">
+            <div *ngIf="!isFavorites">
+              <p class="default-message">Files or folders that are starred will appear here</p>
+            </div>
+            <div *ngFor="let file of (files$ | async); index as i">
+              <div *ngIf="file.IsFavorite" class="favorite">
+                <img class="favorite-icon" [src]="setResource(file.ThumbnailPath)">
+                <h3 class="favorite-title"> {{ file.Name }} </h3>
+                <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(file)">
+                  <mat-icon class="favorite-star">star</mat-icon>
+                </button>
+                <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
+              </div>
             </div>
           </div>
 
@@ -70,32 +68,33 @@
 
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              Recent
-            </mat-panel-title>
+            <mat-panel-title>Recent</mat-panel-title>
             <mat-panel-description>
               <!-- Inform the date you wish to travel
             <mat-icon>date_range</mat-icon> -->
             </mat-panel-description>
           </mat-expansion-panel-header>
 
-          <mat-list *ngIf="isFiles">
-            <!-- <h3 mat-subheader>Folders</h3> -->
+          <div *ngIf="isFiles">
             <mat-divider></mat-divider>
-
-            <mat-list-item *ngFor="let file of (files$ | async); index as i">
-              <!-- <div *ngIf="i < 6"></div> -->
-              <mat-icon mat-list-icon *ngIf="file.type === 'File'">insert_drive_file</mat-icon>
-              <mat-icon mat-list-icon *ngIf="file.type === 'Folder' && !file.isShared">folder</mat-icon>
-              <mat-icon mat-list-icon *ngIf="file.type === 'Folder' && file.isShared">folder_shared</mat-icon>
-              <h4 mat-line>{{ file.name }}</h4>
-              <p mat-line> Added {{ file.creationDate | date }}</p>
-            </mat-list-item>
-
-          </mat-list>
+            <div class="recents">
+              <div class="recent" *ngFor="let file of (files$ | async); index as i">
+                <img class="recent-icon" [src]="setResource(file.ThumbnailPath)">
+                <ul class="recent-list">
+                  <li><h3 class="">{{ file.Name }}</h3></li>
+                  <li><p class="list-info">/Home{{ file.Path }}</p></li>
+                  <li><p class="list-info">Added {{ file.CreatedOn | date }}</p></li>
+                </ul>
+                <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(file)">
+                  <div *ngIf="file.IsFavorite; then star; else starOutline"></div>
+                </button>
+                <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
+              </div>
+            </div>
+          </div>
 
           <mat-list *ngIf="!isFiles">
-            <!-- <h3 mat-subheader>Folders</h3> -->
+
             <mat-divider></mat-divider>
 
             <mat-list-item>
@@ -111,13 +110,42 @@
       </mat-accordion>
     </div>
     <div class="col-lg-2 col-md-2 col-sm-12 col-12 mb-3 pl-0" *ngIf="!isXS">
-      <file-actions 
-        [cwd]="cwd" 
-        [rowSelected]="rowSelected" 
-        [userId]="userId" 
-        [selection]="selection" 
+      <file-actions
+        [cwd]="cwd"
+        [rowSelected]="rowSelected"
+        [userId]="userId"
+        [selection]="selection"
         [userName]="userName"
       ></file-actions>
     </div>
   </div>
 </div>
+
+<ng-template #star>
+  <mat-icon class="favorite-star">star</mat-icon>
+</ng-template>
+
+<ng-template #starOutline>
+  <mat-icon class="favorite-star">star_border</mat-icon>
+</ng-template>
+
+
+<ng-template #fileMenu>
+  <button class="settings" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+    <mat-icon>more_vert</mat-icon>
+  </button>
+  <mat-menu #menu="matMenu" xPosition="before">
+    <button mat-menu-item>
+      <mat-icon>dialpad</mat-icon>
+      <span>Redial</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>voicemail</mat-icon>
+      <span>Check voice mail</span>
+    </button>
+    <button mat-menu-item>
+      <mat-icon>notifications_off</mat-icon>
+      <span>Disable alerts</span>
+    </button>
+  </mat-menu>
+</ng-template>
