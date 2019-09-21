@@ -24,6 +24,7 @@ import { Update } from '@ngrx/entity';
 import { RenameEntityComponent } from '../rename-entity/rename-entity.component';
 
 
+
 @Component({
   selector: 'repository',
   templateUrl: './repository.component.html',
@@ -31,7 +32,7 @@ import { RenameEntityComponent } from '../rename-entity/rename-entity.component'
 })
 export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   public dataSource: MatTableDataSource<IContents>
-  public displayMode: number = 1
+  public displayMode: number = 0
   public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action']
   public isXS: boolean = true
   public rowSelected: boolean = false
@@ -57,7 +58,8 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
 
   constructor(private store$: Store<AppState>, private repoService: HttpRepoService, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
-    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
+    // this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
+    this.server = 'https://portfolioapis.herokuapp.com'
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -146,8 +148,8 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
       if (data[0].length && data[1].cwd) {
         this.files = data[0]
         this.setCurrentDirectoryContents(data[1].cwd)
+        this.isLoadingResults = false;
       } 
-      this.isLoadingResults = false;
     });
   }
 
