@@ -93,7 +93,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     });
   }
 
-  public deleteItem(mode: number, value?: any): void {
+  public deleteAction(mode: number, value?: any): void {
 
     let entities: { name: string, path: string, type: string}[] = [];
     let ids: string[] = [];

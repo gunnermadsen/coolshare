@@ -59,7 +59,7 @@
             <button mat-list-item>
                 <mat-icon class="mr-2">text_format</mat-icon>Rename
             </button>
-            <button mat-list-item (click)="deleteItem(1, row)">
+            <button mat-list-item (click)="deleteAction(1, row)">
                 <mat-icon class="mr-2">close</mat-icon>Delete
             </button>
         </mat-action-list>
@@ -70,11 +70,11 @@
             <mat-icon class="m-icon" color="primary">cloud_download</mat-icon>
             <span *ngIf="isSM">Download</span>
         </button>
-        <button mat-button (click)="createNewFolder()">
+        <button mat-button (click)="renameAction()">
             <mat-icon class="m-icon" color="primary">text_format</mat-icon>
             <span *ngIf="isSM">Rename</span>
         </button>
-        <button mat-button (click)="refreshFiles()">
+        <button mat-button (click)="deleteAction(1, row)">
             <mat-icon class="m-icon" color="primary">close</mat-icon>
             <span *ngIf="isSM">Delete</span>
         </button>

@@ -186,7 +186,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   public deleteItem(index: number, row: any): void {
-    this.fileActionsComponent.deleteItem(index, row);
+    this.fileActionsComponent.deleteAction(index, row);
     this.rowSelected = false;
   }
 

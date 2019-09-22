@@ -84,7 +84,7 @@ export class FileSystemEffects {
 
             return this.repoService.delete(payload).pipe(
 
-                tap(() => this.toastrService.success("Delete operation successful")),
+                tap(() => this.toastrService.success(`${payload.entities[0].name} has been deleted`)),
 
                 map(() => new filesystem.RetrieveFolderContents({ folder: payload.path, id: payload.id })),
 
@@ -102,13 +102,20 @@ export class FileSystemEffects {
             this.generateNotification(action.payload, 1);
             return action;
         }),
-        mergeMap((action: any) => {
+        map((action: any) => {
+            return {
+                path: action.payload.path,
+                id: action.payload.userId,
+                entities: action.payload.entities
+            }
+        }),
+        mergeMap((payload: any) => {
 
-            return this.repoService.delete(action.payload).pipe(
+            return this.repoService.delete(payload).pipe(
 
-                tap(() => this.toastrService.success("Delete operation successful")),
+                tap(() => this.toastrService.success(`${payload.entities[0].name} and ${payload.entities.length - 1} other files has been deleted`)),
 
-                map(() => new filesystem.RetrieveFolderContents({ folder: action.payload.path, id: action.payload.id })),
+                map(() => new filesystem.RetrieveFolderContents({ folder: payload.path, id: payload.id })),
                 
                 catchError(error => {
                     this.toastrService.error(error);
