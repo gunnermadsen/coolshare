@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError, from } from 'rxjs';
 import { Action } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, Effect, ofType, createEffect } from '@ngrx/effects';
 
 import * as notifications from '../actions/notification.actions';
 import * as notificationSettings from '../actions/settings.actions';
@@ -13,8 +13,7 @@ import { HttpNotificationService } from '@/core/http/notification.http.service';
 @Injectable()
 export class NotificationEffects {
 
-    @Effect()
-    public createNewNotification$: Observable<Action> = this.actions$.pipe(
+    public createNewNotification$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(notifications.NotificationActionTypes.CREATE_NOTIFICATION),
         exhaustMap((action: any) => {
             return this.notificationService.createNotification(action.payload).pipe(
@@ -28,10 +27,9 @@ export class NotificationEffects {
 
             )
         })
-    )
+    ))
 
-    @Effect()
-    public getNotifications$ = this.actions$.pipe(
+    public getNotifications$ = createEffect(() => this.actions$.pipe(
         ofType(notifications.NotificationActionTypes.FETCH_NOTIFICATIONS),
         exhaustMap((action: any) => {
             return this.notificationService.getNotifications(action.payload.id).pipe(
@@ -47,10 +45,9 @@ export class NotificationEffects {
 
             )
         })
-    )
+    ))
 
-    @Effect({ dispatch: false })
-    public deleteAllNotifications$: Observable<Action> = this.actions$.pipe(
+    public deleteAllNotifications$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(notifications.NotificationActionTypes.DELETE_ALL_NOTIFICATIONS),
         mergeMap((action: any) => {
             return this.notificationService.deleteAllNotifications(action.payload.id).pipe(
@@ -60,10 +57,9 @@ export class NotificationEffects {
                 catchError((error) => throwError(error))
             )
         })
-    )
+    ), { dispatch: false })
 
-    @Effect()
-    public setNotificationViewState$: Observable<Action> = this.actions$.pipe(
+    public setNotificationViewState$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(notificationSettings.NotificationSettingsActionTypes.SET_NOTIFICATION_VIEW_STATE),
         mergeMap((action: any) => {
             return this.notificationService.setNotificationViewState(action.payload.id, action.payload.notificationBadgeHidden).pipe(
@@ -73,7 +69,7 @@ export class NotificationEffects {
                 catchError((error) => throwError(error))
             )
         })
-    )
+    ))
 
     constructor(private actions$: Actions, private notificationService: HttpNotificationService) { }
 }

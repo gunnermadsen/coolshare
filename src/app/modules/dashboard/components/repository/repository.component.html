@@ -27,7 +27,14 @@
   </div>
 
   <div *ngIf="isXS">
-    <file-actions [mode]="1" [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="userName$ | async"></file-actions>
+    <file-actions 
+      [mode]="1" 
+      [cwd]="cwd" 
+      [rowSelected]="rowSelected" 
+      [selection]="selection" 
+      [userId]="userId" 
+      [userName]="userName$ | async"
+    ></file-actions>
   </div>
   
   <div class="row repository-wrapper">
@@ -47,7 +54,14 @@
     <!-- right side column: Appears when the viewport size is medium or large -->
 
     <div class="col-lg-2 col-md-2 col-sm-12 col-12 pl-0" *ngIf="!isXS">
-      <file-actions [mode]="0" [cwd]="cwd" [rowSelected]="rowSelected" [selection]="selection" [userId]="userId" [userName]="(userName$ | async)"></file-actions>
+      <file-actions 
+        [mode]="0" 
+        [cwd]="cwd" 
+        [rowSelected]="rowSelected" 
+        [selection]="selection" 
+        [userId]="userId" 
+        [userName]="(userName$ | async)"
+      ></file-actions>
     </div>
   </div>
 </div>
@@ -188,7 +202,7 @@
           <button mat-menu-item>Share</button>
           <button mat-menu-item (click)="downloadItem(row.Name)" download>Download</button>
           <button mat-menu-item (click)="setFavoriteState(row)">Star</button>
-          <button mat-menu-item>Rename</button>
+          <button mat-menu-item (click)="renameEntity(row)">Rename</button>
           <button mat-menu-item>Move</button>
           <button mat-menu-item>Copy</button>
           <button mat-menu-item (click)="deleteItem(0, row)">Delete</button>

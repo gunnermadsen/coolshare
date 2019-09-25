@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable, of, forkJoin, throwError } from 'rxjs';
 import { Action, Store, select } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
+import { Actions, Effect, ofType, createEffect } from '@ngrx/effects';
 import { takeUntil, map, catchError, tap, mergeMap, withLatestFrom, retryWhen, take, switchMapTo, switchMap } from 'rxjs/operators';
 import { SaveRetrievedFolderContents, RetrieveFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
 import { HttpEventType } from '@angular/common/http';
@@ -25,8 +25,7 @@ import { NotificationTypes } from '@/modules/notifications/store/state';
 @Injectable()
 export class UploadEffects {
 
-    @Effect()
-    public uploadFile$: Observable<Action> = this.actions$.pipe(
+    public uploadFile$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(fromFileUploadActions.ActionTypes.UPLOAD_REQUEST),
         tap((action: any) => {
             this.generateNotification(action.payload)
@@ -83,8 +82,8 @@ export class UploadEffects {
                 )
             })
             return forkJoin(requests$).pipe(
-                map(() => {
-                    return { folder: path, id: userId }
+                map((action: any) => {
+                    return { folder: path, id: userId, action: action }
                 }),
 
                 catchError((error: any) => throwError(this.handleError(error)))
@@ -96,7 +95,7 @@ export class UploadEffects {
                 new RetrieveFolderContents({ ...action }),
             ]
         }),
-    )
+    ))
 
     // @Effect()
     // public getFolderContents$: Observable<Action> = this.actions$.pipe(

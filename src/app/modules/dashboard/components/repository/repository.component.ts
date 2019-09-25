@@ -56,10 +56,9 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
 
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
-  constructor(private store$: Store<AppState>, private repoService: HttpRepoService, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
+  constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
-    // this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
-    this.server = 'https://portfolioapis.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -162,27 +161,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   public renameEntity(entity: any): void {
-    const config = new MatDialogConfig()
-
-    config.width = '520px'
-    config.height = '250px'
-
-    config.data = {
-      name: entity.Name
-    }
-
-    const dialogRef = this.dialog.open(RenameEntityComponent, config)
-
-    dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
-
-      const payload: Update<any> = {
-        id: result.Id,
-        changes: { Name: result.Name }
-      }
-
-      this.store$.dispatch(new filesystem.RenameEntity({ entity: payload, userId: this.userId }))
-    })
-
+    this.fileActionsComponent.renameAction(entity)
   }
 
   public deleteItem(index: number, row: any): void {
@@ -297,8 +276,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   }
 
   public downloadItem(name: string): void {
-
-    this.store$.dispatch(new filesystem.DownloadItem({ path: this.cwd, name: name, userId: this.userId }));
+    this.fileActionsComponent.downloadAction(name)
   }
 
   public ngOnDestroy(): void {

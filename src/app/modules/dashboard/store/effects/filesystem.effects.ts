@@ -171,13 +171,18 @@ export class FileSystemEffects {
     public renameEntity$: Observable<void> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.FileSystemActionTypes.FS_RENAME_ENTITY),
         tap((action: any) => {
-            this.generateNotification(action.payload, 4)
+            this.generateNotification(action.payload.body, 4)
             return action
         }),
-        exhaustMap((action: any) => {
-            return this.repoService.renameEntity(action.payload).pipe(
 
-                tap(() => this.toastrService.success("File has been renamed successfully")),
+        map((action: any) => action.payload.body),
+
+        exhaustMap((payload: any) => {
+            return this.repoService.renameEntity(payload).pipe(
+
+                tap(() => this.toastrService.success(`${payload.entity.oldName} has been renamed to ${payload.entity.newName}`)),
+
+                // map(() => new filesystem.RetrieveFolderContents({ folder: payload.path, id: payload.userId })),
 
                 catchError((error: any) => {
                     this.toastrService.error(error);
@@ -185,7 +190,6 @@ export class FileSystemEffects {
                 })
             )
         })
-
     ), { dispatch: false })
 
     public generateNotification(payload: any, mode: number): void {
@@ -229,6 +233,14 @@ export class FileSystemEffects {
                 title = 'file added to favorites'
                 options = {
                     fileName: payload.name
+                }
+            }
+            break;
+            case 4: {
+                type = NotificationTypes.RenameEntity
+                title = `${payload.entity.oldName} has been renamed to ${payload.entity.newName}`
+                options = {
+                    fileName: payload.entity.newName
                 }
             }
             break;

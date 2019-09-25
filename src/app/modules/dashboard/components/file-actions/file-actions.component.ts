@@ -7,9 +7,11 @@ import { NewFolderComponent } from '../new-folder/new-folder.component';
 import { take, takeUntil } from 'rxjs/operators';
 import { SelectionModel } from '@angular/cdk/collections';
 
-import * as fromFolderActions from '../../store/actions/filesystem.actions'
+import * as filesystem from '../../store/actions/filesystem.actions'
 import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
 import { Subject } from 'rxjs';
+import { RenameEntityComponent } from '../rename-entity/rename-entity.component';
+import { Update } from '@ngrx/entity';
 
 
 @Component({
@@ -28,17 +30,14 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   public isSM: boolean = false
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
-  constructor(private store$: Store<AppState>, public dialog: MatDialog, private breakpointObserver: BreakpointObserver) {
-    // this.userId = JSON.parse(localStorage.getItem('Account')).Id;
-    
+  constructor(private store$: Store<AppState>, public dialog: MatDialog, private breakpointObserver: BreakpointObserver) {    
     this.breakpointObserver.observe(['(min-width: 475px)']).pipe(
       takeUntil(this.destroy$)
     )
     .subscribe((state: BreakpointState) => state.matches ? this.isSM = true : this.isSM = false)
   }
 
-  ngOnInit() {
-  }
+  ngOnInit() { }
 
   public uploadData(event: any): void {
 
@@ -46,11 +45,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     if (clone) {
 
-      this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({
-        path: this.cwd,
-        userId: this.userId,
-        files: clone
-      }));
+      this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({ path: this.cwd, userId: this.userId, files: clone }));
 
       // this.isFileSet = false;
       // this.files = null;
@@ -59,13 +54,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   }
 
   public refreshFiles(): void {
-    
-    const data = {
-      id: this.userId,
-      path: this.cwd
-    }
-
-    this.store$.dispatch(new fromFolderActions.RetrieveFolderContents({ folder: this.cwd, id: this.userId }))
+    this.store$.dispatch(new filesystem.RetrieveFolderContents({ folder: this.cwd, id: this.userId }))
   }
 
 
@@ -83,7 +72,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
-        this.store$.dispatch(new fromFolderActions.CreateFolder({ 
+        this.store$.dispatch(new filesystem.CreateFolder({ 
           userId: this.userId, 
           path: this.cwd, 
           data: result, 
@@ -95,7 +84,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
   public deleteAction(mode: number, value?: any): void {
 
-    let entities: { name: string, path: string, type: string}[] = [];
+    let entities: { name: string, path: string, type: string }[] = [];
     let ids: string[] = [];
     let id: string = ""
 
@@ -122,15 +111,61 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     }
 
     if (mode === 0) {
-      this.store$.dispatch(new fromFolderActions.DeleteFolderItem(result));
+      this.store$.dispatch(new filesystem.DeleteFolderItem(result));
     } 
     else {
-      this.store$.dispatch(new fromFolderActions.DeleteFolderItems(result));
+      this.store$.dispatch(new filesystem.DeleteFolderItems(result));
     }
 
     this.selection.clear();
     this.rowSelected = false;
 
+  }
+
+  public downloadAction(name: string): void {
+    this.store$.dispatch(new filesystem.DownloadItem({ path: this.cwd, name: name, userId: this.userId }));
+  }
+
+  public renameAction(entity: any): void {
+    const config = new MatDialogConfig()
+
+    config.width = '520px'
+    config.height = '250px'
+
+    config.data = {
+      name: entity.Name
+    }
+
+    const dialogRef = this.dialog.open(RenameEntityComponent, config)
+
+    dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
+
+      if (result.changes) {
+
+        const payload: Update<any> = {
+          id: entity.Id,
+          changes: { Name: result.name }
+        }
+
+        const content = {
+          cwd: entity.Cwd,
+          userId: this.userId,
+          entity: {
+            id: entity.Id,
+            oldName: entity.Name,
+            newName: result.name,
+            type: entity.Type,
+            path: entity.Path
+          }
+        }
+
+        this.store$.dispatch(new filesystem.RenameEntity({
+          entity: payload, 
+          body: content
+        }))
+      }
+
+    })
   }
 
   public ngOnDestroy(): void {

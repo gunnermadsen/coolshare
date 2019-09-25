@@ -78,7 +78,7 @@ export class ModifyFavorites implements Action {
 
 export class RenameEntity implements Action {
     readonly type = FileSystemActionTypes.FS_RENAME_ENTITY;
-    constructor(public payload: { entity: Update<any>, userId: string }) {}
+    constructor(public payload: { entity: Update<any>, body: any }) {}
 }
 
 

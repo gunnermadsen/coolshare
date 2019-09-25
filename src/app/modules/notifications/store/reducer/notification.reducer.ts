@@ -2,15 +2,14 @@ import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
 import { NotificationActions, NotificationActionTypes } from '../actions/notification.actions';
 import { Md5 } from 'ts-md5/dist/md5';
 import * as uuid from 'uuid'
+import { INotificationState } from '../state';
 export interface NotificationState extends EntityState<any> {}
 
+const sortByDate = (n1: INotificationState, n2: INotificationState): number => new Date(n2.createdOn).getTime() - new Date(n1.createdOn).getTime()
+
 export const adapter: EntityAdapter<any> = createEntityAdapter<any>({
-    selectId: () => {
-
-        const id = uuid.v4();
-
-        return id
-    }
+    selectId: () => uuid.v4(),
+    sortComparer: sortByDate
 });
 
 export const initialNotificationState: NotificationState = adapter.getInitialState()

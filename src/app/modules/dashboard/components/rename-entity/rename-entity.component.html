@@ -16,8 +16,8 @@
     </div>
     <div class="row">
         <div class="col">
-            <button mat-raised-button color="primary">Save</button>
-            <button mat-raised-button>Cancel</button>
+            <button mat-raised-button (click)="save()" color="primary">Save</button>
+            <button mat-raised-button (click)="dialogRef.close({ changes: false })">Cancel</button>
         </div>
     </div>
 </div>

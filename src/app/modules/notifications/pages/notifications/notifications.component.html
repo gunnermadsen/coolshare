@@ -1,106 +1,112 @@
-<button mat-icon-button [matMenuTriggerFor]="menu" (click)="setNotificationViewState($event)">
-    <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="(viewState$ | async)" matBadgePosition="before" matBadgeColor="accent">notifications_none</mat-icon>
-</button>
-
-<mat-menu #menu="matMenu">
-    <div class="container-fluid">
-        <div class="row notification-container" *ngFor="let notification of (notifications$ | async); index as i">
-            <div class="col px-0" [ngSwitch]="notification.type">
+<div class="notifications-container">
+    <div class="notification-heading">
+        <div class="heading-content">
+            <h2 class="heading-title">Activity</h2>
+            <button mat-button class="close-notifications" (click)="closeNotificationSidenav()">
+                <mat-icon>close</mat-icon>
+            </button>
+        </div>
+        <mat-divider></mat-divider>
+    </div>
+    <div class="notifications">
+        <div class="notification-items">
+            <div [ngSwitch]="notification.type" *ngFor="let notification of notifications; index as i" >
                 <div class="notification m-2" *ngSwitchCase="'Upload'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon color="primary" class="mr-2">cloud_upload</mat-icon>
-                        </div>
-                        <div class="col pl-0">
-                            <h4>{{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon color="primary" class="mr-2">cloud_upload</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Delete File'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon class="mr-2 text-danger">delete_outline</mat-icon>
-                        </div>
-                        <div class="col pl-0">
-                            <h4>{{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon class="mr-2 text-danger">delete_outline</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Delete Files'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon class="mr-2 text-danger">delete_sweep</mat-icon>
-                        </div>
-                        <div class="col pl-0">
-                            <h4>{{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon class="mr-2 text-danger">delete_sweep</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Download'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon color="primary" class="mr-2">cloud_download</mat-icon>
-                        </div>
-                        <div class="col pl-0">
-                            <h4>{{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon color="primary" class="mr-2">cloud_download</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Account Modified'">
-                    <h4>{{ notification.title }}</h4>
-                    <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                    <div class="notification-icon">
+                        <mat-icon color="primary">edit</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                    </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Create New Shared Folder'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon class="mr-2" color="primary">folder_shared</mat-icon>
-                        </div>
-                        <div class="col pl-0">
-                            <h4>{{ notification.options.folderName }} {{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon class="mr-2" color="primary">folder_shared</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.options.folderName }} {{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Create New Folder'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon class="mr-2" color="primary">create_new_folder</mat-icon>
-                        </div>
-                        <div class="pl-0 col">
-                            <h4>{{ notification.options.folderName }} {{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon class="mr-2" color="primary">create_new_folder</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.options.folderName }} {{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
+                    </div>
+                </div>
+                <div class="notification m-2" *ngSwitchCase="'Rename Entity'">
+                    <div class="notification-icon">
+                        <mat-icon class="mr-2" color="primary">text_format</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Is Favorite'">
-                    <div class="row">
-                        <div class="col-auto pr-1">
-                            <mat-icon class="mr-2" color="primary">star</mat-icon>
-                        </div>
-                        <div class="pl-0 col">
-                            <h4>{{ notification.title }}</h4>
-                            <h5>{{ notification.createdOn | date : 'short' }}</h5>
-                        </div>
+                    <div class="notification-icon">
+                        <mat-icon class="mr-2" color="primary">star</mat-icon>
+                    </div>
+                    <div class="notification-info">
+                        <h4>{{ notification.title }}</h4>
+                        <h5>{{ notification.createdOn | date : 'short' }}</h5>
                     </div>
                 </div>
                 <div class="m-2 no-new-notification" *ngSwitchCase="'Default'">
                     <h4 class="mb-0">{{ notification.title }}</h4>
                 </div>
-                
+                <div class="notification-divider" *ngIf="notifications.length != (i + 1)">
+                    <mat-divider></mat-divider>
+                </div>
             </div>
         </div>
-        <div class="row mt-2 notification-actions" *ngIf="!isEmpty">
-            <div class="col">
-                <!-- <mat-divider class="mx-2" *ngIf="!notificationState"></mat-divider> -->
-                <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)"><mat-icon class="mr-2">clear</mat-icon>Clear</button>
-            </div>
-            <div class="col-auto ml-auto">
-                <button mat-raised-button color="primary" (click)="refreshNotifications($event)"><mat-icon class="mr-2">refresh</mat-icon>Refresh</button>
-            </div>
+        <div class="notification-actions" *ngIf="!isEmpty">
+            <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)">
+                <mat-icon class="mr-2">clear</mat-icon>Clear
+            </button>
+            <button mat-raised-button color="primary" (click)="refreshNotifications($event)">
+                <mat-icon class="mr-2">refresh</mat-icon>Refresh
+            </button>
         </div>
     </div>
-</mat-menu>
+</div>

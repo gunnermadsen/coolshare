@@ -1,24 +1,32 @@
   <!-- <div class="sidenav-container"> -->
     <mat-sidenav-container fullscreen class="mat-sidenav-container">
-      <mat-sidenav mode="over" #sidenav>
+
+      <!-- Navigation Sidenav -->
+      <mat-sidenav mode="over" #navigationSidenav position="start">
         <mat-action-list>
-          <button mat-list-item class="float-right close-btn" (click)="sidenav.close()">
+          <button mat-list-item class="float-right close-btn" (click)="navigationSidenav.close()">
             <mat-icon>close</mat-icon>
           </button>
         </mat-action-list>
-        <mat-nav-list (click)="sidenav.close()">
+        <mat-nav-list (click)="navigationSidenav.close()">
           <div *ngIf="(authState$ | async); then dashboardNav; else homeNav"></div>
         </mat-nav-list>
       </mat-sidenav>
+
+      <!-- Notifications Sidenav -->
+      <mat-sidenav #notificationSidenav [mode]="mode" position="end">
+        <notifications [id]="userId" [notifications]="(notifications$ | async)" [isEmpty]="isEmpty" (closeSidenav)="closeSidenav($event)"></notifications>
+      </mat-sidenav>
+
       <mat-toolbar color="primary">
         <div class="navbar-center">
           <div class="side-nav-menu" *ngIf="isXS">
-            <button mat-button class="menu-icon" (click)="sidenav.toggle()">
-              <mat-icon [inline]="true">menu</mat-icon>
+            <button mat-button class="menu-icon" (click)="navigationSidenav.toggle()">
+              <mat-icon>menu</mat-icon>
             </button>
           </div>
           <button mat-button type="button" class="px-0" routerLink="/dashboard/main">
-            <h3>Coolshare</h3>
+            <h3>Shareily</h3>
           </button>
           <div class="navbar-center ml-3" *ngIf="!isXS && (authState$ | async)">
             <button mat-button type="button" class="px-0" routerLink="/dashboard/files">
@@ -36,8 +44,11 @@
         </div>
         <span class="spacer"></span>
         <div class="navbar-end" *ngIf="(authState$ | async)">
-          <notifications></notifications>
-          <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1 ml-3" (click)="navigate('/account')">{{ initials$ | async }}</button>
+          <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1 mr-3" (click)="navigate('/account')">{{ initials$ | async }}</button>
+          <button mat-icon-button (click)="setNotificationViewState($event)">
+            <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="(viewState$ | async)"
+              matBadgePosition="before" matBadgeColor="accent">notifications_none</mat-icon>
+          </button>
         </div>
       </mat-toolbar>
       <!-- <mat-sidenav-content> -->
