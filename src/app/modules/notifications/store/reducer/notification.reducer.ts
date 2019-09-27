@@ -5,7 +5,9 @@ import * as uuid from 'uuid'
 import { INotificationState } from '../state';
 export interface NotificationState extends EntityState<any> {}
 
-const sortByDate = (n1: INotificationState, n2: INotificationState): number => new Date(n2.createdOn).getTime() - new Date(n1.createdOn).getTime()
+const sortByDate = (n1: INotificationState, n2: INotificationState): number => {
+    return new Date(n2.createdOn).getTime() - new Date(n1.createdOn).getTime();
+}
 
 export const adapter: EntityAdapter<any> = createEntityAdapter<any>({
     selectId: () => uuid.v4(),

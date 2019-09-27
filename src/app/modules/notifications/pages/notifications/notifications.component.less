@@ -24,7 +24,7 @@
     width: 225px;
     overflow-x: hidden;
     display: flex;
-    
+    flex-direction: column;
 }
 
 .notification-icon {
@@ -44,7 +44,7 @@
     width: auto;
     justify-content: space-evenly;
     align-items: center;
-    background-color: white;
+    background-color: rgba(255, 255, 255, 0.7);
     // margin-bottom: 10px;
     margin-top: 10px;
     // align-items: flex-end;
@@ -54,6 +54,12 @@
 .notification-heading {
     margin: 10px 10px;
     height: 4%;
+    background-color: rgba(255, 255, 255, 0.7);
+}
+
+.notification-content {
+    display: flex;
+    flex-direction: row;
 }
 
 .notification-divider {

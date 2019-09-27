@@ -1,9 +1,11 @@
 import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
+import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 
 import * as notificationActions from '../../store/actions/notification.actions';
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
+import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'notifications',
@@ -12,6 +14,8 @@ import * as notificationActions from '../../store/actions/notification.actions';
 })
 export class NotificationsComponent implements OnInit {
   private viewState: boolean
+
+  public isUploadActive: boolean = false
 
   @Input() 
   public notifications: any
@@ -25,10 +29,20 @@ export class NotificationsComponent implements OnInit {
   @Output()
   public closeSidenav: EventEmitter<any> = new EventEmitter<any>()
 
+  public fileUploadState$: Observable<boolean>;
+
+
   constructor(private store$: Store<AppState>) {
   }
 
-  public ngOnInit() { }
+  public ngOnInit() {
+    this.fileUploadState$ = this.store$.pipe(
+      select(fromFileUploadSelectors.selectUploadState),
+      tap((state: any) => {
+        this.isUploadActive = state.progress >= 1 || state.progress <= 99 ? true : false
+      })
+    )
+  }
 
   public deleteAllNotifications(event: MouseEvent): void {
     event.stopPropagation()

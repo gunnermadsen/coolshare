@@ -38,12 +38,12 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
         CommonModule,
         SharedModule,
         DashboardRouter,
-        UploadModule,
         StoreModule.forFeature('FileSystem', FileSystemReducerMap),
         EffectsModule.forFeature([FileSystemEffects]),
-
+        
         FileSaverModule,
-        NotificationsModule
+        NotificationsModule,
+        UploadModule,
     ],
     exports: [
         RepositoryComponent,

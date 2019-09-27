@@ -4,6 +4,7 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
+import { tap } from 'rxjs/operators';
 
 
 @Component({

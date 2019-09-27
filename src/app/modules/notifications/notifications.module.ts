@@ -7,6 +7,7 @@ import { EffectsModule } from '@ngrx/effects';
 import { SharedModule } from '@/shared/shared.module';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { notificationSettingsReducer } from './store/reducer/settings.reducer';
+import { UploadModule } from '../upload-file/upload.module';
 
 export const NotificationReducersMap: ActionReducerMap<any> = {
     Events: notificationReducer,
@@ -21,6 +22,9 @@ export const NotificationReducersMap: ActionReducerMap<any> = {
     imports: [ 
         CommonModule,
         SharedModule,
+
+        UploadModule,
+
         
         StoreModule.forFeature('Notifications', NotificationReducersMap),
         EffectsModule.forFeature([NotificationEffects]), 
