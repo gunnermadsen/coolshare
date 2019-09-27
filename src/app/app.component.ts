@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { selectUser } from './core/authentication/store/selectors/authentication.selectors';
 import { LogoutUserRequested } from './core/authentication/store/actions/authentication.actions';
@@ -19,6 +19,7 @@ import { takeUntil, map, tap } from 'rxjs/operators';
 import { Observable, of, Subject } from 'rxjs';
 
 import { NotificationTypes } from './modules/notifications/store/state';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'app-root',
@@ -38,8 +39,11 @@ export class AppComponent {
   public mode: string
   @ViewChild('notificationSidenav', { static: true }) public notificationsSidebar: MatSidenav
 
-  constructor(private breakpointObserver: BreakpointObserver, private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {
-    this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private breakpointObserver: BreakpointObserver, private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {
+    if (isPlatformBrowser(this.platformId)) {
+      // Client only code.
+      this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    }
     this.initializeNotifications()
   }
   ngOnInit(): void {

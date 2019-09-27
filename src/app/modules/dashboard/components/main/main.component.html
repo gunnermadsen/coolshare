@@ -18,6 +18,20 @@
 </div> -->
 
 <div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col">
+      <div *ngIf="isXS">
+        <file-actions 
+          [mode]="1" 
+          [cwd]="cwd" 
+          [rowSelected]="rowSelected" 
+          [selection]="selection" 
+          [userId]="userId" 
+          [userName]="userName$ | async"
+        ></file-actions>
+      </div>
+    </div>
+  </div>
   <div class="row mb-3">
     <div class="col-lg-10 col-md-10 col-sm-12 col-12">
       <mat-accordion class="example-headers-align" [multi]="true">
@@ -111,11 +125,12 @@
     </div>
     <div class="col-lg-2 col-md-2 col-sm-12 col-12 mb-3 pl-0" *ngIf="!isXS">
       <file-actions
+        [mode]="0"
         [cwd]="cwd"
         [rowSelected]="rowSelected"
-        [userId]="userId"
         [selection]="selection"
-        [userName]="userName"
+        [userId]="userId"
+        [userName]="(userName$ | async)"
       ></file-actions>
     </div>
   </div>

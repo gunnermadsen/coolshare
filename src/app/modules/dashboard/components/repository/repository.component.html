@@ -158,8 +158,8 @@
   
     <!-- Date Created Column -->
     <ng-container matColumnDef="createdDate">
-      <th mat-header-cell mat-sort-header arrowPosition="before" class="text-left" *matHeaderCellDef>Date Created</th>
-      <td mat-cell *matCellDef="let row">{{ row.CreatedOn | date : "short" }}</td>
+      <th mat-header-cell mat-sort-header arrowPosition="before" class="text-left" *matHeaderCellDef showColumn [showContent]="isXS">Date Created</th>
+      <td mat-cell *matCellDef="let row" showColumn [showContent]="isXS">{{ row.CreatedOn | date : "short" }}</td>
     </ng-container>
   
     <!-- Members Column -->

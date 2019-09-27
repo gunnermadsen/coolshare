@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
 import { Observable, of, defer } from 'rxjs';
 import { Action, Store } from '@ngrx/store';
 import { Actions, Effect, ofType } from '@ngrx/effects';
@@ -13,10 +13,13 @@ import { SaveRetrievedFolderContents } from '@/modules/dashboard/store/actions/f
 
 import * as auth from '@/core/authentication/store/actions/authentication.actions';
 
+import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+
+
 @Injectable()
 export class AuthenticationEffects {
 
-    constructor(private actions$: Actions, private authService: HttpAuthService, private store$: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute) { }
+    constructor(private actions$: Actions, private authService: HttpAuthService, private store$: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute, @Inject(PLATFORM_ID) private platformId: Object) { }
 
     @Effect()
     public registerUserRequested$: Observable<Action> = this.actions$.pipe(
@@ -57,9 +60,12 @@ export class AuthenticationEffects {
         exhaustMap((action: any) => {
             return this.authService.logout().pipe(
                 tap(() => {
-                    localStorage.removeItem('Account');
-                    this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
-                    this.toastrService.success("You have successfully logged out");
+                    if (isPlatformBrowser(this.platformId)) {
+                        // Client only code.
+                        localStorage.removeItem('Account');
+                        this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
+                        this.toastrService.success("You have successfully logged out");
+                    }
                 }),
                 catchError((error: any) => {
                     this.toastrService.error(error);
@@ -98,21 +104,28 @@ export class AuthenticationEffects {
     authenticationSuccessful$ = this.actions$.pipe(
         ofType(auth.AuthenticationActionTypes.AuthenticateUserSuccessful),
         tap((action: any) => {
-            localStorage.setItem('Account', JSON.stringify(action.payload.token))
+            if (isPlatformBrowser(this.platformId)) {
+                // Client only code.
+                localStorage.setItem('Account', JSON.stringify(action.payload.token))
+            }
         })
     );
 
     @Effect()
     public init$ = defer(() => {
 
-        const account = JSON.parse(localStorage.getItem("Account"));
-
-        if (account && account.JWTToken) {
-            return of(new auth.AuthenticateUserSuccessful({ token: account }));
+        if (isPlatformBrowser(this.platformId)) {
+            // Client only code.
+            const account = JSON.parse(localStorage.getItem("Account"));
+    
+            if (account && account.JWTToken) {
+                return of(new auth.AuthenticateUserSuccessful({ token: account }));
+            }
+            // else {
+            //     return <any> of(new LogoutUserRequested());
+            // }
         }
-        // else {
-        //     return <any> of(new LogoutUserRequested());
-        // }
+
 
     })
 

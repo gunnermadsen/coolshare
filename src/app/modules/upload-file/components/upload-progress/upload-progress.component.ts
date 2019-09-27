@@ -1,4 +1,4 @@
-import { Component, OnInit, Inject, Input, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Inject, Input, SimpleChanges, OnChanges, PLATFORM_ID } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { Observable, BehaviorSubject } from 'rxjs';
@@ -9,6 +9,7 @@ import { take, tap, map } from 'rxjs/operators';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
 
+import { isPlatformBrowser } from '@angular/common';
 
 
 @Component({
@@ -34,8 +35,12 @@ export class UploadProgressComponent implements OnChanges, OnInit {
 
   @Input() public color: string;
 
-  constructor(private store$: Store<AppState>, private dialog: MatDialog, private snackbar: MatSnackBar) {
-    this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private store$: Store<AppState>, private dialog: MatDialog, private snackbar: MatSnackBar) {
+    
+    if (isPlatformBrowser(this.platformId)) {
+      this.userId = JSON.parse(localStorage.getItem('Account')).Id;
+    }
+
   }
 
   ngOnChanges(changes: SimpleChanges): void {

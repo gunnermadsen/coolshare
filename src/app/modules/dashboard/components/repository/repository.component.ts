@@ -33,7 +33,7 @@ import { RenameEntityComponent } from '../rename-entity/rename-entity.component'
 export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   public dataSource: MatTableDataSource<IContents>
   public displayMode: number = 0
-  public displayedColumns: string[] = ['select', 'name', 'createdDate', 'members', 'action']
+  public displayedColumns: string[] = []
   public isXS: boolean = true
   public rowSelected: boolean = false
   public isFolderEmpty: boolean = false
@@ -59,6 +59,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
     this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
+    this.displayedColumns = [ 'select', 'name', 'action' ]
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -68,8 +69,17 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
 
   ngOnInit() {
     
-    this.breakpointObserver.observe(['(max-width: 768px)']).subscribe((state: BreakpointState) => {
-      return state.matches ? this.isXS = true : this.isXS = false;
+    this.breakpointObserver.observe(['(max-width: 768px)', '(max-width: 500px)']).subscribe((state: BreakpointState) => {
+      // state.matches ? this.isXS = true : this.isXS = false;
+      this.isXS = state.breakpoints['(max-width: 768px)']
+
+      if (state.breakpoints['(max-width: 500px)']) {
+        this.displayedColumns.splice(2, 2)
+      }
+      else if (state.breakpoints['(max-width: 768px)']) {
+        this.displayedColumns.splice(2, 0, ...[ 'createdDate', 'members' ])
+        console.log(this.displayedColumns)
+      }
     })
 
     if (this.mode === 0) {
