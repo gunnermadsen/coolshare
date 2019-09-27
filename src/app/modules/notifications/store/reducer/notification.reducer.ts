@@ -10,8 +10,8 @@ const sortByDate = (n1: INotificationState, n2: INotificationState): number => {
 }
 
 export const adapter: EntityAdapter<any> = createEntityAdapter<any>({
-    selectId: () => uuid.v4(),
-    sortComparer: sortByDate
+    selectId: () => uuid.v4()
+    // sortComparer: sortByDate
 });
 
 export const initialNotificationState: NotificationState = adapter.getInitialState()

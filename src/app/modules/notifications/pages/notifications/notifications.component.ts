@@ -6,6 +6,7 @@ import { AppState } from '@/reducers';
 import * as notificationActions from '../../store/actions/notification.actions';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import { tap } from 'rxjs/operators';
+import { INotificationState } from '../../store/state';
 
 @Component({
   selector: 'notifications',
@@ -31,8 +32,14 @@ export class NotificationsComponent implements OnInit {
 
   public fileUploadState$: Observable<boolean>;
 
+  constructor(private store$: Store<AppState>) { }
 
-  constructor(private store$: Store<AppState>) {
+  public ngOnChanges(changes: SimpleChanges): void {
+    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
+    //Add '${implements OnChanges}' to the class.
+    if (changes.notifications.currentValue.length > 1) {
+      changes.notifications.currentValue.sort((n1: INotificationState, n2: INotificationState) => new Date(n2.createdOn).getTime() - new Date(n1.createdOn).getTime())
+    }
   }
 
   public ngOnInit() {

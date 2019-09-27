@@ -78,7 +78,6 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
       }
       else if (state.breakpoints['(max-width: 768px)']) {
         this.displayedColumns.splice(2, 0, ...[ 'createdDate', 'members' ])
-        console.log(this.displayedColumns)
       }
     })
 
