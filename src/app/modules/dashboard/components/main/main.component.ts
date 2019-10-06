@@ -4,8 +4,8 @@ import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
 import { Observable, Subject } from 'rxjs';
-import { map, tap, takeUntil } from 'rxjs/operators';
-import * as favorites from '../../store/actions/filesystem.actions';
+import { map, tap, takeUntil, take, filter } from 'rxjs/operators';
+import * as filesystem from '../../store/actions/filesystem.actions';
 import { Update } from '@ngrx/entity';
 
 
@@ -22,6 +22,7 @@ export class MainComponent implements OnInit, OnDestroy {
   public cwd: string
   public path: string[] = []
   public files$: Observable<any>
+  public favorites$: Observable<any>
   public isFavorites: boolean = false
   public isFiles: boolean = false
   private server: string
@@ -41,17 +42,31 @@ export class MainComponent implements OnInit, OnDestroy {
       return state.matches ? this.isXS = true : this.isXS = false;
     })
 
+    this.favorites$ = this.store$.pipe(
+      select(getRepoData),
+      map((result: any, index: any) => {
+        return result.filter((file: any) => file.IsFavorite)
+      }),
+      map((result: any) => {
+        if (!result.length) {
+          return [
+            { Name: "Files or folders that are starred will appear here" }
+          ]
+        }
+      })
+    )
+
     this.files$ = this.store$.pipe(
       select(getRepoData), 
       tap((result: any[]) => {
         if (result.length) {
 
           this.cwd = result[0].Cwd;
-          let favoriteState = result.filter((file: any) => file.IsFavorite)
+          // let favoriteState = result.filter((file: any) => file.IsFavorite)
 
-          if (favoriteState.length) {
-            this.isFavorites = true
-          }
+          // if (favoriteState.length) {
+          //   this.isFavorites = true
+          // }
 
           this.isFiles = true
 
@@ -69,7 +84,7 @@ export class MainComponent implements OnInit, OnDestroy {
       changes: { IsFavorite: !entity.IsFavorite }
     }
 
-    this.store$.dispatch(new favorites.ModifyFavorites({ entity: payload, userId: this.userId }))
+    this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
   public setResource(path: string): string {

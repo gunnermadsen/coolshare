@@ -17,6 +17,7 @@ export interface NotificationSettingsState {
 }
 
 export interface INotificationState {
+    id: string
     type: NotificationTypes
     title: String
     options: any

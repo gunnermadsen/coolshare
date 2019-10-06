@@ -1,11 +1,11 @@
 import { createFeatureSelector, createSelector, MemoizedSelector } from '@ngrx/store';
-import { State, UploadStatus } from '../../state';
+import { UploadState, UploadStatus } from '../../state';
 
-export const selectUploadFileFeatureState: MemoizedSelector<object, State> = createFeatureSelector<State>('upload');
+export const selectUploadFileFeatureState: MemoizedSelector<object, UploadState> = createFeatureSelector<UploadState>('upload');
 
 export const selectUploadFileError: MemoizedSelector<object, string> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): string => state.error
+  (state: UploadState): string => state.error
 );
 
 export const concatFileArrays = (state: any) => {
@@ -16,7 +16,7 @@ export const concatFileArrays = (state: any) => {
 
 export const selectProgressBarColor = (index: number) => createSelector(
   selectUploadFileFeatureState,
-  (state: State) => { 
+  (state: UploadState) => { 
     const files = concatFileArrays(state);
     const progressColor = files[index].progressColor;
     return progressColor;
@@ -25,7 +25,7 @@ export const selectProgressBarColor = (index: number) => createSelector(
 
 export const selectIndividualFileUploadState = (index: number) => createSelector(
   selectUploadFileFeatureState,
-  (state: State) => { 
+  (state: UploadState) => { 
     const files = concatFileArrays(state);
     const file = files[index];
     return file;
@@ -34,44 +34,44 @@ export const selectIndividualFileUploadState = (index: number) => createSelector
 
 export const selectUploadFileReady: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => state.status === UploadStatus.Ready
+  (state: UploadState): boolean => state.status === UploadStatus.Ready
 );
 
 export const selectUploadFileRequested: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => state.status === UploadStatus.Requested
+  (state: UploadState): boolean => state.status === UploadStatus.Requested
 );
 
 export const selectUploadFileStarted: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => state.status === UploadStatus.Started
+  (state: UploadState): boolean => state.status === UploadStatus.Started
 );
 
 export const selectUploadFileProgress: MemoizedSelector<object, number> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): number => state.progress
+  (state: UploadState): number => state.progress
 );
 
 export const selectUploadFileInProgress: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => state.status === UploadStatus.Started && state.progress >= 0
+  (state: UploadState): boolean => state.status === UploadStatus.Started && state.progress >= 0
 );
 
 export const selectUploadFileFailed: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => state.status === UploadStatus.Failed
+  (state: UploadState): boolean => state.status === UploadStatus.Failed
 );
 
 export const selectUploadFileCompleted: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): boolean => {
+  (state: UploadState): boolean => {
     return state.status === UploadStatus.Completed;
   }
 );
 
 export const selectUploadFileState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): any => {
+  (state: UploadState): any => {
     const files = concatFileArrays(state);
     return files;
   }
@@ -79,24 +79,29 @@ export const selectUploadFileState: MemoizedSelector<object, any> = createSelect
 
 export const selectUploadViewState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): any => {
+  (state: UploadState): any => {
     return state.viewState;
   }
 )
 
 export const selectUploadState: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): any => {
-    const result = { ...state, files: concatFileArrays(state )}
+  (state: UploadState): any => {
+    const result = { ...state, files: concatFileArrays(state)}
     return result;
+  }
+)
+
+export const selectCurrentUploadState: MemoizedSelector<object, any> = createSelector(
+  selectUploadFileFeatureState,
+  (state: UploadState) => {
+    return state
   }
 )
 
 export const selectIndividualFileUploadProgress: MemoizedSelector<object, any> = createSelector(
   selectUploadFileFeatureState,
-  (state: State): any => {
+  (state: UploadState): any => {
     return state.pendingFiles
   }
 )
-
-

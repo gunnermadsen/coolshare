@@ -1,5 +1,5 @@
 import { UploadActions, ActionTypes } from '../actions/upload.actions';
-import { initialState, State, UploadStatus } from '../../state';
+import { initialState, UploadStatus, UploadState } from '../../state';
 import * as _ from 'lodash';
 
 const setFileState = (files: any): any[] => {
@@ -16,7 +16,7 @@ const setFileState = (files: any): any[] => {
     return data;
 }
 
-export function uploadReducer(state = initialState, action: UploadActions): State {
+export function uploadReducer(state = initialState, action: UploadActions): UploadState {
     switch (action.type) {
         case ActionTypes.UPLOAD_VIEW_STATE: {
             return {
@@ -95,6 +95,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Stat
         case ActionTypes.UPLOAD_PROGRESS: {
             return {
                 ...state,
+                status: UploadStatus.Ongoing,
                 progress: action.payload.progress,
                 progressColor: 'primary',
                 pendingFiles: action.payload.files

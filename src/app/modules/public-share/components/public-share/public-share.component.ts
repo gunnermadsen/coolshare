@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { AppState } from '@/reducers';
-import { SaveRetrievedFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
+import * as filesystem from '@/modules/dashboard/store/actions/filesystem.actions';
 
 @Component({
   selector: 'app-public-share',
@@ -26,7 +26,7 @@ export class PublicShareComponent implements OnInit {
       this.id = this.route.snapshot.data.status.userId;
       this.userName = this.route.snapshot.data.status.userName;
   
-      this.store$.dispatch(new SaveRetrievedFolderContents({ contents: data }));
+      this.store$.dispatch(filesystem.saveRetrievedFolderContents({ contents: data }));
 
     } else {
 

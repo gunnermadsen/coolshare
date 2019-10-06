@@ -1,12 +1,12 @@
 <div *ngIf="rowSelected; then selectedActionCard; else actionCard"></div>
 
 <ng-template #actionCard>
-    <input multiple type="file" hidden (change)="uploadData($event)" #uploader>
-
+    <input type="file" multiple hidden (change)="uploadData($event)" #fileUploader>
+    <input type="file" webkitdirectory (change)="uploadFolder($event)" mozdirectory hidden #folderUploader>
     <mat-card class="mat-elevation-z2 px-0" *ngIf="mode === 0">
         <mat-action-list>
             <!-- <button mat-list-item class="px-3" color="primary">Create new file</button> -->
-            <button mat-list-item (click)="uploader.click()">
+            <button mat-list-item (click)="fileUploader.click()">
                 <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
             </button>
             <!-- <button mat-list-item class="px-3" >Upload folder</button> -->
@@ -20,9 +20,13 @@
     </mat-card>
 
     <mat-toolbar class="mat-elevation-z2 m-toolbar action-toolbar" *ngIf="mode === 1">
-        <button mat-button (click)="uploader.click()">
+        <button mat-button (click)="fileUploader.click()">
             <mat-icon class="m-icon" color="primary">cloud_upload</mat-icon> 
             <span *ngIf="isSM">Upload Files</span>
+        </button>
+        <button mat-button (click)="folderUploader.click()">
+            <mat-icon class="m-icon" color="primary">backup</mat-icon> 
+            <span *ngIf="isSM">Upload Folder</span>
         </button>
         <button mat-button (click)="createNewFolder()">
             <mat-icon class="m-icon" color="primary">create_new_folder</mat-icon>
@@ -66,7 +70,7 @@
     </mat-card>
 
     <mat-toolbar class="mat-elevation-z2 m-toolbar action-toolbar" *ngIf="mode === 1">
-        <button mat-button (click)="uploader.click()">
+        <button mat-button (click)="fileUploader.click()">
             <mat-icon class="m-icon" color="primary">cloud_download</mat-icon>
             <span *ngIf="isSM">Download</span>
         </button>

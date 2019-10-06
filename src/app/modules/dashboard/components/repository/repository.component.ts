@@ -1,36 +1,32 @@
-import { Component, OnInit, ViewChild, Input, OnChanges, SimpleChanges, OnDestroy, isDevMode } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnDestroy, isDevMode, AfterViewInit } from '@angular/core';
+import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
+import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
+import { SelectionModel } from '@angular/cdk/collections';
+
 import { Store, select } from '@ngrx/store';
+import { Update } from '@ngrx/entity';
+
 import { AppState } from '@/reducers';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
-import { Observable, of as observableOf, Subject, of } from 'rxjs';
-import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
-import { catchError, tap, take, takeUntil, withLatestFrom, map, delay } from 'rxjs/operators';
-import { IContents } from '@/shared/models/contents.model';
-import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
-// import { RetrieveFolderContents, DownloadItem } from '../../store/actions/filesystem.actions';
 
-import * as filesystem from '../../store/actions/filesystem.actions'; 
-import * as favorites from '../../store/actions/filesystem.actions';
-import * as account from '@/modules/account/store/selectors/account.selectors';
-import * as settingsSelector from '../../store/selectors/settings.selectors';
+import { Observable, of as observableOf, Subject, of } from 'rxjs';
+import { catchError, tap, take, takeUntil, withLatestFrom, map, delay } from 'rxjs/operators';
+
+import { IContents } from '@/shared/models/contents.model';
 
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
-import { SelectionModel } from '@angular/cdk/collections';
 import { FileActionsComponent } from '../file-actions/file-actions.component';
-import { HttpRepoService } from '@/core/http/repo.http.service';
 
-import { getRepoSettings } from '../../store/selectors/settings.selectors';
-import { Update } from '@ngrx/entity';
-import { RenameEntityComponent } from '../rename-entity/rename-entity.component';
-
-
+import * as filesystem from '../../store/actions/filesystem.actions'; 
+import * as account from '@/modules/account/store/selectors/account.selectors';
+import * as settingsSelector from '../../store/selectors/settings.selectors';
 
 @Component({
   selector: 'repository',
   templateUrl: './repository.component.html',
   styleUrls: ['./repository.component.less']
 })
-export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
+export class RepositoryComponent implements OnInit, OnDestroy {
   public dataSource: MatTableDataSource<IContents>
   public displayMode: number = 0
   public displayedColumns: string[] = []
@@ -42,19 +38,18 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
   public cwd: string
   public userName$: Observable<string>
   public files$: Observable<any>
+  public isLoadingResults = true;
+  public fileList: FileList;
+  public files: any[] = [];
+  public selection: SelectionModel<any>;
+  private server: string;
+  private destroy$: Subject<boolean> = new Subject<boolean>()
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator
   @ViewChild(MatSort, { static: true }) public sort: MatSort
   @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent
   @Input() public mode: number = 0;
   @Input() public userId: string;
   @Input() public userName: string;
-  public isLoadingResults = true;
-  public fileList: FileList;
-  public files: any[] = [];
-  private server: string;
-  public selection: SelectionModel<any>;
-
-  private destroy$: Subject<boolean> = new Subject<boolean>()
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
@@ -62,30 +57,15 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
     this.displayedColumns = [ 'select', 'name', 'action' ]
   }
 
-  ngOnChanges(changes: SimpleChanges): void {
-    // this.userId = changes.id.currentValue;
-    // this.userName = changes.userName.currentValue;
-  }
-
   ngOnInit() {
-    
-    this.breakpointObserver.observe(['(max-width: 768px)', '(max-width: 500px)']).subscribe((state: BreakpointState) => {
-      // state.matches ? this.isXS = true : this.isXS = false;
-      this.isXS = state.breakpoints['(max-width: 768px)']
-
-      if (state.breakpoints['(max-width: 500px)']) {
-        this.displayedColumns.splice(2, 2)
-      }
-      else if (state.breakpoints['(max-width: 768px)']) {
-        this.displayedColumns.splice(2, 0, ...[ 'createdDate', 'members' ])
-      }
-    })
 
     if (this.mode === 0) {
       const user = JSON.parse(localStorage.getItem('Account'));
       this.userId = user.Id;
       this.userName$ = this.store$.pipe(select(account.selectUserName))
     }
+
+    this.initializeBreakpoints()
 
     this.initializeTableData();
   }
@@ -117,14 +97,32 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
     }
   }
 
+  private initializeBreakpoints(): void {
+    this.breakpointObserver.observe(
+      ['(max-width: 768px)', '(min-width: 500px)', '(max-width: 500px)']
+    )
+    .subscribe((state: BreakpointState) => {
+      // state.matches ? this.isXS = true : this.isXS = false;
+      this.isXS = state.breakpoints['(max-width: 768px)']
+
+      if (state.breakpoints['(max-width: 500px)'] && this.displayedColumns.length != 3) {
+        // remove createdDate and members columns when the viewport width is less than 500px
+        this.displayedColumns.splice(2, 2)
+      }
+      else if (state.breakpoints['(min-width: 500px)'] && this.displayedColumns.length != 5) {
+        // add createdDate and members columns when the viewport width is greater than 500px
+        this.displayedColumns.splice(2, 0, ...['createdDate', 'members'])
+      }
+
+    })
+  }
+
   public masterToggle(): void {
     if (this.isAllSelected()) {
       this.selection.clear();
       this.rowSelected = false;
     } else {
-      this.dataSource.data.forEach((row: any) => {
-        return this.selection.select(row);
-      });
+      this.dataSource.data.forEach((row: any) => this.selection.select(row))
       this.rowSelected = true;
     }    
   }
@@ -148,9 +146,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
         }
         return result;
       }),
-      catchError((error: any) => {
-        return observableOf([]);
-      })
+      catchError((error: any) => observableOf([{ Name: "Unable to retrieve your files at this time" }]))
     )
     .subscribe((data: any) => {
       if (data[0].length && data[1].cwd) {
@@ -166,7 +162,7 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
       id: entity.Id,
       changes: { IsFavorite: !entity.IsFavorite }
     }
-    this.store$.dispatch(new filesystem.ModifyFavorites({ entity: payload, userId: this.userId }))
+    this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
   public renameEntity(entity: any): void {
@@ -221,12 +217,15 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
       this.isFolderEmpty = false
     }
 
-    this.dataSource = new MatTableDataSource(files)
-
-    this.dataSource.paginator = this.paginator
-    this.dataSource.sort = this.sort
-
-    this.files$ = of(this.dataSource.data)
+    if (this.displayMode === 1) {
+      this.files$ = of(files)
+    } 
+    else {
+      this.dataSource = new MatTableDataSource(files)
+      this.dataSource.paginator = this.paginator
+      this.dataSource.sort = this.sort
+    }
+    
   }
 
   public navigateToNode(index: number): void {
@@ -272,16 +271,16 @@ export class RepositoryComponent implements OnChanges, OnInit, OnDestroy {
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
-  public editFavoriteStatus($event: MouseEvent, entity: any): void {
+  public editFavoriteStatus(event: MouseEvent, entity: any): void {
 
-    $event.stopPropagation()
+    event.stopPropagation()
 
     const payload: Update<any> = {
       id: entity.Id,
       changes: { IsFavorite: !entity.IsFavorite }
     }
 
-    this.store$.dispatch(new favorites.ModifyFavorites({ entity: payload, userId: this.userId }))
+    this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
   public downloadItem(name: string): void {

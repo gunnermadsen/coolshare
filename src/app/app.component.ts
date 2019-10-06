@@ -7,10 +7,9 @@ import { MatSnackBar, MatSidenav } from '@angular/material';
 
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import * as fromAccount from '@/modules/account/store/actions/account.actions';
-import * as fromNotifications from '@/modules/notifications/store/actions/notification.actions';
 import * as account from '@/modules/account/store/selectors/account.selectors';
 import * as notifications from './modules/notifications/store/selectors/notification.selectors';
-import * as notificationSettingsActions from './modules/notifications/store/actions/settings.actions';
+import * as notificationSettings from './modules/notifications/store/actions/settings.actions';
 
 import { Router, ActivatedRoute } from '@angular/router';
 import { FileUploadProgressComponent } from './modules/upload-file/components/file-upload-progress/file-upload-progress.component';
@@ -20,6 +19,7 @@ import { Observable, of, Subject } from 'rxjs';
 
 import { NotificationTypes } from './modules/notifications/store/state';
 import { isPlatformBrowser } from '@angular/common';
+import { fetchNotifications } from '@/modules/notifications/store/actions/notification.actions';
 
 @Component({
   selector: 'app-root',
@@ -29,29 +29,32 @@ import { isPlatformBrowser } from '@angular/common';
 
 export class AppComponent {
   public authState$: Observable<boolean>
-  public initials$: Observable<string>;
+  public initials$: Observable<string>
   public notifications$: Observable<any>
-  public viewState$: Observable<boolean>
+  public viewState$: Observable<boolean> //= of(true)
   private viewState: boolean
   public isEmpty: boolean = true
-  public isXS: boolean = true;
-  public userId: string
+  public isXS: boolean = true
+  public isSM: boolean = null
+  public userId: string = ""
   public mode: string
   @ViewChild('notificationSidenav', { static: true }) public notificationsSidebar: MatSidenav
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private breakpointObserver: BreakpointObserver, private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {
-    if (isPlatformBrowser(this.platformId)) {
-      // Client only code.
-      this.userId = JSON.parse(localStorage.getItem('Account')).Id;
-    }
     this.initializeNotifications()
   }
   ngOnInit(): void {
     
     this.store$.pipe(select(selectUser)).subscribe((result: any) => {
       if (result.isLoggedIn) {
+
+        if (isPlatformBrowser(this.platformId)) {
+          // Client only code.
+          this.userId = JSON.parse(localStorage.getItem('Account')).Id
+        }
+
         this.store$.dispatch(new fromAccount.FetchAccountInfo())
-        this.store$.dispatch(new fromNotifications.FetchNotifications({ id: result.token.Id }))
+        this.store$.dispatch(fetchNotifications({ id: result.token.Id }))
       }
       this.authState$ = of(result.isLoggedIn)
     });
@@ -68,8 +71,8 @@ export class AppComponent {
       })
     )
 
-
     this.observeBreakpointChanges()
+
   }
 
   public logout(): void {
@@ -105,9 +108,15 @@ export class AppComponent {
   }
 
   private observeBreakpointChanges(): void {
-    this.breakpointObserver.observe(['(max-width: 500px']).subscribe((result: BreakpointState) => {
-      this.mode = result.matches ? 'over' : 'side'
-      this.isXS = result.matches;
+    this.breakpointObserver.observe(
+      ['(max-width: 500px)', '(min-width: 600px)', '(min-width: 750px)']
+    )
+    .subscribe((result: BreakpointState) => {
+      this.isXS = result.breakpoints['(max-width: 550px)'];
+      this.isSM = result.breakpoints['(min-width: 600px)']
+
+      this.mode = result.breakpoints['(min-width: 750px)'] ? 'side' : 'over'
+      
     })
   }
 
@@ -150,7 +159,7 @@ export class AppComponent {
     this.notificationsSidebar.toggle()
 
     if (!this.viewState) {
-      this.store$.dispatch(new notificationSettingsActions.SetNotificationSettingsViewState({ id: this.userId, notificationBadgeHidden: true }))
+      this.store$.dispatch(notificationSettings.setNotificationSettingsViewState({ id: this.userId, notificationBadgeHidden: true }))
     }
   }
 

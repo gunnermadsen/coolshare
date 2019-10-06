@@ -63,11 +63,11 @@
           <mat-divider></mat-divider>
 
           <div class="favorites">
-            <div *ngIf="!isFavorites">
+            <!-- <div *ngIf="!isFavorites">
               <p class="default-message">Files or folders that are starred will appear here</p>
-            </div>
-            <div *ngFor="let file of (files$ | async); index as i">
-              <div *ngIf="file.IsFavorite" class="favorite">
+            </div> -->
+            <div *ngFor="let file of (favorites$ | async); index as i">
+              <div class="favorite">
                 <img class="favorite-icon" [src]="setResource(file.ThumbnailPath)">
                 <h3 class="favorite-title"> {{ file.Name }} </h3>
                 <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(file)">

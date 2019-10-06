@@ -6,7 +6,7 @@
                 <mat-icon>close</mat-icon>
             </button>
         </div>
-        <mat-divider></mat-divider>
+        <!-- <mat-divider></mat-divider> -->
     </div>
     <div class="notifications">
         <div class="notification-items">
@@ -21,7 +21,7 @@
                             <h5>{{ notification.createdOn | date : 'short' }}</h5>
                         </div>
                     </div>
-                    <div class="upload-progress" *ngIf="isUploadActive">
+                    <div class="upload-progress" *ngIf="(fileUploadState$ | async).status === 'Ongoing'">
                         <!-- <mat-progress-bar mode="determinate" value="40"></mat-progress-bar> -->
                         <upload-progress [color]="(fileUploadState$ | async).progressColor"></upload-progress>
                     </div>

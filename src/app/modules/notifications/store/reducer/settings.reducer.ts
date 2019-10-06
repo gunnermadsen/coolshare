@@ -1,17 +1,17 @@
-import { NotificationSettingsActionTypes, NotificationSettingsActions } from '../actions/settings.actions';
 import { initialNotificationSettingsState, NotificationSettingsState } from '../state';
+import { createReducer, on, Action } from '@ngrx/store';
 
+import * as NotificationSettingsActions from '../actions/settings.actions';
 
-export function notificationSettingsReducer(state = initialNotificationSettingsState, action: NotificationSettingsActions): NotificationSettingsState {
-    switch (action.type) {
-        case NotificationSettingsActionTypes.SAVE_NOTIFICATION_VIEW_STATE: {
-            return {
-                notificationBadgeHidden: action.payload.notificationBadgeHidden
-            }
+const reducer = createReducer(
+    initialNotificationSettingsState,
+    on(NotificationSettingsActions.saveNotificationSettingsViewState, (state: NotificationSettingsState, { notificationBadgeHidden }) => {
+        return {
+            notificationBadgeHidden: notificationBadgeHidden
         }
+    })
+)
 
-        default: {
-            return state;
-        }
-    }
+export function notificationSettingsReducer(state: NotificationSettingsState | undefined, action: Action) {
+    return reducer(state, action)
 }

@@ -7,6 +7,7 @@ import * as notificationActions from '../../store/actions/notification.actions';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
 import { tap } from 'rxjs/operators';
 import { INotificationState } from '../../store/state';
+import { deleteAllNotifications, fetchNotifications } from '../../store/actions/notification.actions';
 
 @Component({
   selector: 'notifications',
@@ -44,9 +45,12 @@ export class NotificationsComponent implements OnInit {
 
   public ngOnInit() {
     this.fileUploadState$ = this.store$.pipe(
-      select(fromFileUploadSelectors.selectUploadState),
+      select(fromFileUploadSelectors.selectCurrentUploadState),
       tap((state: any) => {
-        this.isUploadActive = state.progress >= 1 || state.progress <= 99 ? true : false
+        if (state.progress >= 1) {
+          this.isUploadActive = true
+        }
+        // this.isUploadActive =  ? true : false //|| state.progress <= 99
       })
     )
   }
@@ -54,14 +58,14 @@ export class NotificationsComponent implements OnInit {
   public deleteAllNotifications(event: MouseEvent): void {
     event.stopPropagation()
     event.preventDefault()
-    this.store$.dispatch(new notificationActions.DeleteAllNotifications({ id: this.id }))
+    this.store$.dispatch(deleteAllNotifications({ id: this.id }))
     this.isEmpty = true;
   }
 
   public refreshNotifications(event: MouseEvent): void {
     event.stopPropagation()
     event.preventDefault()
-    this.store$.dispatch(new notificationActions.FetchNotifications({ id: this.id }))
+    this.store$.dispatch(fetchNotifications({ id: this.id }))
   }
 
   public closeNotificationSidenav(): void {

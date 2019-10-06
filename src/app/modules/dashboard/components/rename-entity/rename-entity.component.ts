@@ -18,6 +18,7 @@ export class RenameEntityComponent implements OnInit {
   public get fileName() {
     return this.renameFileForm.controls['FileName'].value
   }
+  
   ngOnInit() {
     this.renameFileForm = this.formBuilder.group({
       FileName: [this.entity.name]

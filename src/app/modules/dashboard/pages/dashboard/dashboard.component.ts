@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
-import { RetrieveFolderContents } from '../../store/actions/filesystem.actions';
+import * as filesystem from '../../store/actions/filesystem.actions';
 import { Observable } from 'rxjs';
 import { getRepoData } from '../../store/selectors/dashboard.selectors';
 import { ActivatedRoute } from '@angular/router';
@@ -21,7 +21,7 @@ export class DashboardComponent implements OnInit {
     
     if (account) {
   
-      this.store.dispatch(new RetrieveFolderContents({ folder: '/', id: account.Id }));
+      this.store.dispatch(filesystem.readEntityContents({ folder: '/', id: account.Id }));
       
     } 
 

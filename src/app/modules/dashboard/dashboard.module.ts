@@ -18,7 +18,6 @@ import { AppState } from '@/reducers';
 import { FileSystemSettingsReducer } from './store/reducer/settings.reducer';
 import { RenameEntityComponent } from './components/rename-entity/rename-entity.component';
 
-import { ShowColumnDirective } from '@/shared/directives/show-column.directive'
 
 export const FileSystemReducerMap: ActionReducerMap<AppState> = {
     Content: FileSystemReducer,
@@ -34,7 +33,6 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
         FileActionsComponent,
         RenameEntityComponent,
         
-        ShowColumnDirective
     ],
     imports: [
         CommonModule,

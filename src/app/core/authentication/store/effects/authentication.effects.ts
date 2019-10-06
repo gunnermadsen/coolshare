@@ -9,7 +9,6 @@ import { ToastrService } from 'ngx-toastr';
 import { Router, ActivatedRoute } from '@angular/router';
 import { HttpAuthService } from '@/core/http/auth.http.service';
 import { HttpRepoService } from '@/core/http/repo.http.service';
-import { SaveRetrievedFolderContents } from '@/modules/dashboard/store/actions/filesystem.actions';
 
 import * as auth from '@/core/authentication/store/actions/authentication.actions';
 

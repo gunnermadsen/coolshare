@@ -1,6 +1,7 @@
 import { createEntityAdapter, EntityAdapter, EntityState } from '@ngrx/entity';
-import { FileSystemActions, FileSystemActionTypes } from '../actions/filesystem.actions';
+import { createReducer, on, Action } from '@ngrx/store';
 
+import * as FileSystemActions from '../actions/filesystem.actions';
 
 export interface FileSystemState extends EntityState<any> {}
 
@@ -8,29 +9,17 @@ export const adapter: EntityAdapter<any> = createEntityAdapter<any>({ selectId: 
 
 export const initialFileSystemState: FileSystemState = adapter.getInitialState()
 
-export function FileSystemReducer(state = initialFileSystemState, action: FileSystemActions): FileSystemState {
-    switch (action.type) {
+const reducer = createReducer(
+    initialFileSystemState,
+    on(FileSystemActions.saveRetrievedFolderContents, (state: FileSystemState, { contents }) => adapter.addAll(contents, state)),
+    on(FileSystemActions.updateFavoriteStatus, (state: FileSystemState, { entity }) => adapter.updateOne(entity, state)),
+    on(FileSystemActions.renameEntity, (state: FileSystemState, { entity }) => adapter.updateOne(entity, state)),
+    on(FileSystemActions.deleteFolderEntity, (state: FileSystemState, { id }) => adapter.removeOne(id, state)),
+    on(FileSystemActions.deleteFolderEntities, (state: FileSystemState, { ids }) => adapter.removeMany(ids, state))
+)
 
-        case FileSystemActionTypes.FS_SAVE_RETRIEVED_FOLDER_CONTENTS:
-            return adapter.addAll(action.payload.contents, { ...state });
-
-        case FileSystemActionTypes.FS_MODIFY_FAVORITE_STATUS:
-            return adapter.updateOne(action.payload.entity, state);
-
-        case FileSystemActionTypes.FS_RENAME_ENTITY:
-            return adapter.updateOne(action.payload.entity, state);
-
-        case FileSystemActionTypes.FS_DELETE_FOLDER_ITEM:
-            return adapter.removeOne(action.payload.id, state);
-
-        case FileSystemActionTypes.FS_DELETE_FOLDER_ITEMS:
-            return adapter.removeMany(action.payload.ids, state);
-
-        default: {
-            return state;
-        }
-    }
+export function FileSystemReducer(state: FileSystemState | undefined, action: Action) {
+    return reducer(state, action)
 }
 
-// destructor the adapter object and get some selectors
 export const { selectAll, selectEntities, selectIds, selectTotal } = adapter.getSelectors();

@@ -27,14 +27,19 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   @Input() public rowSelected: boolean;
   @Input() public selection: SelectionModel<any>;
   @Input() public userName: string;
-  public isSM: boolean = false
+  public isSM: boolean = null
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
   constructor(private store$: Store<AppState>, public dialog: MatDialog, private breakpointObserver: BreakpointObserver) {    
-    this.breakpointObserver.observe(['(min-width: 475px)']).pipe(
+    this.breakpointObserver.observe(
+      ['(min-width: 475px)', '(min-width: 550px)', '(min-width: 600px)', '(min-width: 750px)']
+    )
+    .pipe(
       takeUntil(this.destroy$)
     )
-    .subscribe((state: BreakpointState) => state.matches ? this.isSM = true : this.isSM = false)
+    .subscribe((state: BreakpointState) => {
+      this.isSM = state.breakpoints['(min-width: 550px)']
+    })
   }
 
   ngOnInit() { }
@@ -53,8 +58,23 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
   }
 
+  public uploadFolder(event: any): void {
+    const files: any = { ...event.target.files }
+
+    let result = Object.values(files).map((file: any) => {
+      let pathArr: string[] = file.webkitRelativePath.split('/')
+      pathArr.splice(pathArr.length - 1, 1)
+      let path = pathArr.toString()
+      path.replace(/,/g, '/')
+      file.webkitRelativePath = path
+      return file
+    })
+
+    return
+  }
+
   public refreshFiles(): void {
-    this.store$.dispatch(new filesystem.RetrieveFolderContents({ folder: this.cwd, id: this.userId }))
+    this.store$.dispatch(filesystem.readEntityContents({ folder: this.cwd, id: this.userId }))
   }
 
 
@@ -72,7 +92,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
-        this.store$.dispatch(new filesystem.CreateFolder({ 
+        this.store$.dispatch(filesystem.createFolder({ 
           userId: this.userId, 
           path: this.cwd, 
           data: result, 
@@ -111,10 +131,10 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     }
 
     if (mode === 0) {
-      this.store$.dispatch(new filesystem.DeleteFolderItem(result));
+      this.store$.dispatch(filesystem.deleteFolderEntity(result));
     } 
     else {
-      this.store$.dispatch(new filesystem.DeleteFolderItems(result));
+      this.store$.dispatch(filesystem.deleteFolderEntity(result));
     }
 
     this.selection.clear();
@@ -123,7 +143,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   }
 
   public downloadAction(name: string): void {
-    this.store$.dispatch(new filesystem.DownloadItem({ path: this.cwd, name: name, userId: this.userId }));
+    this.store$.dispatch(filesystem.downloadEntity({ path: this.cwd, name: name, userId: this.userId }));
   }
 
   public renameAction(entity: any): void {
@@ -159,7 +179,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
           }
         }
 
-        this.store$.dispatch(new filesystem.RenameEntity({
+        this.store$.dispatch(filesystem.renameEntity({
           entity: payload, 
           body: content
         }))

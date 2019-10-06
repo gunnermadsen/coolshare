@@ -1,5 +1,6 @@
 export enum UploadStatus {
   Ready = 'Ready',
+  Ongoing = 'Ongoing',
   Requested = 'Requested',
   Started = 'Started',
   Failed = 'Failed',
@@ -7,27 +8,45 @@ export enum UploadStatus {
 }
 
 export interface FileState {
-  
+  progress: number
+  progressColor: string
+  file: File
+  loaded: number
+  completed: boolean
+  status: UploadStatus
 }
 
-export interface State {
-  status: UploadStatus;
+export interface UploadState {
   completedFiles: any[] | null;
   currentFile: number;
   error: string | null;
+  files: FileState[]
+  pendingFiles: FileState[] | null;
   progress: number | null;
   progressColor: string | null;
-  pendingFiles: any[] | null;
+  status: UploadStatus;
   viewState: boolean | null;
 }
 
-export const initialState: State = {
-  status: UploadStatus.Ready,
+export const initialState: UploadState = {
+  completedFiles: null,
   currentFile: null,
   error: null,
+  files: null,
+  pendingFiles: null,
   progress: null,
   progressColor: null,
-  pendingFiles: null,
-  completedFiles: null,
+  status: UploadStatus.Ready,
   viewState: null
-};
+}
+
+export interface UploadEventState {
+  type: number
+  loaded: number
+  total: number
+}
+
+export interface UpdatedUploadState {
+  content: UploadState
+  event: UploadEventState
+}
