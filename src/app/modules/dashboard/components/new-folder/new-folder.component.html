@@ -1,93 +1,130 @@
-<div class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <form [formGroup]="newFolderForm">
-                <div class="row">
-                    <div class="col-auto pb-2">
-                        <div *ngIf="(mode === 1); then sharedFolderIcon; else folderIcon"></div>
-                    </div>
-                    <div class="col">
-                        <h2 mat-dialog-title class="mt-3">Create new <span *ngIf="mode === 1">shared</span> folder</h2>
-                    </div>
-                </div>
+<form [formGroup]="newFolderForm">
+    <div class="folder-dialog">
 
-                <mat-dialog-content>
-                    <mat-form-field appearance="outline">
-                        <mat-label>Name this folder</mat-label>
-                        <input matInput placeholder="Placeholder" formControlName="FolderName">
-                        <!-- <mat-hint>Hint</mat-hint> -->
-                    </mat-form-field>
+        <div class="new-folder-heading">
+            <div class="new-folder-icon">
+                <div *ngIf="(mode === 1); then sharedFolderIcon; else folderIcon"></div>
+            </div>
+            <div class="new-folder-header">
+                <h2 mat-dialog-title>Create new <span *ngIf="mode === 1">shared</span> folder</h2>
+            </div>
+        </div>
+    
+        <mat-divider class="divider-spacing"></mat-divider>
+    
+        <mat-dialog-content>
+            <div class="share-name">
+                <mat-form-field appearance="outline">
+                    <mat-label>Name this folder</mat-label>
+                    <input matInput placeholder="Placeholder" formControlName="FolderName">
+                    <mat-hint>{{ checkDevMode() }}/{{ userName }}/{{ shareName | lowercase }}</mat-hint>
+                    <!-- <mat-hint>Hint</mat-hint> -->
+                </mat-form-field>
+            </div>
+    
+            <!-- <div *ngIf="mode === 1">
+                <p>Your share is accesssible at:</p>
+                <span>{{ checkDevMode() }}/{{ userName }}/{{ shareName | lowercase }}</span>
+            </div> -->
+    
+            <mat-list>
+                <h3 mat-subheader class="list-subheader">Who has access</h3>
+                <mat-divider class="divider-spacing"></mat-divider>
+                <mat-radio-group color="primary" formControlName="Accessibility" [value]="0" (change)="setMode($event)">
+                    <mat-radio-button [value]="0" class="mb-2">
+                        <mat-list-item>
+                            <h4 mat-line>Only You</h4>
+                            <p mat-line>Only you can access this folder</p>
+                        </mat-list-item>
+                    </mat-radio-button>
+                    <mat-radio-button [value]="1">
+                        <mat-list-item>
+                            <h4 mat-line>Group of people</h4>
+                            <p mat-line>Share this folder with a group of people</p>
+                        </mat-list-item>
+                    </mat-radio-button>
+                </mat-radio-group>
+            </mat-list>
 
-                    <div *ngIf="mode === 1">
-                        <p>Your share is accesssible at:</p>
-                        <span>{{ checkDevMode() }}/{{ userName }}/{{ shareName | lowercase }}</span>
-                    </div>
-
-                    <mat-list>
-                        <h3 mat-subheader class="px-0 pb-1">Who has access</h3>
-                        <mat-divider class="mb-2"></mat-divider>
-                        <mat-radio-group color="primary" formControlName="Accessibility" [value]="0" (change)="setMode($event)">
-                            <mat-radio-button [value]="0" class="mb-2">
-                                <mat-list-item>
-                                    <h4 mat-line>Only You</h4>
-                                    <p mat-line>Only you can access this folder</p>
-                                </mat-list-item>
-                            </mat-radio-button>
-                            <mat-radio-button [value]="1">
-                                <mat-list-item>
-                                    <h4 mat-line>Group of people</h4>
-                                    <p mat-line>Share this folder with a group of people</p>
-                                </mat-list-item>
-                            </mat-radio-button>
-                        </mat-radio-group>
-                    </mat-list>
-                    <div *ngIf="mode === 1" class="mt-3">
-                        <div class="row">
-                            <div class="col">
-                                <h3 class="mb-0">Add people by email</h3>
-                            </div>
-                            <div class="col-auto ml-auto">
-                                <button mat-icon-button color="primary" class="mb-1" (click)="addInvitee()"><mat-icon>add</mat-icon></button>
+            <div *ngIf="mode === 1" class="mt-3">
+                <mat-list>
+                    <h3 mat-subheader class="list-subheader">Folder Settings</h3>
+                    <mat-divider class="divider-spacing"></mat-divider>
+                </mat-list>
+                <mat-accordion>
+                    <mat-expansion-panel [expanded]="true" class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title><mat-icon color="primary" class="panel-icon">group</mat-icon>Invitees</mat-panel-title>
+                            <!-- <mat-panel-description>Invite people to your shared folder</mat-panel-description> -->
+                        </mat-expansion-panel-header>
+                        <mat-divider></mat-divider>
+                        <div class="invitees">
+                            <h3 class="mb-0">Add people by email</h3>
+                            <div class="invitee-actions">
+                                <button mat-icon-button color="primary" (click)="removeInvitee()" *ngIf="inviteeCount > 1">
+                                    <mat-icon class="close-btn-color">close</mat-icon>
+                                </button>
+                                <button mat-icon-button color="primary" (click)="addInvitee()">
+                                    <mat-icon>add</mat-icon>
+                                </button>
                             </div>
                         </div>
-                        <div class="row mb-2">
-                            <div class="col">
-                                <mat-divider></mat-divider>
+                        
+                        <!-- <mat-divider class="divider-spacing"></mat-divider> -->
+                        
+                        <div class="invitee-inputs" formArrayName="Invitees">
+                            <div class="invitee-input" *ngFor="let invitee of inviteeControls; index as i; trackBy: trackByFn">
+                                <mat-form-field appearance="outline">
+                                    <mat-label>Invitee Email</mat-label>
+                                    <input matInput [formControlName]="i">
+                                </mat-form-field>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col">
-                                <div formArrayName="Invitees">
-                                    <div class="row" *ngFor="let invitee of inviteeControls; index as i; trackBy: trackByFn">
-                                        <div class="col">
-                                            <mat-form-field appearance="outline">
-                                                <mat-label>Invitee Email</mat-label>
-                                                <input matInput [formControlName]="i">
-                                            </mat-form-field>
-                                        </div>
-                                    </div>
-                                </div>
+                       
+                    </mat-expansion-panel>
+                    <mat-expansion-panel class="mat-elevation-z0">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title><mat-icon color="primary" class="panel-icon">security</mat-icon>Permissions</mat-panel-title>
+                            <!-- <mat-panel-description>Edit your folder settings</mat-panel-description> -->
+                        </mat-expansion-panel-header>
+                        <mat-divider></mat-divider>
+                        <div class="folder-settings">
+                            <div class="settings-permissions">
+                                <mat-list>
+                                    <mat-radio-group color="primary" formControlName="Permissions">
+                                        <mat-radio-button class="permission" *ngFor="let permission of permissions; index as i" [value]="i">
+                                            <mat-list-item>
+                                                <h4 mat-line>{{ permission.type }}</h4>
+                                                <p mat-line>{{ permission.subtitle }}</p>
+                                            </mat-list-item>
+                                        </mat-radio-button>
+                                    </mat-radio-group>
+                                </mat-list>
+                            </div>
+                            <div class="lock-permissions">
+                                <mat-checkbox color="primary" formControlName="LockPermissions">Prevent invitees from changing access settings</mat-checkbox>
                             </div>
                         </div>
-                    </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+    
+        </mat-dialog-content>
 
-                </mat-dialog-content>
-                
-                <div class="row">
-                    <div class="col-auto ml-auto">
-                        <button mat-button mat-dialog-close class="mr-2">Cancel</button>
-                        <button mat-flat-button color="primary" (click)="saveAndClose()">Create</button>
-                    </div>
-                </div>
-            </form>
+        <mat-divider></mat-divider>
+    
+        <div class="dialog-actions" mat-dialog-actions>
+            <button mat-raised-button mat-dialog-close class="mr-2">Cancel</button>
+            <button mat-raised-button color="primary" (click)="saveAndClose()">Create</button>
         </div>
     </div>
-</div>
+
+</form>
 
 <ng-template #sharedFolderIcon>
-    <mat-icon class="folder-icon" [inline]="true">folder_shared</mat-icon>
+    <mat-icon color="primary" class="folder-icon" [inline]="true">folder_shared</mat-icon>
 </ng-template>
 
 <ng-template #folderIcon>
-    <mat-icon class="folder-icon" [inline]="true">folder</mat-icon>
+    <mat-icon color="primary" class="folder-icon" [inline]="true">folder</mat-icon>
 </ng-template>

@@ -1,25 +1,25 @@
-import { Component, ViewChild, Inject, PLATFORM_ID } from '@angular/core';
-import { Store, select } from '@ngrx/store';
-import { selectUser } from './core/authentication/store/selectors/authentication.selectors';
-import { LogoutUserRequested } from './core/authentication/store/actions/authentication.actions';
-import { AppState } from './reducers/index';
-import { MatSnackBar, MatSidenav } from '@angular/material';
+import { Component, ViewChild, Inject, PLATFORM_ID } from '@angular/core'
+import { Store, select } from '@ngrx/store'
+import { selectUser } from './core/authentication/store/selectors/authentication.selectors'
+import { LogoutUserRequested } from './core/authentication/store/actions/authentication.actions'
+import { AppState } from './reducers/index'
+import { MatSnackBar, MatSidenav } from '@angular/material'
 
-import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
-import * as fromAccount from '@/modules/account/store/actions/account.actions';
-import * as account from '@/modules/account/store/selectors/account.selectors';
-import * as notifications from './modules/notifications/store/selectors/notification.selectors';
-import * as notificationSettings from './modules/notifications/store/actions/settings.actions';
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts' 
+import * as fromAccount from '@/modules/account/store/actions/account.actions'
+import * as account from '@/modules/account/store/selectors/account.selectors'
+import * as notifications from './modules/notifications/store/selectors/notification.selectors'
+import * as notificationSettings from './modules/notifications/store/actions/settings.actions'
 
-import { Router, ActivatedRoute } from '@angular/router';
-import { FileUploadProgressComponent } from './modules/upload-file/components/file-upload-progress/file-upload-progress.component';
-import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { takeUntil, map, tap } from 'rxjs/operators';
-import { Observable, of, Subject } from 'rxjs';
+import { Router, ActivatedRoute } from '@angular/router'
+import { FileUploadProgressComponent } from './modules/upload-file/components/file-upload-progress/file-upload-progress.component'
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
+import { takeUntil, map, tap } from 'rxjs/operators'
+import { Observable, of, Subject } from 'rxjs'
 
-import { NotificationTypes } from './modules/notifications/store/state';
-import { isPlatformBrowser } from '@angular/common';
-import { fetchNotifications } from '@/modules/notifications/store/actions/notification.actions';
+import { NotificationTypes } from './modules/notifications/store/state'
+import { isPlatformBrowser } from '@angular/common'
+import { fetchNotifications } from '@/modules/notifications/store/actions/notification.actions'
 
 @Component({
   selector: 'app-root',
@@ -57,7 +57,7 @@ export class AppComponent {
         this.store$.dispatch(fetchNotifications({ id: result.token.Id }))
       }
       this.authState$ = of(result.isLoggedIn)
-    });
+    })
 
     this.store$.pipe(select(fromFileUploadSelectors.selectUploadViewState)).subscribe((state: any) => this.openSnackBar(state))
 
@@ -66,7 +66,7 @@ export class AppComponent {
       // takeUntil(this.authState$),
       map((account: any) => {
         if (Object.keys(account).length > 1) {
-          return this.getInitialsFromAccountData(account);
+          return this.getInitialsFromAccountData(account)
         }
       })
     )
@@ -76,20 +76,20 @@ export class AppComponent {
   }
 
   public logout(): void {
-    this.store$.dispatch(new LogoutUserRequested());
+    this.store$.dispatch(new LogoutUserRequested())
     this.authState$ = of(false)
   }
 
   private openSnackBar(state: boolean): void {
     if (state) {
-      this.snackBar.openFromComponent(FileUploadProgressComponent);
+      this.snackBar.openFromComponent(FileUploadProgressComponent)
     } else {
       this.snackBar.dismiss()
     }
   }
   
   public navigate(route: string): void {
-    this.router.navigate([route], { relativeTo: this.route });
+    this.router.navigate([route], { relativeTo: this.route })
   }
 
   private getInitialsFromAccountData(account: any): string {
@@ -98,7 +98,7 @@ export class AppComponent {
     if (account.FirstName && account.LastName) {
       const fullName: string[] = `${account.FirstName} ${account.LastName}`.split(" ")
       initials = `${fullName[0][0]}${fullName[1][0]}`
-      return initials;
+      return initials
     }
     else {
       initials = account.UserName[0]
@@ -112,7 +112,7 @@ export class AppComponent {
       ['(max-width: 500px)', '(min-width: 600px)', '(min-width: 750px)']
     )
     .subscribe((result: BreakpointState) => {
-      this.isXS = result.breakpoints['(max-width: 550px)'];
+      this.isXS = result.breakpoints['(max-width: 550px)']
       this.isSM = result.breakpoints['(min-width: 600px)']
 
       this.mode = result.breakpoints['(min-width: 750px)'] ? 'side' : 'over'
@@ -126,7 +126,7 @@ export class AppComponent {
       // takeUntil(this.authState$),
       tap((result: any) => {
         this.viewState = result
-        return result;
+        return result
       })
     )
 

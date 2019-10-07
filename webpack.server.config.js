@@ -1,5 +1,5 @@
 // Work around for https://github.com/angular/angular-cli/issues/7200
-
+const nodeExternals = require('webpack-node-externals')
 const path = require('path');
 const webpack = require('webpack');
 
@@ -9,9 +9,15 @@ module.exports = {
     // This is our Express server for Dynamic universal
     server: './server.ts'
   },
-  externals: {
-    './dist/server/main': 'require("./server/main")'
-  },
+  externals: [
+    // nodeExternals(),
+    {
+      './dist/server/main': 'require("./server/main")',
+    },
+    // {
+    //   mongoose: 'commonjs mongoose'
+    // }
+  ],
   target: 'node',
   resolve: { extensions: ['.ts', '.js'] },
   optimization: {
@@ -46,6 +52,7 @@ module.exports = {
       /(.+)?express(\\|\/)(.+)?/,
       path.join(__dirname, 'src'),
       {}
-    )
+    ),
+    // new webpack.ContextReplacementPlugin(/.*/)
   ]
 };

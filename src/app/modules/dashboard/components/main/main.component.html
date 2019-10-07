@@ -37,15 +37,21 @@
       <mat-accordion class="example-headers-align" [multi]="true">
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
-            <mat-panel-title>
-              Recent Items
-            </mat-panel-title>
+            <mat-panel-title>Suggestions</mat-panel-title>
             <mat-panel-description>
               <!-- Type your name and age
             <mat-icon>account_circle</mat-icon> -->
             </mat-panel-description>
           </mat-expansion-panel-header>
           <mat-divider></mat-divider>
+
+          <div class="suggestions">
+            <div *ngFor="let suggestion of (suggestions$ | async); index as i">
+              <div class="suggestion" *ngIf="isSuggestions">
+                {{ suggestion.Name }}
+              </div>
+            </div>
+          </div>
           
           <!-- <file-thumbnail [mode]="1" [files]="(files$ | async)"></file-thumbnail> -->
 
@@ -66,14 +72,16 @@
             <!-- <div *ngIf="!isFavorites">
               <p class="default-message">Files or folders that are starred will appear here</p>
             </div> -->
-            <div *ngFor="let file of (favorites$ | async); index as i">
+            <div *ngFor="let favorite of (favorites$ | async); index as i">
               <div class="favorite">
-                <img class="favorite-icon" [src]="setResource(file.ThumbnailPath)">
-                <h3 class="favorite-title"> {{ file.Name }} </h3>
-                <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(file)">
+                <img *ngIf="isFavorites" class="favorite-icon" [src]="setResource(favorite.ThumbnailPath)">
+                <h3 class="favorite-title"> {{ favorite.Name }} </h3>
+                <button *ngIf="isFavorites" mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(favorite)">
                   <mat-icon class="favorite-star">star</mat-icon>
                 </button>
-                <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
+                <div *ngIf="isFavorites">
+                  <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
+                </div>
               </div>
             </div>
           </div>

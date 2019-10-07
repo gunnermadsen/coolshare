@@ -1,17 +1,17 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core';
-import { AppState } from '@/reducers';
-import { Store } from '@ngrx/store';
-import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts';
-import { MatDialogConfig, MatDialog } from '@angular/material';
-import { NewFolderComponent } from '../new-folder/new-folder.component';
-import { take, takeUntil } from 'rxjs/operators';
-import { SelectionModel } from '@angular/cdk/collections';
+import { Component, OnInit, Input, OnDestroy } from '@angular/core'
+import { AppState } from '@/reducers'
+import { Store } from '@ngrx/store'
+import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts'
+import { MatDialogConfig, MatDialog } from '@angular/material'
+import { NewFolderComponent } from '../new-folder/new-folder.component'
+import { take, takeUntil } from 'rxjs/operators'
+import { SelectionModel } from '@angular/cdk/collections'
 
 import * as filesystem from '../../store/actions/filesystem.actions'
-import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout';
-import { Subject } from 'rxjs';
-import { RenameEntityComponent } from '../rename-entity/rename-entity.component';
-import { Update } from '@ngrx/entity';
+import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
+import { Subject } from 'rxjs'
+import { RenameEntityComponent } from '../rename-entity/rename-entity.component'
+import { Update } from '@ngrx/entity'
 
 
 @Component({
@@ -21,12 +21,12 @@ import { Update } from '@ngrx/entity';
 })
 export class FileActionsComponent implements OnInit, OnDestroy {
 
-  @Input() public userId: string;
-  @Input() public mode: number;
-  @Input() public cwd: string;
-  @Input() public rowSelected: boolean;
-  @Input() public selection: SelectionModel<any>;
-  @Input() public userName: string;
+  @Input() public userId: string
+  @Input() public mode: number
+  @Input() public cwd: string
+  @Input() public rowSelected: boolean
+  @Input() public selection: SelectionModel<any>
+  @Input() public userName: string
   public isSM: boolean = null
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
@@ -46,14 +46,14 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
   public uploadData(event: any): void {
 
-    const clone: FileList = { ...event.target.files };
+    const clone: FileList = { ...event.target.files }
 
     if (clone) {
 
-      this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({ path: this.cwd, userId: this.userId, files: clone }));
+      this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({ path: this.cwd, userId: this.userId, files: clone }))
 
-      // this.isFileSet = false;
-      // this.files = null;
+      // this.isFileSet = false
+      // this.files = null
     }
 
   }
@@ -80,15 +80,16 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
   public createNewFolder(): void {
 
-    const config = new MatDialogConfig();
+    const config = new MatDialogConfig()
 
-    config.width = '450px';
+    config.width = '475px'
+    config.maxHeight = '1000px'
     
     config.data = {
       userName: this.userName
     }
 
-    const dialogRef = this.dialog.open(NewFolderComponent, config);
+    const dialogRef = this.dialog.open(NewFolderComponent, config)
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
@@ -99,26 +100,26 @@ export class FileActionsComponent implements OnInit, OnDestroy {
           userName: this.userName 
         }))
       }
-    });
+    })
   }
 
   public deleteAction(mode: number, value?: any): void {
 
-    let entities: { name: string, path: string, type: string }[] = [];
-    let ids: string[] = [];
+    let entities: { name: string, path: string, type: string }[] = []
+    let ids: string[] = []
     let id: string = ""
 
     switch (mode) {
       case 0: 
         entities.push({ name: value.Name, path: value.Path, type: value.Type })
         id = value.Id
-      break;
+      break
       case 1: 
         this.selection.selected.map((entity: any) => {
           entities.push({ name: entity.Name, path: entity.Path, type: entity.Type })
           ids.push(entity.Id)
         })
-      break;
+      break
       
     }
 
@@ -131,19 +132,19 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     }
 
     if (mode === 0) {
-      this.store$.dispatch(filesystem.deleteFolderEntity(result));
+      this.store$.dispatch(filesystem.deleteFolderEntity(result))
     } 
     else {
-      this.store$.dispatch(filesystem.deleteFolderEntity(result));
+      this.store$.dispatch(filesystem.deleteFolderEntity(result))
     }
 
-    this.selection.clear();
-    this.rowSelected = false;
+    this.selection.clear()
+    this.rowSelected = false
 
   }
 
   public downloadAction(name: string): void {
-    this.store$.dispatch(filesystem.downloadEntity({ path: this.cwd, name: name, userId: this.userId }));
+    this.store$.dispatch(filesystem.downloadEntity({ path: this.cwd, name: name, userId: this.userId }))
   }
 
   public renameAction(entity: any): void {
