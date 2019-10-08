@@ -1,22 +1,3 @@
-<!-- <div class="container-fluid mt-3" *ngIf="isXS">
-  <div class="row">
-    <div class="col">
-      <file-actions 
-        [cwd]="cwd" 
-        [rowSelected]="rowSelected" 
-        [userId]="userId" 
-        [selection]="selection" 
-        [userName]="userName"
-      ></file-actions>
-      <mat-card>
-        <mat-form-field>
-          <input matInput>
-        </mat-form-field>
-      </mat-card>
-    </div>
-  </div>
-</div> -->
-
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col">
@@ -38,94 +19,66 @@
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-title>Suggestions</mat-panel-title>
-            <mat-panel-description>
-              <!-- Type your name and age
-            <mat-icon>account_circle</mat-icon> -->
-            </mat-panel-description>
           </mat-expansion-panel-header>
           <mat-divider></mat-divider>
 
           <div class="suggestions">
             <div *ngFor="let suggestion of (suggestions$ | async); index as i">
-              <div class="suggestion" *ngIf="isSuggestions">
+              <div class="suggestion">
                 {{ suggestion.Name }}
               </div>
             </div>
           </div>
-          
-          <!-- <file-thumbnail [mode]="1" [files]="(files$ | async)"></file-thumbnail> -->
-
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
             <mat-panel-title>Favorites</mat-panel-title>
-            <mat-panel-description>
-              <!-- Type the country name
-            <mat-icon>map</mat-icon> -->
-            </mat-panel-description>
           </mat-expansion-panel-header>
 
           <mat-divider></mat-divider>
 
           <div class="favorites">
-            <!-- <div *ngIf="!isFavorites">
-              <p class="default-message">Files or folders that are starred will appear here</p>
-            </div> -->
             <div *ngFor="let favorite of (favorites$ | async); index as i">
-              <div class="favorite">
-                <img *ngIf="isFavorites" class="favorite-icon" [src]="setResource(favorite.ThumbnailPath)">
-                <h3 class="favorite-title"> {{ favorite.Name }} </h3>
-                <button *ngIf="isFavorites" mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(favorite)">
+              <div *ngIf="!isFavorites" class="favorite">{{ favorite.Name }}</div>
+              <div *ngIf="isFavorites" class="favorite">
+                <img class="favorite-icon" [src]="setResource(favorite.ThumbnailPath)">
+                <h3 class="favorite-title">{{ favorite.Name }}</h3>
+                <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(favorite)">
                   <mat-icon class="favorite-star">star</mat-icon>
                 </button>
-                <div *ngIf="isFavorites">
-                  <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
-                </div>
+                <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
               </div>
+              <mat-divider *ngIf="(favorites$ | async).length - 1 != i"></mat-divider>
             </div>
           </div>
-
         </mat-expansion-panel>
 
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
-            <mat-panel-title>Recent</mat-panel-title>
-            <mat-panel-description>
-              <!-- Inform the date you wish to travel
-            <mat-icon>date_range</mat-icon> -->
-            </mat-panel-description>
+            <mat-panel-title>Recents</mat-panel-title>
           </mat-expansion-panel-header>
 
-          <div *ngIf="isFiles">
-            <mat-divider></mat-divider>
-            <div class="recents">
-              <div class="recent" *ngFor="let file of (files$ | async); index as i">
-                <img class="recent-icon" [src]="setResource(file.ThumbnailPath)">
+          <mat-divider></mat-divider>
+
+          <div class="recents">
+            <div *ngFor="let recent of (recents$ | async); index as i">
+              <div *ngIf="!isRecents" class="recent">{{ recent.Name }}</div>
+              <div *ngIf="isRecents" class="recent">
+                <img class="recent-icon" [src]="setResource(recent.ThumbnailPath)">
                 <ul class="recent-list">
-                  <li><h3 class="">{{ file.Name }}</h3></li>
-                  <li><p class="list-info">/Home{{ file.Path }}</p></li>
-                  <li><p class="list-info">Added {{ file.CreatedOn | date }}</p></li>
+                  <li><h3 class="">{{ recent.Name }}</h3></li>
+                  <li><p class="list-info">/Home{{ recent.Path }}</p></li>
+                  <li><p class="list-info">Added {{ recent.CreatedOn | date }}</p></li>
                 </ul>
-                <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(file)">
-                  <div *ngIf="file.IsFavorite; then star; else starOutline"></div>
+                <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(recent)">
+                  <div *ngIf="recent.IsFavorite; then star; else starOutline"></div>
                 </button>
                 <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
               </div>
+              <mat-divider *ngIf="(recents$ | async).length - 1 != i"></mat-divider>
             </div>
           </div>
-
-          <mat-list *ngIf="!isFiles">
-
-            <mat-divider></mat-divider>
-
-            <mat-list-item>
-              <mat-icon mat-list-icon>insert_drive_file</mat-icon>
-              <h4 mat-line>You have no recent files to display</h4>
-              <p mat-line>Files that have been edited recently will appear here</p>
-            </mat-list-item>
-
-          </mat-list>
 
         </mat-expansion-panel>
 

@@ -4,7 +4,9 @@ export enum UploadStatus {
   Requested = 'Requested',
   Started = 'Started',
   Failed = 'Failed',
-  Completed = 'Completed'
+  Completed = 'Completed',
+  Cancelled = 'Cancelled',
+  Paused = 'Paused'
 }
 
 export interface FileState {
@@ -17,7 +19,7 @@ export interface FileState {
 }
 
 export interface UploadState {
-  completedFiles: any[] | null;
+  completedFiles: FileState[] | null;
   currentFile: number;
   error: string | null;
   files: FileState[]

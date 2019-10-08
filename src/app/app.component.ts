@@ -31,7 +31,7 @@ export class AppComponent {
   public authState$: Observable<boolean>
   public initials$: Observable<string>
   public notifications$: Observable<any>
-  public viewState$: Observable<boolean> //= of(true)
+  public notificationBadgeViewState$: Observable<boolean> = of(true)
   private viewState: boolean
   public isEmpty: boolean = true
   public isXS: boolean = true
@@ -121,7 +121,7 @@ export class AppComponent {
   }
 
   private initializeNotifications(): void {
-    this.viewState$ = this.store$.pipe(
+    this.notificationBadgeViewState$ = this.store$.pipe(
       select(notifications.selectViewState),
       // takeUntil(this.authState$),
       tap((result: any) => {
@@ -137,7 +137,7 @@ export class AppComponent {
         if (!state.length) {
           return [{
             title: 'No notifications at this time',
-            type: NotificationTypes.Default
+            notificationType: NotificationTypes.Default
           }]
         }
         this.isEmpty = false
@@ -159,7 +159,7 @@ export class AppComponent {
     this.notificationsSidebar.toggle()
 
     if (!this.viewState) {
-      this.store$.dispatch(notificationSettings.setNotificationSettingsViewState({ id: this.userId, notificationBadgeHidden: true }))
+      this.store$.dispatch(notificationSettings.saveNotificationSettingsViewState({ id: this.userId, notificationBadgeHidden: true }))
     }
   }
 

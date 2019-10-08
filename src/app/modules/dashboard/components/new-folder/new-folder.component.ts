@@ -87,7 +87,8 @@ export class NewFolderComponent implements OnInit, OnDestroy {
       Invitees: this.formBuilder.array([
         this.initializeInvitees('')
       ]),
-      LockPermissions: [false]
+      LockPermissions: [false],
+      UserName: [this.userName]
     })
   }
 

@@ -46,7 +46,7 @@
         <div class="navbar-end" *ngIf="(authState$ | async)">
           <button mat-mini-fab type="button" color="warm" class="mat-elevation-z1 mr-3" (click)="navigate('/account')">{{ initials$ | async }}</button>
           <button mat-icon-button (click)="setNotificationViewState($event)">
-            <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="(viewState$ | async)"
+            <mat-icon [matBadge]="(notifications$ | async).length" [matBadgeHidden]="(notificationBadgeViewState$ | async)"
               matBadgePosition="before" matBadgeColor="accent">notifications_none</mat-icon>
           </button>
         </div>

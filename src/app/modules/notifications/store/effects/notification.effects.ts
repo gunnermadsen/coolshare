@@ -20,12 +20,9 @@ export class NotificationEffects {
         exhaustMap((payload: any) => {
             return this.notificationService.createNotification(payload).pipe(
 
-                map((payload: any) => {
-                    return settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.notificationBadgeHidden })
-                }),
-
+                map((result: any) => settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden, id: payload.userId })),
+                
                 catchError(error => throwError(error))
-
             )
         })
     ))
@@ -38,12 +35,11 @@ export class NotificationEffects {
                 switchMap((payload: any) => {
                     return [
                         saveNotifications({ notifications: payload.Notifications }),
-                        settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden })
+                        settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden, id: payload.id })
                     ]
                 }),
                 
                 catchError(error => throwError(error))
-
             )
         })
     ))
@@ -60,17 +56,17 @@ export class NotificationEffects {
         })
     ), { dispatch: false })
 
-    public setNotificationViewState$: Observable<Action> = createEffect(() => this.actions$.pipe(
-        ofType(settings.setNotificationSettingsViewState),
+    public setNotificationViewState$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(settings.saveNotificationSettingsViewState),
         mergeMap((payload: any) => {
             return this.notificationService.setNotificationViewState(payload.id, payload.notificationBadgeHidden).pipe(
-                map((payload: any) => {
-                    return settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.notificationBadgeHidden });
-                }),
+               
+                tap(() => console.log("Notification view state has been set")),
+                
                 catchError((error) => throwError(error))
             )
         })
-    ))
+    ), { dispatch: false })
 
     constructor(private actions$: Actions, private notificationService: HttpNotificationService) { }
 }

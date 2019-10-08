@@ -10,7 +10,7 @@
     </div>
     <div class="notifications">
         <div class="notification-items">
-            <div [ngSwitch]="notification.type" *ngFor="let notification of notifications; index as i" >
+            <div [ngSwitch]="notification.notificationType" *ngFor="let notification of notifications; index as i">
                 <div class="notification m-2" *ngSwitchCase="'Upload'">
                     <div class="notification-content">
                         <div class="notification-icon">
@@ -21,10 +21,10 @@
                             <h5>{{ notification.createdOn | date : 'short' }}</h5>
                         </div>
                     </div>
-                    <div class="upload-progress" *ngIf="(fileUploadState$ | async).status === 'Ongoing'">
-                        <!-- <mat-progress-bar mode="determinate" value="40"></mat-progress-bar> -->
+                    <!-- <div class="upload-progress" *ngIf="(fileUploadState$ | async).status === 'Ongoing'">
+                        <mat-progress-bar mode="determinate" value="40"></mat-progress-bar>
                         <upload-progress [color]="(fileUploadState$ | async).progressColor"></upload-progress>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="notification m-2" *ngSwitchCase="'Delete File'">
                     <div class="notification-content">

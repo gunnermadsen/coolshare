@@ -1,9 +1,9 @@
-import { UploadActions, ActionTypes } from '../actions/upload.actions';
-import { initialState, UploadStatus, UploadState } from '../../state';
-import * as _ from 'lodash';
+import { UploadActions, ActionTypes } from '../actions/upload.actions'
+import { initialState, UploadStatus, UploadState } from '../../state'
+import * as _ from 'lodash'
 
 const setFileState = (files: any): any[] => {
-    let data: any[] = [];
+    let data: any[] = []
     Object.values(files).forEach((file: File, index: number) => {
         data.push({
             progress: 0,
@@ -12,8 +12,8 @@ const setFileState = (files: any): any[] => {
             completed: false,
             status: UploadStatus.Ready
         })
-    });
-    return data;
+    })
+    return data
 }
 
 export function uploadReducer(state = initialState, action: UploadActions): UploadState {
@@ -35,8 +35,8 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 pendingFiles: setFileState(action.payload.files),
                 completedFiles: [],
                 viewState: true
-            };
-            return result;
+            }
+            return result
         }
 
         case ActionTypes.UPLOAD_CURRENT_FILE: {
@@ -48,9 +48,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
         case ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED: {
             return {
                 ...state,
-                pendingFiles: action.payload.files,
-                progress: action.payload.progress
-            };
+            }
         }
         case ActionTypes.UPLOAD_CANCEL: {
             return {
@@ -58,7 +56,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 status: UploadStatus.Ready,
                 progress: null,
                 error: null,
-            };
+            }
         }
         case ActionTypes.UPLOAD_RESET: {
             return {
@@ -66,7 +64,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 status: UploadStatus.Ready,
                 progress: null,
                 error: null,
-            };
+            }
         }
         case ActionTypes.UPLOAD_FAILURE: {
             return {
@@ -75,7 +73,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 error: action.payload.error,
                 progress: null,
                 progressColor: 'warm'
-            };
+            }
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_FAILURE: {
             return {
@@ -83,14 +81,14 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 status: UploadStatus.Failed,
                 pendingFiles: action.payload.files
                
-            };
+            }
         }
         case ActionTypes.UPLOAD_STARTED: {
             return {
                 ...state,
                 status: UploadStatus.Started,
                 progress: 0,
-            };
+            }
         }
         case ActionTypes.UPLOAD_PROGRESS: {
             return {
@@ -99,7 +97,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 progress: action.payload.progress,
                 progressColor: 'primary',
                 pendingFiles: action.payload.files
-            };
+            }
         }
         case ActionTypes.UPLOAD_COMPLETED: {
             const result = {
@@ -110,8 +108,8 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 progressColor: 'accent',
                 progress: 100,
                 error: null
-            };
-            return result;
+            }
+            return result
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_COMPLETED: {
             return {
@@ -119,16 +117,16 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 status: UploadStatus.Completed,
                 pendingFiles: action.payload.files,
                 error: null
-            };
+            }
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_PAUSED: {
             return {
                 ...state,
                 pendingFiles: action.payload.files,
-            };
+            }
         }
         default: {
-            return state;
+            return state
         }
     }
 }

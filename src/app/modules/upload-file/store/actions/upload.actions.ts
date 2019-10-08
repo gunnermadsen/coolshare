@@ -4,7 +4,7 @@ export enum ActionTypes {
     UPLOAD_VIEW_STATE = '[File Upload View] Current View State',
     UPLOAD_REQUEST = '[File Upload Form] Request',
     UPLOAD_CANCEL = '[File Upload Form] Cancel',
-    SINGLE_FILE_UPLOAD_CANCELLED = '[File Upload API] Sing File Upload Cancelled',
+    SINGLE_FILE_UPLOAD_CANCELLED = '[File Upload API] Single File Upload Cancelled',
     UPLOAD_RESET = '[File Upload Form] Reset',
     UPLOAD_STARTED = '[File Upload API] Started',
     UPLOAD_PROGRESS = '[File Upload API] Progress',
@@ -36,7 +36,7 @@ export class UploadCancelAction implements Action {
 
 export class UploadFileCancelAction implements Action {
     readonly type = ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED;
-    constructor(public payload: { index: number, files: any, progress: number }) {}
+    constructor(public payload: { index: number }) {}
 }
 
 export class UploadFilePausedAction implements Action {

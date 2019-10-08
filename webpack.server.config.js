@@ -1,5 +1,4 @@
 // Work around for https://github.com/angular/angular-cli/issues/7200
-const nodeExternals = require('webpack-node-externals')
 const path = require('path');
 const webpack = require('webpack');
 

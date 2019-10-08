@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpEvent, HttpResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpResponse, HttpHeaders, HttpRequest, HttpParams } from '@angular/common/http';
 import { Observable, throwError, of } from 'rxjs';
 import * as mime from 'mime';
 import { saveAs } from 'file-saver'
 import { map, catchError } from 'rxjs/operators';
+import { fromFetch } from 'rxjs/fetch';
 
 
 @Injectable({ providedIn: 'root' })
@@ -26,8 +27,10 @@ export class HttpRepoService {
         formData.append('path', path)
 
         // const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data').set('Accept', '*/*')
+        // const request = new HttpRequest('POST', '/api/repo/upload', formData, { reportProgress: true, observe: 'events' })
 
         return this.http.post<any>('/api/repo/upload', formData, { reportProgress: true, observe: 'events' })
+        // return fromFetch()
     }
 
     public createFolder(payload: any): Observable<any> {
@@ -38,16 +41,13 @@ export class HttpRepoService {
         return this.http.post<any>('/api/repo/delete', payload)
     }
 
-    public download(payload: any): Observable<any> {
+    public download(payload: { userId: string, path: string, name: string }): Observable<any> {
 
-        let query = this.generateQueryUri(payload);
+        // let query = this.generateQueryUri(payload);
+        const headers = new HttpHeaders({ 'Content-Type' : 'application/json', 'Accept' : '*/*'});
+        const params = new HttpParams().set('resource', payload.name).set('path', payload.path).set('id', payload.userId)
 
-        const headers = new HttpHeaders({
-            'Content-Type' : 'application/json',
-            'Accept'       : '*/*'
-        });
-
-        return this.http.get(`/api/repo/download?${query}`, { headers: headers, responseType: 'blob' as 'json' })
+        return this.http.get(`/api/repo/download`, { headers: headers, params: params, responseType: 'blob' as 'json' })
     }
 
     public verifyLink(linkDetails: any): Observable<any> {

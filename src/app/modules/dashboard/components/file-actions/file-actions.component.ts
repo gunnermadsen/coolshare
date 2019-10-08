@@ -82,6 +82,8 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     const config = new MatDialogConfig()
 
+    let that = this
+
     config.width = '475px'
     config.maxHeight = '1000px'
     
@@ -93,11 +95,11 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
-        this.store$.dispatch(filesystem.createFolder({ 
-          userId: this.userId, 
-          path: this.cwd, 
+        that.store$.dispatch(filesystem.createFolder({ 
+          userId: that.userId, 
+          path: that.cwd, 
           data: result, 
-          userName: this.userName 
+          userName: that.userName 
         }))
       }
     })
