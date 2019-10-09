@@ -41,8 +41,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
 
         case ActionTypes.UPLOAD_CURRENT_FILE: {
             return {
-                ...state,
-                currentFile: action.payload.currentFile
+                ...state
             }
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED: {
@@ -64,6 +63,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
                 status: UploadStatus.Ready,
                 progress: null,
                 error: null,
+                viewState: false
             }
         }
         case ActionTypes.UPLOAD_FAILURE: {
@@ -121,8 +121,7 @@ export function uploadReducer(state = initialState, action: UploadActions): Uplo
         }
         case ActionTypes.SINGLE_FILE_UPLOAD_PAUSED: {
             return {
-                ...state,
-                pendingFiles: action.payload.files,
+                ...state
             }
         }
         default: {

@@ -7,11 +7,14 @@ import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { UploadModule } from '@/modules/upload-file/upload.module';
 import { FileSizePipe } from './pipes/file-size.pipe';
+import { DropzoneDirective } from './directives/dropzone.directive';
+import { UploadSpeedPipe } from './pipes/file-upload-speed.pipe';
 
 @NgModule({
     declarations: [
-        FileSizePipe
-
+        FileSizePipe,
+        UploadSpeedPipe,
+        DropzoneDirective
     ],
     imports: [
         CommonModule,
@@ -28,7 +31,9 @@ import { FileSizePipe } from './pipes/file-size.pipe';
     exports: [
         MaterialModule,
         ReactiveFormsModule,
-        FileSizePipe
+        FileSizePipe,
+        UploadSpeedPipe,
+        DropzoneDirective
     ],
     providers: [],
 })

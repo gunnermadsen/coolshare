@@ -2,36 +2,78 @@
     margin-top: auto;
 }
 
-.file-list {
-    height: 370px;
-    overflow-y: auto;
-}
-
-
-// .mat-list-item {
-//     height: auto;
-// }
-
-.list-item {
-    border: 1px solid black;
-    height: 60px;
-}
-
-
-.list-name {
-    overflow: hidden;
-    width: auto;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-
 .mat-list-item-content {
     padding-left: 0;
     padding-right: 0;
 }
 
 
-.row {
-    overflow-x: hidden;
+// Upload Details File Que
+
+.dialog-file-list {
+    display: flex;
+    flex-direction: column;
+    height: 370px;
+    overflow-y: auto;
+}
+
+.upload-dialog-title {
+    margin-bottom: 10px;
+}
+
+.mat-dialog-title {
+    margin: 0;
+}
+
+.list-items {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    width: 100%;
+    height: 60px;
+    padding: 0px 0px 15px 0px;
+
+}
+
+.list-item {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 2px;
+}
+
+.list-name {
+    overflow: hidden;
+    width: 225px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.list-size {
+    display: flex;
+    justify-content: flex-start;
+    width: 100px
+}
+
+
+.list-actions {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.list-progress-bar {
+    padding: 0 2px 0 1px;
+    width: 100%;
+}
+
+.upload-dialog-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-top: 10px;
 }

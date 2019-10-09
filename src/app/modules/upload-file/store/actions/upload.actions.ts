@@ -26,7 +26,7 @@ export class UploadRequestAction implements Action {
 export class UploadCurrentFileAction implements Action {
     readonly type = ActionTypes.UPLOAD_CURRENT_FILE;
 
-    constructor(public payload: { currentFile: number }) {}
+    constructor(public payload: { index: number }) {}
 }
 
 export class UploadCancelAction implements Action {
@@ -41,7 +41,7 @@ export class UploadFileCancelAction implements Action {
 
 export class UploadFilePausedAction implements Action {
     readonly type = ActionTypes.SINGLE_FILE_UPLOAD_PAUSED;
-    constructor(public payload: { index: number, files: any, progress: number }) {}
+    constructor(public payload: { index: number, state: boolean }) {}
 }
 
 export class UploadResetAction implements Action {

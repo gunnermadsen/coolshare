@@ -1,19 +1,20 @@
-<div class="container-fluid px-0">
-    <div class="row" *ngIf="(viewState$ | async)">
-        <div class="col-auto">
-            <button mat-button class="px-0" (click)="viewDetails()">View details</button>
-        </div>
+<!-- Component used for snackbar -->
+
+<div class="progress-container">
+    <div class="progress-actions" *ngIf="(viewState$ | async)">
+
+        <button mat-button class="px-0" (click)="viewDetails()">View details</button>
         
-        <div class="col-auto ml-auto pr-1">
-            <button mat-icon-button class="px-0" *ngIf="(completed$ | async)" (click)="close()"><mat-icon>close</mat-icon></button>
-            <div *ngIf="(progress$ | async) < 100">
-                {{ (progress$ | async) }}%
-            </div>
+        <button mat-icon-button class="action-details" *ngIf="(completed$ | async)" (click)="closeSnackbar()">
+            <mat-icon>close</mat-icon>
+        </button>
+
+        <div *ngIf="(progress$ | async) < 100">
+            {{ (progress$ | async) }}%
         </div>
+
     </div>
-    <div class="row">
-        <div class="col px-0">
-            <mat-progress-bar [color]="color" mode="determinate" [value]="(progress$ | async)"></mat-progress-bar>
-        </div>
+    <div class="progress-bar">
+        <mat-progress-bar [color]="color" mode="determinate" [value]="(progress$ | async)"></mat-progress-bar>
     </div>
 </div>

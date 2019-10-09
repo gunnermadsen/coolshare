@@ -16,18 +16,20 @@ export interface FileState {
   loaded: number
   completed: boolean
   status: UploadStatus
+  uploadSpeed: number
+  isPaused: boolean
 }
 
 export interface UploadState {
-  completedFiles: FileState[] | null;
-  currentFile: number;
-  error: string | null;
+  completedFiles: FileState[] | null
+  currentFile: number
+  error: string | null
   files: FileState[]
-  pendingFiles: FileState[] | null;
-  progress: number | null;
-  progressColor: string | null;
-  status: UploadStatus;
-  viewState: boolean | null;
+  pendingFiles: FileState[] | null
+  progress: number | null
+  progressColor: string | null
+  status: UploadStatus
+  viewState: boolean | null
 }
 
 export const initialState: UploadState = {
@@ -39,7 +41,7 @@ export const initialState: UploadState = {
   progress: null,
   progressColor: null,
   status: UploadStatus.Ready,
-  viewState: null
+  viewState: null,
 }
 
 export interface UploadEventState {

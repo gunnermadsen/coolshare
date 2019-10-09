@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy } from '@angular/core'
+import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core'
 import { AppState } from '@/reducers'
 import { Store } from '@ngrx/store'
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts'
@@ -27,6 +27,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   @Input() public rowSelected: boolean
   @Input() public selection: SelectionModel<any>
   @Input() public userName: string
+  @ViewChild('fileUploader', { static: true}) public fileUploaderInput: ElementRef<HTMLInputElement>
   public isSM: boolean = null
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
@@ -37,9 +38,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     .pipe(
       takeUntil(this.destroy$)
     )
-    .subscribe((state: BreakpointState) => {
-      this.isSM = state.breakpoints['(min-width: 550px)']
-    })
+    .subscribe((state: BreakpointState) => this.isSM = state.breakpoints['(min-width: 550px)'])
   }
 
   ngOnInit() { }
@@ -48,12 +47,10 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     const clone: FileList = { ...event.target.files }
 
-    if (clone) {
-
+    if (Object.values(clone).length > 0) {
       this.store$.dispatch(new fromFileUploadActions.UploadRequestAction({ path: this.cwd, userId: this.userId, files: clone }))
-
-      // this.isFileSet = false
-      // this.files = null
+      
+      // this.fileUploaderInput.nativeElement.value = ""
     }
 
   }

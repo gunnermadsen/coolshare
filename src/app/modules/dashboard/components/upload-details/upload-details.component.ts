@@ -6,8 +6,9 @@ import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/
 
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts'
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material'
-import { Observable } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 import { map, tap } from 'rxjs/operators'
+import { FileState } from '@/modules/upload-file/state'
 
 
 @Component({
@@ -17,10 +18,11 @@ import { map, tap } from 'rxjs/operators'
 })
 export class UploadDetailsComponent implements OnInit {
 
-  public files$: Observable<boolean>
+  public files$: Observable<FileState>
   public fileState$: Observable<any>
   public completed$: Observable<boolean>
   public progressColor$: Observable<string>
+
 
   constructor(private store$: Store<AppState>, @Inject(MAT_DIALOG_DATA) public data: any, private dialog: MatDialogRef<any>) { }
 
@@ -48,11 +50,17 @@ export class UploadDetailsComponent implements OnInit {
     this.dialog.close()
   }
 
-  public cancelUpload(event: MouseEvent, index: number): void {
-    console.log(index)
-    // event.preventDefault()
+
+  public setUploadPlayerState(event: MouseEvent, state: boolean, index: number): void {
+    event.preventDefault()
     event.stopPropagation()
-    this.store$.dispatch(new fromFileUploadActions.UploadFileCancelAction({ index: index }))
+    this.store$.dispatch(new fromFileUploadActions.UploadFilePausedAction({ index: index, state: state}))
+  }
+
+  public cancelUpload(event: MouseEvent, index: number): void {
+    event.preventDefault()
+    event.stopPropagation()
+    // this.store$.dispatch(new fromFileUploadActions.UploadFileCancelAction({ index: index }))
   }
 
   public getProgressColor$(index: number): Observable<string> {
@@ -63,7 +71,18 @@ export class UploadDetailsComponent implements OnInit {
 
   public getFileState$(index: number): Observable<any> {
     return this.store$.pipe(
-      select(fromFileUploadSelectors.selectIndividualFileUploadState(index))
+      select(fromFileUploadSelectors.selectIndividualFileUploadState(index)),
+      // tap((state: FileState) => {
+      //   if (state.progress === 100) {
+      //     this.paused$.next(false)
+      //   }
+      // })
+    )
+  }
+
+  public selectUploadSpeed$(index: number): Observable<string> {
+    return this.store$.pipe(
+      select(fromFileUploadSelectors.selectFileUploadSpeed(index)),
     )
   }
 

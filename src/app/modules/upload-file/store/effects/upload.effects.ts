@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core'
-import { HttpEventType, HttpEvent } from '@angular/common/http'
+import { HttpEventType, HttpEvent, HttpRequest } from '@angular/common/http'
 
-import { Observable, of, forkJoin, EMPTY, NEVER } from 'rxjs'
-import { takeUntil, map, catchError, tap, mergeMap, withLatestFrom, switchMap, switchMapTo, materialize, dematerialize } from 'rxjs/operators'
+import { Observable, of, forkJoin, EMPTY, NEVER, from } from 'rxjs'
+import { takeUntil, map, catchError, tap, mergeMap, withLatestFrom, switchMap, switchMapTo, materialize, dematerialize, exhaustMap, takeWhile } from 'rxjs/operators'
 
 import { Action, Store, select } from '@ngrx/store'
 import { Actions, ofType, createEffect } from '@ngrx/effects'
@@ -27,41 +27,32 @@ import * as uuid from 'uuid'
 @Injectable()
 export class UploadEffects {
 
+    private requests$: Observable<any>[]
+
     public uploadFile$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(fromFileUploadActions.ActionTypes.UPLOAD_REQUEST),
-        tap((action: any) => {
-            this.generateNotification(action.payload)
-            return action
-        }),
-        takeUntil(this.actions$.pipe(ofType(fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED))),
+        tap((action: any) => this.generateNotification(action.payload)),
         mergeMap((action: any) => {      
-            
             let total: number = 0
             let loaded: number = 0
+
+            const timestamp: number = Date.now()
             
-            const path = action.payload.path
-            const userId = action.payload.userId
+            const path: string = action.payload.path
+            const userId: string = action.payload.userId
             const files: any[] = Object.values(action.payload.files)
 
             files.forEach((file: File) => total += file.size)
 
-            const requests$ = files.map((file: File, index: number) => {
+            this.requests$ = files.map((file: File, index: number) => {
                 return this.repoService.uploadFile(file, path, index, userId).pipe(
-                    takeUntil(this.actions$.pipe(
-                        ofType(fromFileUploadActions.ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED),
-                        withLatestFrom(this.store$.pipe(select(fromFileUploadSelectors.selectCurrentUploadState))),
-                        materialize(),
-                        switchMap((data: any) => {
-                            console.log(data)
-                            // const uploadState = this.updateFileUploadState()
-                            return EMPTY
-                        }),
-                        dematerialize()
-                    )),
-                    withLatestFrom(this.store$.pipe(
-                        select(fromFileUploadSelectors.selectUploadState),
-                        takeUntil(this.actions$.pipe(ofType(fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED)))
-                    )),
+                    // takeUntil(this.actions$.pipe(
+                    //     ofType(fromFileUploadActions.ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED)),
+                    //     switchMapTo((action: any) => {
+                    //         return action
+                    //     })
+                    // ),
+                    withLatestFrom(this.store$.pipe(select(fromFileUploadSelectors.selectUploadState))),
                     tap(([mode, state]) => {
                         loaded = 0
                         state.pendingFiles.forEach((payload: any) => loaded += payload.loaded)
@@ -70,32 +61,66 @@ export class UploadEffects {
                         }
                         return state
                     }),
-                    
-                    map(([mode, state]) => this.getActionFromHttpEvent(mode, state, index, loaded, total, action, userId)),
-
-                    catchError((error: any) => of(this.handleError(error)))
+                    map(([mode, state]) => this.getActionFromHttpEvent(mode, state, index, loaded, total, action, userId, timestamp)),
+                    catchError((error: any) => of(this.handleError(error))),
                 )
             })
-            return forkJoin(requests$).pipe(
+
+            return forkJoin(this.requests$).pipe(
                 map((action: any) => {
                     return { folder: path, id: userId, action: action }
                 }),
-                
-                catchError((error: any) => of(this.handleError(error)))
+                catchError((error: any) => of(this.handleError(error))),
             )
         }),
         // switchMap will cancel and replace the prior observable with a new value that came through
-        switchMap((action: { action: any, folder: string, id: string }) => {
+        exhaustMap((action: { action: any, folder: string, id: string }) => {
             return [
                 new fromFileUploadActions.UploadCompletedAction(),
                 filesystem.readEntityContents({ ...action })
             ]
         }),
+        // takeUntil(this.actions$.pipe(ofType(fromFileUploadActions.ActionTypes.UPLOAD_COMPLETED))),
     ))
+
+    // public cancelUpload$: Observable<void> = createEffect(() => this.actions$.pipe(
+    //     ofType(fromFileUploadActions.ActionTypes.SINGLE_FILE_UPLOAD_CANCELLED),
+    //     withLatestFrom(this.store$.pipe(select(fromFileUploadSelectors.selectCurrentUploadState))),
+    //     // materialize(),
+    //     tap((data: any) => {
+    //         console.log(data)
+    //         this.requests$.splice(data[0].payload.index, 1)
+    //         // const uploadState = this.updateFileUploadState()
+    //         // return of(this.requests$).pipe(
+    //         //     map((requests: any) => {
+    //         //         return requests
+    //         //     })
+    //         // )
+    //         return EMPTY
+    //     }),    
+    // ), { dispatch: false })
+
+    public setUploadPlayerState$: Observable<any> = createEffect(() => this.actions$.pipe(
+        ofType(fromFileUploadActions.ActionTypes.SINGLE_FILE_UPLOAD_PAUSED),
+        withLatestFrom(this.store$.pipe(select(fromFileUploadSelectors.selectCurrentUploadState))),
+        switchMap((action: any) => {
+            const index = action[0].payload.index
+
+            // this.requests$[index]
+            
+            if (!action[1].pendingFiles[index].isPaused) {
+                return EMPTY
+            }
+            else {
+                return of(this.requests$).pipe(materialize())
+            }
+        }),
+        dematerialize()
+    ), { dispatch: false })
 
     constructor(private repoService: HttpRepoService, private actions$: Actions<fromFileUploadActions.UploadActions>, private store$: Store<AppState>) { }
 
-    private getActionFromHttpEvent(mode: any, result: UploadState, index: number, loaded: number, total: number, action: fromFileUploadActions.UploadRequestAction, userId: string): Observable<void> | any {
+    private getActionFromHttpEvent(mode: any, result: UploadState, index: number, loaded: number, total: number, action: fromFileUploadActions.UploadRequestAction, userId: string, timestamp: number): Observable<void> | any {
         // the current execution context is based on one file, 
         // however we still need to calculate the total progress 
         // for all files (even just for one file). 
@@ -106,11 +131,9 @@ export class UploadEffects {
             }
             
             case HttpEventType.UploadProgress: {
-
-                const payload = this.updateFileUploadState(result, mode, index, action)
+                const payload = this.updateFileUploadState(result, mode, index, action, timestamp)
 
                 return this.updateFileProgress(index, payload.content.pendingFiles, loaded, total, action)
-
             }
 
             case HttpEventType.DownloadProgress: {
@@ -120,36 +143,40 @@ export class UploadEffects {
             case HttpEventType.ResponseHeader:
             case HttpEventType.Response: {
                 if (mode.status === 400) {
-                    const payload = this.updateFileUploadState(result, mode, index, action)
+                    const payload = this.updateFileUploadState(result, mode, index, action, timestamp)
                     //this.generateNotification({ userId: userId, title: `${result[index].}`, status: UploadStatus.Failed, files: result })
                     return of(this.store$.dispatch(new fromFileUploadActions.FileUploadFailureAction({ files: payload.content.pendingFiles })))
                 }
                 else if (mode.status === 204) {
-                    const payload = this.updateFileUploadState(result, mode, index, action)
+                    const payload = this.updateFileUploadState(result, mode, index, action, timestamp)
                     //this.generateNotification({ userId: userId, title: `${result.files[index].file.name} `, status: UploadStatus.Completed, files: result })
                     return of(this.store$.dispatch(new fromFileUploadActions.FileUploadCompletedAction({ files: payload.content.pendingFiles })))
                 }
             }
 
             default: {
-                return of(this.store$.dispatch(new fromFileUploadActions.UploadFailureAction({ error: `Unknown Event: ${JSON.stringify(event)}` })))
+                return of(this.store$.dispatch(
+                    new fromFileUploadActions.UploadFailureAction({ error: `Unknown Event: ${JSON.stringify(event)}` })
+                ))
             }
         }
     }
 
     private updateFileProgress(index: number, files: FileState[], loaded: number, total: number, action: UploadActions): Observable<void> {
         const totalProgress = Math.round(loaded / total * 100)
-        // console.log(`Progress of file ${index}: ${totalProgress}%`)
-        return of(
-            this.store$.dispatch(
-                new fromFileUploadActions.UploadProgressAction({
-                    progress: totalProgress,
-                    progressColor: this.setProgressBarColorState(action).color,
-                    index: index,
-                    files: files
-                })
+        return of(this.store$.dispatch(
+            new fromFileUploadActions.UploadProgressAction(
+                { progress: totalProgress, progressColor: this.setProgressBarColorState(action).color, index: index, files: files }
             )
-        )
+        ))
+    }
+
+    private calculateUploadSpeed(timestamp: number, index: number, files: FileState[]): number {
+        let time = Date.now() - timestamp
+        let chunk = files[index].progress * files[index].file.size
+        let speed = parseInt(((chunk / 1024 / 1024) / (time / 1000)).toFixed(2)) //(chunk / 1024 / 1024)
+        // console.info(`${files[index].file.name} upload speed: `, speed, 'B/s')
+        return speed
     }
 
     private handleError(error: any): Action {
@@ -158,8 +185,8 @@ export class UploadEffects {
     }
 
     // this method needs to update the upload state for 
-    // ongoing upload actions, as well as cancel and pause actions
-    private updateFileUploadState(state: UploadState, event: UploadEventState, index: number, action: any): UpdatedUploadState {
+    // ongoing upload actions, as well as cancellation and pause states for files
+    private updateFileUploadState(state: UploadState, event: UploadEventState, index: number, action: any, timestamp: number): UpdatedUploadState {
 
         let payload: any = {}
         let loaded: number = 0
@@ -199,11 +226,13 @@ export class UploadEffects {
 
         const newFileState: FileState = {
             progress: progress,
-            progressColor: (progress === 100) ? 'accent' : this.setProgressBarColorState(action).color, 
+            progressColor: (progress === 100) ? 'accent' : this.setProgressBarColorState(action).color,
             file: state.pendingFiles[index].file,
             loaded: loaded,
             completed: (progress === 100) ? true : false,
-            status: uploadStatus //(progress === 100) ? UploadStatus.Completed : 
+            status: uploadStatus, //(progress === 100) ? UploadStatus.Completed : 
+            uploadSpeed: this.calculateUploadSpeed(timestamp, index, state.pendingFiles),
+            isPaused: state.pendingFiles[index].isPaused
         }
 
         clone.pendingFiles[index] = newFileState 

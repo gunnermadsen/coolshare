@@ -133,87 +133,90 @@
 <!-- Material Data Table List View -->
 
 <ng-template #list>
-  <table mat-table [dataSource]="dataSource" class="example-table" matSort>
-    <!-- Checkbox Column -->
-    <ng-container matColumnDef="select">
-      <th mat-header-cell *matHeaderCellDef>
-        <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
-          [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"
-          [aria-label]="checkboxLabel()">
-        </mat-checkbox>
-      </th>
-      <td mat-cell *matCellDef="let row; let i = index">
-        <mat-checkbox color="primary" *ngIf="!row.empty" (click)="$event.stopPropagation()"
-          (change)="setSelectionState($event, row)" [checked]="selection.isSelected(row)"
-          [aria-label]="checkboxLabel(row)">
-        </mat-checkbox>
-      </td>
-    </ng-container>
-  
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell mat-sort-header *matHeaderCellDef>Name</th>
-      <td mat-cell *matCellDef="let row" class="text-truncate">{{ row.Name }}</td>
-    </ng-container>
-  
-    <!-- Date Created Column -->
-    <ng-container matColumnDef="createdDate">
-      <th mat-header-cell mat-sort-header arrowPosition="before" class="text-left" *matHeaderCellDef>Date Created</th>
-      <td mat-cell *matCellDef="let row">{{ row.CreatedOn | date : "short" }}</td>
-    </ng-container>
-  
-    <!-- Members Column -->
-    <ng-container matColumnDef="members">
-      <th mat-header-cell mat-sort-header arrowPosition="before" *matHeaderCellDef>Members</th>
-      <td mat-cell *matCellDef="let row">{{ row.IsShared ? "Members" : "Only Me" }}</td>
-    </ng-container>
-  
-    <!-- Action Column -->
-    <ng-container matColumnDef="action">
-      <th mat-header-cell *matHeaderCellDef>
+  <div dropzone (onFileDropped)="uploadData(files)">
 
-        <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
-
-        <!-- <button mat-icon-button class="p-0" [matMenuTriggerFor]="displayMenu">
-          <mat-icon>list</mat-icon>
-        </button> -->
-
-        <button *ngIf="isXS" class="p-0" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
+    <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+      <!-- Checkbox Column -->
+      <ng-container matColumnDef="select">
+        <th mat-header-cell *matHeaderCellDef>
+          <mat-checkbox color="primary" (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [aria-label]="checkboxLabel()">
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row; let i = index">
+          <mat-checkbox color="primary" *ngIf="!row.empty" (click)="$event.stopPropagation()"
+            (change)="setSelectionState($event, row)" [checked]="selection.isSelected(row)"
+            [aria-label]="checkboxLabel(row)">
+          </mat-checkbox>
+        </td>
+      </ng-container>
+    
+      <!-- Name Column -->
+      <ng-container matColumnDef="name">
+        <th mat-header-cell mat-sort-header *matHeaderCellDef>Name</th>
+        <td mat-cell *matCellDef="let row" class="text-truncate">{{ row.Name }}</td>
+      </ng-container>
+    
+      <!-- Date Created Column -->
+      <ng-container matColumnDef="createdDate">
+        <th mat-header-cell mat-sort-header arrowPosition="before" class="text-left" *matHeaderCellDef>Date Created</th>
+        <td mat-cell *matCellDef="let row">{{ row.CreatedOn | date : "short" }}</td>
+      </ng-container>
+    
+      <!-- Members Column -->
+      <ng-container matColumnDef="members">
+        <th mat-header-cell mat-sort-header arrowPosition="before" *matHeaderCellDef>Members</th>
+        <td mat-cell *matCellDef="let row">{{ row.IsShared ? "Members" : "Only Me" }}</td>
+      </ng-container>
+    
+      <!-- Action Column -->
+      <ng-container matColumnDef="action">
+        <th mat-header-cell *matHeaderCellDef>
   
-        <!-- View Mode Menu -->
-
-        <!-- <mat-menu #displayMenu="matMenu">
-          <button (click)="setTableViewState($event, 0)" mat-menu-item>
-            <mat-icon class="mr-2">list</mat-icon>List
+          <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
+  
+          <!-- <button mat-icon-button class="p-0" [matMenuTriggerFor]="displayMenu">
+            <mat-icon>list</mat-icon>
+          </button> -->
+  
+          <button *ngIf="isXS" class="p-0" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
           </button>
-          <button (click)="setTableViewState($event, 1)" mat-menu-item>
-            <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
+    
+          <!-- View Mode Menu -->
+  
+          <!-- <mat-menu #displayMenu="matMenu">
+            <button (click)="setTableViewState($event, 0)" mat-menu-item>
+              <mat-icon class="mr-2">list</mat-icon>List
+            </button>
+            <button (click)="setTableViewState($event, 1)" mat-menu-item>
+              <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
+            </button>
+          </mat-menu> -->
+    
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <button class="p-0" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="menu">
+            <mat-icon>more_vert</mat-icon>
           </button>
-        </mat-menu> -->
-  
-      </th>
-      <td mat-cell *matCellDef="let row">
-        <button class="p-0" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="menu">
-          <mat-icon>more_vert</mat-icon>
-        </button>
-        <mat-menu #menu="matMenu">
-          <button mat-menu-item>Share</button>
-          <button mat-menu-item (click)="downloadItem(row.Name)" download>Download</button>
-          <button mat-menu-item (click)="setFavoriteState(row)">Star</button>
-          <button mat-menu-item (click)="renameEntity(row)">Rename</button>
-          <button mat-menu-item>Move</button>
-          <button mat-menu-item>Copy</button>
-          <button mat-menu-item (click)="deleteItem(0, row)">Delete</button>
-        </mat-menu>
-      </td>
-    </ng-container>
-  
-    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="getFolderContents(row)"></tr>
-  
-  </table>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>Share</button>
+            <button mat-menu-item (click)="downloadItem(row.Name)" download>Download</button>
+            <button mat-menu-item (click)="setFavoriteState(row)">Star</button>
+            <button mat-menu-item (click)="renameEntity(row)">Rename</button>
+            <button mat-menu-item>Move</button>
+            <button mat-menu-item>Copy</button>
+            <button mat-menu-item (click)="deleteItem(0, row)">Delete</button>
+          </mat-menu>
+        </td>
+      </ng-container>
+    
+      <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="getFolderContents(row)"></tr>
+    
+    </table>
+  </div>
 </ng-template>
 
 

@@ -5,7 +5,7 @@ import { LogoutUserRequested } from './core/authentication/store/actions/authent
 import { AppState } from './reducers/index'
 import { MatSnackBar, MatSidenav } from '@angular/material'
 
-import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts' 
+import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors' 
 import * as fromAccount from '@/modules/account/store/actions/account.actions'
 import * as account from '@/modules/account/store/selectors/account.selectors'
 import * as notifications from './modules/notifications/store/selectors/notification.selectors'
