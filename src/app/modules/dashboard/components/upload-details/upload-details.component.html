@@ -21,23 +21,23 @@
             </div> -->
 
             <div class="list-actions">
-                <div *ngIf="item.progress < 100">
-                    <button mat-icon-button *ngIf="!item.isPaused" (click)="setUploadPlayerState($event, true, i)">
+                <div *ngIf="item.progress < 100" class="actions-player">
+                    <button mat-icon-button  (click)="setUploadPlayerState($event, 'PAUSE', i)"> <!-- *ngIf="!item.isPaused" -->
                         <mat-icon color="primary">pause</mat-icon>
                     </button>
                     
-                    <button mat-icon-button *ngIf="item.isPaused" (click)="setUploadPlayerState($event, false, i)">
+                    <button mat-icon-button  (click)="setUploadPlayerState($event, 'RESUME', i)"> <!-- *ngIf="item.isPaused" -->
                         <mat-icon color="accent">play_arrow</mat-icon>
                     </button>
                 </div>
                 <ng-container 
-                    *ngTemplateOutlet="(getFileState$(i) | async).progress === 100 ? done : loading; context: { index: i, color: item.color }"
+                    *ngTemplateOutlet="item.progress === 100 ? done : loading; context: { index: i, color: item.color }"
                 ></ng-container>
             </div>
         </div>
     
         <div class="list-progress-bar">
-            <upload-progress [progress]="item.progress" [key]="i" [color]="getProgressColor$(i) | async"></upload-progress>
+            <upload-progress [progress]="item.progress" [key]="i" [color]="item.progressColor"></upload-progress>
         </div>
     </div>
 </div>

@@ -40,6 +40,13 @@ export const selectFileUploadSpeed = (index: number): MemoizedSelector<object, a
   }
 )
 
+export const selectFileUploadProgress = (index: number): MemoizedSelector<object, any> => createSelector(
+  selectUploadFileFeatureState,
+  (state: UploadState): number => {
+    return state.pendingFiles[index].progress
+  }
+)
+
 export const selectUploadFileReady: MemoizedSelector<object, boolean> = createSelector(
   selectUploadFileFeatureState,
   (state: UploadState): boolean => state.status === UploadStatus.Ready

@@ -15,7 +15,8 @@ export enum ActionTypes {
     SINGLE_FILE_UPLOAD_COMPLETED = '[File Upload API] File Upload Complete',
     UPLOAD_CURRENT_FILE = '[File Upload API] Switch Files',
     UPLOAD_FINISHED = '[File Upload API] Update Folder Contents',
-    SINGLE_FILE_UPLOAD_PAUSED = '[File Upload API] Upload File Paused'
+    SINGLE_FILE_UPLOAD_PAUSED = '[File Upload API] Upload File Paused',
+    SINGLE_FILE_UPLOAD_RESUME = '[File Upload API] Upload File Resume'
 }
 
 export class UploadRequestAction implements Action {
@@ -41,7 +42,12 @@ export class UploadFileCancelAction implements Action {
 
 export class UploadFilePausedAction implements Action {
     readonly type = ActionTypes.SINGLE_FILE_UPLOAD_PAUSED;
-    constructor(public payload: { index: number, state: boolean }) {}
+    constructor(public payload: { index: number, state: string }) {}
+}
+
+export class UploadFileResumeAction implements Action {
+    readonly type = ActionTypes.SINGLE_FILE_UPLOAD_RESUME;
+    constructor(public payload: { index: number, state: string }) {}
 }
 
 export class UploadResetAction implements Action {

@@ -51,16 +51,23 @@ export class UploadDetailsComponent implements OnInit {
   }
 
 
-  public setUploadPlayerState(event: MouseEvent, state: boolean, index: number): void {
+  public setUploadPlayerState(event: MouseEvent, state: string, index: number): void {
     event.preventDefault()
     event.stopPropagation()
-    this.store$.dispatch(new fromFileUploadActions.UploadFilePausedAction({ index: index, state: state}))
+    switch (state) {
+      case 'PAUSE': 
+        this.store$.dispatch(new fromFileUploadActions.UploadFilePausedAction({ index: index, state: state }))
+      break
+      case 'RESUME':
+        this.store$.dispatch(new fromFileUploadActions.UploadFileResumeAction({ index: index, state: state }))
+      break
+    }
   }
 
   public cancelUpload(event: MouseEvent, index: number): void {
     event.preventDefault()
     event.stopPropagation()
-    // this.store$.dispatch(new fromFileUploadActions.UploadFileCancelAction({ index: index }))
+    this.store$.dispatch(new fromFileUploadActions.UploadFileCancelAction({ index: index }))
   }
 
   public getProgressColor$(index: number): Observable<string> {
@@ -77,6 +84,12 @@ export class UploadDetailsComponent implements OnInit {
       //     this.paused$.next(false)
       //   }
       // })
+    )
+  }
+
+  public getFileUploadProgress$(index: number): Observable<number> {
+    return this.store$.pipe(
+      select(fromFileUploadSelectors.selectFileUploadProgress(index))
     )
   }
 

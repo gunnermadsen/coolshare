@@ -27,10 +27,10 @@ export class HttpRepoService {
         formData.append('path', path)
 
         // const headers = new HttpHeaders().set('Content-Type', 'multipart/form-data').set('Accept', '*/*')
-        // const request = new HttpRequest('POST', '/api/repo/upload', formData, { reportProgress: true, observe: 'events' })
+        // const request = new Request('/api/repo/upload', { body: formData, method: 'POST', reportProgress: true, observe: 'events' })
 
         return this.http.post<any>('/api/repo/upload', formData, { reportProgress: true, observe: 'events' })
-        // return fromFetch()
+        // return fromFetch(request)
     }
 
     public createFolder(payload: any): Observable<any> {
