@@ -8,7 +8,7 @@ import { map, tap, takeUntil, take, filter } from 'rxjs/operators'
 import * as filesystem from '../../store/actions/filesystem.actions'
 import { Update } from '@ngrx/entity'
 import { isPlatformBrowser } from '@angular/common'
-
+import * as path from 'path'
 import * as fsSelectors from '../../store/selectors/dashboard.selectors';
 import { IFile } from '@/shared/models/file.model'
 
@@ -39,7 +39,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.userName = account.UserName
     }
 
-    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:4200' : 'https://coolshare.herokuapp.com'
   }
 
   ngOnInit() {
@@ -92,8 +92,17 @@ export class MainComponent implements OnInit, OnDestroy {
     this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
-  public setResource(path: string): string {
-    return this.server + path
+  public setResource(name: string, type: string): string {
+    // const id = JSON.parse(localStorage.getItem('Account')).Id
+    switch (type) {
+      case "File": {
+        const extension = name.split('.')
+        return `${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png`
+      } 
+      case "Folder": {
+        return `${this.server}/assets/icons/folder-24.png`
+      }
+    }
   }
 
   public ngOnDestroy(): void {

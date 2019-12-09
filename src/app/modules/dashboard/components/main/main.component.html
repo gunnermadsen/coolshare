@@ -42,7 +42,7 @@
             <div *ngFor="let favorite of (favorites$ | async); index as i">
               <div *ngIf="!isFavorites" class="favorite">{{ favorite.Name }}</div>
               <div *ngIf="isFavorites" class="favorite">
-                <img class="favorite-icon" [src]="setResource(favorite.ThumbnailPath)">
+                <img class="favorite-icon" [src]="setResource(favorite.Name, favorite.Type)" (error)="this.src = '/assets/icons/file-13.png'">
                 <h3 class="favorite-title">{{ favorite.Name }}</h3>
                 <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(favorite)">
                   <mat-icon class="favorite-star">star</mat-icon>
@@ -65,7 +65,7 @@
             <div *ngFor="let recent of (recents$ | async); index as i">
               <div *ngIf="!isRecents" class="recent">{{ recent.Name }}</div>
               <div *ngIf="isRecents" class="recent">
-                <img class="recent-icon" [src]="setResource(recent.ThumbnailPath)">
+                <img class="recent-icon" [src]="setResource(recent.Name, recent.Type)">
                 <ul class="recent-list">
                   <li><h3 class="">{{ recent.Name }}</h3></li>
                   <li><p class="list-info">/Home{{ recent.Path }}</p></li>

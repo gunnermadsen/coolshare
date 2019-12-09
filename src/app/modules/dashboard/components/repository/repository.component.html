@@ -95,10 +95,10 @@
     <div class="loading-shade" *ngIf="isLoadingResults">
       <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
     </div>
-    <div class="thumbnail-wrapper" [id]="i" (click)="getFolderContents(file)" *ngFor="let file of (files$ | async); index as i; trackBy: trackByFn">
-      <div class="thumbnail" [ngStyle]="{ 'background-image': getUrl(file.ThumbnailPath) }">
+    <div class="thumbnail-wrapper" [id]="i" (click)="getFolderContents(file)" *ngFor="let file of files; index as i; trackBy: trackByFn">
+      <div class="thumbnail" [ngStyle]="{ 'background-image': getUrl(file.Name, file.Type) }">
         <div class="tn-top-row">
-          <mat-checkbox color="primary" class="ghost-button m-2" (click)="$event.stopPropagation()"></mat-checkbox>
+          <mat-checkbox color="primary" class="ghost-button m-2" (click)="$event.stopPropagation()" (change)="setSelectionState($event, file)"></mat-checkbox>
           <button class="ghost-button tb-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
             <mat-icon class="thumbnail-menu">more_vert</mat-icon>
           </button>
@@ -176,9 +176,9 @@
   
           <input type="file" hidden multiple (change)="uploadData($event)" #uploader>
   
-          <!-- <button mat-icon-button class="p-0" [matMenuTriggerFor]="displayMenu">
+          <button mat-icon-button class="p-0" [matMenuTriggerFor]="displayMenu">
             <mat-icon>list</mat-icon>
-          </button> -->
+          </button>
   
           <button *ngIf="isXS" class="p-0" mat-icon-button (click)="$event.stopPropagation()" [matMenuTriggerFor]="menu">
             <mat-icon>more_vert</mat-icon>
@@ -186,14 +186,14 @@
     
           <!-- View Mode Menu -->
   
-          <!-- <mat-menu #displayMenu="matMenu">
+          <mat-menu #displayMenu="matMenu">
             <button (click)="setTableViewState($event, 0)" mat-menu-item>
               <mat-icon class="mr-2">list</mat-icon>List
             </button>
             <button (click)="setTableViewState($event, 1)" mat-menu-item>
               <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
             </button>
-          </mat-menu> -->
+          </mat-menu>
     
         </th>
         <td mat-cell *matCellDef="let row">

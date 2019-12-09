@@ -53,7 +53,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
-    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:4200' : 'https://coolshare.herokuapp.com'
     this.displayedColumns = [ 'select', 'name', 'action' ]
   }
 
@@ -70,8 +70,17 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.initializeTableData();
   }
 
-  public getUrl(uri: string): string {
-    return `url('${this.server}${uri}')`
+  public getUrl(name: string, type: string): string {
+    switch (type) {
+      case "File": {
+        const extension = name.split('.')
+        return `url('${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png'), 
+                url('${this.server}/assets/icons/file-13.png')`
+      }
+      case "Folder": {
+        return `url('${this.server}/assets/icons/folder-24.png')`
+      }
+    }
   }
 
   public trackByFn<V, I>(value: V, index: I): V | I {
@@ -138,7 +147,6 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.store$.pipe(
       select(getRepoData),
       withLatestFrom(this.store$.pipe(select(settingsSelector.getRepoSettings))),
-      takeUntil(this.destroy$),
       // delay(3000),
       tap((result: any) => {
         if (result[0].length && result[1].cwd) {
@@ -146,7 +154,8 @@ export class RepositoryComponent implements OnInit, OnDestroy {
         }
         return result;
       }),
-      catchError((error: any) => observableOf([{ Name: "Unable to retrieve your files at this time" }]))
+      catchError((error: any) => observableOf([{ Name: "Unable to retrieve your files at this time" }])),
+      takeUntil(this.destroy$),
     )
     .subscribe((data: any) => {
       if (data[0].length && data[1].cwd) {
