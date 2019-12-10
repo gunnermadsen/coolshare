@@ -22,10 +22,8 @@ export const NotificationReducersMap: ActionReducerMap<any> = {
     imports: [ 
         CommonModule,
         SharedModule,
-
         UploadModule,
 
-        
         StoreModule.forFeature('Notifications', NotificationReducersMap),
         EffectsModule.forFeature([NotificationEffects]), 
     ],

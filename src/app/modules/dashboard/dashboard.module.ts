@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
 import { MainComponent } from './components/main/main.component';
 import { RepositoryComponent } from './components/repository/repository.component';
@@ -35,7 +34,6 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
         
     ],
     imports: [
-        CommonModule,
         SharedModule,
         DashboardRouter,
         StoreModule.forFeature('FileSystem', FileSystemReducerMap),

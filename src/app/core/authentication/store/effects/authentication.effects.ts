@@ -1,132 +1,119 @@
-import { Injectable, Inject, PLATFORM_ID } from '@angular/core';
-import { Observable, of, defer } from 'rxjs';
-import { Action, Store } from '@ngrx/store';
-import { Actions, Effect, ofType } from '@ngrx/effects';
-import { exhaustMap, catchError, tap, map, switchMap, mergeMap } from 'rxjs/operators';
-import { HttpClient, HttpRequest } from '@angular/common/http';
-import { AppState } from '@/reducers';
-import { ToastrService } from 'ngx-toastr';
-import { Router, ActivatedRoute } from '@angular/router';
-import { HttpAuthService } from '@/core/http/auth.http.service';
-import { HttpRepoService } from '@/core/http/repo.http.service';
+import { Injectable, Inject, PLATFORM_ID } from '@angular/core'
+import { Router } from '@angular/router'
+import { isPlatformBrowser } from '@angular/common'
 
-import * as auth from '@/core/authentication/store/actions/authentication.actions';
+import { Observable, of, EMPTY } from 'rxjs'
 
-import { isPlatformBrowser, isPlatformServer } from '@angular/common';
+import { Action, Store } from '@ngrx/store'
+import { Actions, ofType, createEffect, OnInitEffects } from '@ngrx/effects'
+import { exhaustMap, catchError, tap, map } from 'rxjs/operators'
 
+import { ToastrService } from 'ngx-toastr'
+
+import { HttpAuthService } from '@/core/http/auth.http.service'
+
+
+import * as account from '@/core/authentication/store/actions/authentication.actions'
+import { AppState } from '@/reducers'
 
 @Injectable()
-export class AuthenticationEffects {
+export class AuthenticationEffects implements OnInitEffects {
+    public registerUserRequested$: Observable<Action> = createEffect(() => this.actions$.pipe(
+        ofType(account.registerUserRequested),
+        exhaustMap((payload: any): Observable<any> => {
+            return this.authService.register(payload.user).pipe(
 
-    constructor(private actions$: Actions, private authService: HttpAuthService, private store$: Store<AppState>, private toastrService: ToastrService, private router: Router, private route: ActivatedRoute, @Inject(PLATFORM_ID) private platformId: Object) { }
+                map((payload: any): Action => account.registrationSuccessful(payload)),
 
-    @Effect()
-    public registerUserRequested$: Observable<Action> = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.RegisterUserRequested),
-
-        exhaustMap((action: any): Observable<any> => {
-
-            return this.authService.register(action.payload.user).pipe(
-
-                map((payload: any): Action => new auth.RegistrationSuccessful(payload)),
-
-                catchError((error: any): Observable<Action> => of(new auth.RegistrationUnsuccessful({ error: error })))
+                catchError((error: any): Observable<Action> => of(account.registrationUnsuccessful({ error: error })))
 
             )
         })
-    );
+    ))
 
-    @Effect()
-    public authenticateUserRequested$: Observable<Action> = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.AuthenticateUserRequested),
+    public authenticateUserRequested$: Observable<Action> = createEffect(() => this.actions$.pipe(
+        ofType(account.authenticateUserRequested),
         exhaustMap((action: any) => {
-            return this.authService.login(action.payload.account).pipe(
+            return this.authService.login(action.account).pipe(
 
-                map((payload: any) => new auth.AuthenticateUserSuccessful({ token: payload })),
+                map((payload: any) => account.authenticateUserSuccessful({ account: payload })),
 
-                tap((user: any) => this.router.navigateByUrl('/dashboard/main')),
+                tap(() => this.router.navigateByUrl('/dashboard/main')),
 
-                catchError((err: any) => of(new auth.AuthenticateUserUnsuccessful({ error: err })))
+                catchError((err: any) => of(account.authenticateUserUnsuccessful({ error: err })))
 
             )
         })
 
-    );
+    ))
 
-    @Effect({ dispatch: false })
-    public userLogout$ = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.LogoutUserRequested),
+    public userLogout$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(account.logoutUserRequested),
         exhaustMap((action: any) => {
             return this.authService.logout().pipe(
                 tap(() => {
                     if (isPlatformBrowser(this.platformId)) {
                         // Client only code.
-                        localStorage.removeItem('Account');
-                        this.router.navigate(['/login'], { replaceUrl: true }); //, { relativeTo: this.route }
-                        this.toastrService.success("You have successfully logged out");
+                        localStorage.removeItem('Account')
+                        this.router.navigate(['/login'], { replaceUrl: true }) //, { relativeTo: this.route }
+                        this.toastrService.success('You have successfully logged out')
                     }
                 }),
                 catchError((error: any) => {
-                    this.toastrService.error(error);
-                    return error;
+                    this.toastrService.error(error)
+                    return error
                 })
             )
         })
-    )
+    ), { dispatch: false })
 
-    @Effect({ dispatch: false })
-    registrationUnsuccessful$ = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.RegistrationUnsuccessful),
-        tap((action: any) => {
-            this.toastrService.error(action.payload.error);
-        })
-    );
+    public registrationUnsuccessful$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(account.registrationUnsuccessful),
+        tap((action: any) => this.toastrService.error(action.payload.error))
+    ), { dispatch: false })
 
-    @Effect({ dispatch: false })
-    registrationSuccessful$ = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.RegistrationSuccessful),
+    public registrationSuccessful$: Observable<any> = createEffect(() => this.actions$.pipe(
+        ofType(account.registrationSuccessful),
         tap(() => {
-            this.toastrService.success('Registration was successsful, you may now log in');
-            this.router.navigateByUrl('/login');
+            this.toastrService.success('Registration was successsful, you may now log in')
+            this.router.navigateByUrl('/login')
         })
-    );
+    ), { dispatch: false })
 
-    @Effect({ dispatch: false })
-    authenticationUnsuccessful$ = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.AuthenticateUserUnsuccessful),
-        tap((action: any) => {
-            this.toastrService.error(action.payload.error);
-        })
-    );
+    public authenticationUnsuccessful$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(account.authenticateUserUnsuccessful),
+        tap((action: any) => this.toastrService.error(action.payload.error))
+    ), { dispatch: false })
 
-    @Effect({ dispatch: false })
-    authenticationSuccessful$ = this.actions$.pipe(
-        ofType(auth.AuthenticationActionTypes.AuthenticateUserSuccessful),
+    public authenticationSuccessful$: Observable<void> = createEffect(() => this.actions$.pipe(
+        ofType(account.authenticateUserSuccessful),
         tap((action: any) => {
             if (isPlatformBrowser(this.platformId)) {
-                // Client only code.
-                localStorage.setItem('Account', JSON.stringify(action.payload.token))
+                localStorage.setItem('Account', JSON.stringify(action.account))
             }
         })
-    );
+    ), { dispatch: false })
 
-    @Effect()
-    public init$ = defer(() => {
+    public checkAuthenticationStatus$: Observable<Action | any> = createEffect(() => this.actions$.pipe(
+        ofType(account.checkAuthenticationStatus),
+        map(() => {
+            if (isPlatformBrowser(this.platformId)) {
+                // Client only code.
+                const user = JSON.parse(localStorage.getItem("Account"))
 
-        if (isPlatformBrowser(this.platformId)) {
-            // Client only code.
-            const account = JSON.parse(localStorage.getItem("Account"));
-    
-            if (account && account.JWTToken) {
-                return of(new auth.AuthenticateUserSuccessful({ token: account }));
+                if (user) {
+                    return of(this.store$.dispatch(account.authenticateUserSuccessful({ account: user })))
+                } else {
+                    return EMPTY
+                }
             }
-            // else {
-            //     return <any> of(new LogoutUserRequested());
-            // }
-        }
+        })
+    ), { dispatch: false })
 
+    constructor(private actions$: Actions, private authService: HttpAuthService, private toastrService: ToastrService, private router: Router, @Inject(PLATFORM_ID) private platformId: object, private store$: Store<AppState>) { }
 
-    })
-
+    ngrxOnInitEffects(): Action {
+        return account.checkAuthenticationStatus()
+    }
 
 }

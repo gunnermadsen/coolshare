@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
 import { ProfileComponent } from './components/profile/profile.component';
 import { SharedModule } from '@/shared/shared.module';
 import { AccountComponent } from '@/modules/account/pages/account/account.component';
@@ -26,7 +25,6 @@ import { ImageCropperModule } from 'ngx-image-cropper';
 
     ],
     imports: [
-        CommonModule,
         SharedModule,
         AccountRoutingModule,
         StoreModule.forFeature('Account', AccountReducer),

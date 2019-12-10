@@ -2,10 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, AbstractControl } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AppState } from '@/reducers';
-import { RegisterUserRequested } from '@/core/authentication/store/actions/authentication.actions';
 import { InvalidCharacterValidator } from '@/shared/validators/invalid-characters.validator';
 import { PasswordMatchValidator } from '@/shared/validators/password-match.validator';
 import { PasswordStrengthValidator } from '@/shared/validators/password-strength.validator';
+import { registerUserRequested } from '@/core/authentication/store/actions/authentication.actions';
 
 @Component({
   selector: 'app-register',
@@ -80,7 +80,7 @@ export class RegisterComponent implements OnInit {
       Password: this.f.Password,
     }
     
-    this.store.dispatch(new RegisterUserRequested({ user: user }));
+    this.store.dispatch(registerUserRequested({ user: user }));
   }
 
   public getErrorMessage(control: string, error: string): string {

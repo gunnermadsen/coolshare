@@ -1,30 +1,27 @@
-import { AuthenticationActionTypes, AuthenticationActions } from '../actions/authentication.actions';
+import { createReducer, on, Action } from '@ngrx/store';
+import { authenticateUserSuccessful, logoutUserRequested } from '../actions/authentication.actions';
 
 export interface AuthenticationState {
     isLoggedIn: boolean;
-    token: any
+    account: any
 }
 
 export const initialAuthenticationState: AuthenticationState = {
     isLoggedIn: false,
-    token: undefined
+    account: undefined
 };
 
-export function AuthenticationReducer(state = initialAuthenticationState, action: AuthenticationActions): AuthenticationState {
-    switch (action.type) {
-        case AuthenticationActionTypes.AuthenticateUserSuccessful:
-            return {
-                isLoggedIn: true,
-                token: action.payload.token
-            }
+const reducer = createReducer(
+    initialAuthenticationState,
+    on(authenticateUserSuccessful, (state: AuthenticationState, { account }) => {
+        return {
+            isLoggedIn: true,
+            account: account
+        }
+    }),
+    on(logoutUserRequested, () => initialAuthenticationState)
+)
 
-        case AuthenticationActionTypes.LogoutUserRequested:
-            return {
-                isLoggedIn: false,
-                token: undefined
-            }
-
-        default:
-            return state;
-    }
+export function AuthenticationReducer(state: AuthenticationState | undefined, action: Action) {
+    return reducer(state, action)
 }

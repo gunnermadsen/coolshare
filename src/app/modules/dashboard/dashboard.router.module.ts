@@ -17,9 +17,14 @@ const routes: Routes = [
             {
                 path: 'files',
                 component: RepositoryComponent
+            },
+            {
+                path: '**',
+                redirectTo: 'files'
             }
         ]
     },
+    
 ];
 
 @NgModule({

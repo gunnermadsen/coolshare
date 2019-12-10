@@ -20,7 +20,7 @@ export class NotificationEffects {
         exhaustMap((payload: any) => {
             return this.notificationService.createNotification(payload).pipe(
 
-                map((result: any) => settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden, id: payload.userId })),
+                map(() => settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden })),
                 
                 catchError(error => throwError(error))
             )
@@ -35,7 +35,7 @@ export class NotificationEffects {
                 switchMap((payload: any) => {
                     return [
                         saveNotifications({ notifications: payload.Notifications }),
-                        settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden, id: payload.id })
+                        settings.saveNotificationSettingsViewState({ notificationBadgeHidden: payload.NotificationBadgeHidden })
                     ]
                 }),
                 
@@ -59,12 +59,16 @@ export class NotificationEffects {
     public setNotificationViewState$: Observable<void> = createEffect(() => this.actions$.pipe(
         ofType(settings.saveNotificationSettingsViewState),
         mergeMap((payload: any) => {
-            return this.notificationService.setNotificationViewState(payload.id, payload.notificationBadgeHidden).pipe(
+
+            const id = JSON.parse(localStorage.getItem('Account')).Id
+
+            return this.notificationService.setNotificationViewState(id, payload.notificationBadgeHidden).pipe(
                
                 tap(() => console.log("Notification view state has been set")),
                 
                 catchError((error) => throwError(error))
             )
+            
         })
     ), { dispatch: false })
 

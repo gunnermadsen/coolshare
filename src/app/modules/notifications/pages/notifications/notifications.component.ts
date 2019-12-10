@@ -1,49 +1,49 @@
-import { Component, OnInit, Input, Output, EventEmitter, SimpleChanges, OnChanges } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, Inject, PLATFORM_ID, SimpleChanges, OnChanges } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
+import * as notifications from '@/modules/notifications/store/selectors/notification.selectors'
 
 import * as notificationActions from '../../store/actions/notification.actions';
 import * as fromFileUploadSelectors from '@/modules/upload-file/store/selectors/upload.selectors.ts'; 
-import { tap } from 'rxjs/operators';
-import { INotificationState } from '../../store/state';
+import { tap, map } from 'rxjs/operators';
+import { INotificationState, NotificationTypes } from '../../store/state';
 import { deleteAllNotifications, fetchNotifications } from '../../store/actions/notification.actions';
+import { isPlatformBrowser } from '@angular/common';
 
 @Component({
   selector: 'notifications',
   templateUrl: './notifications.component.html',
   styleUrls: ['./notifications.component.less']
 })
-export class NotificationsComponent implements OnInit {
-  private viewState: boolean
-
+export class NotificationsComponent implements OnInit, OnChanges {
   public isUploadActive: boolean = false
-
-  @Input() 
-  public notifications: any
-
-  @Input() 
-  public id: string
+  public userId: string
 
   @Input()
   public isEmpty: boolean
+
+  @Input()
+  public notifications: any[]
 
   @Output()
   public closeSidenav: EventEmitter<any> = new EventEmitter<any>()
 
   public fileUploadState$: Observable<boolean>;
 
-  constructor(private store$: Store<AppState>) { }
+  constructor(private store$: Store<AppState>, @Inject(PLATFORM_ID) private platformId: Object) {
+    if (isPlatformBrowser(this.platformId)) {
+      this.userId = JSON.parse(localStorage.getItem('Account'))
+    }
+  }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    //Called before any other lifecycle hook. Use it to inject dependencies, but avoid any serious work here.
-    //Add '${implements OnChanges}' to the class.
     if (changes.notifications.currentValue.length > 1) {
       changes.notifications.currentValue.sort((n1: INotificationState, n2: INotificationState) => new Date(n2.createdOn).getTime() - new Date(n1.createdOn).getTime())
     }
   }
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.fileUploadState$ = this.store$.pipe(
       select(fromFileUploadSelectors.selectCurrentUploadState),
       tap((state: any) => {
@@ -58,14 +58,14 @@ export class NotificationsComponent implements OnInit {
   public deleteAllNotifications(event: MouseEvent): void {
     event.stopPropagation()
     event.preventDefault()
-    this.store$.dispatch(deleteAllNotifications({ id: this.id }))
+    this.store$.dispatch(deleteAllNotifications({ id: this.userId }))
     this.isEmpty = true;
   }
 
   public refreshNotifications(event: MouseEvent): void {
     event.stopPropagation()
     event.preventDefault()
-    this.store$.dispatch(fetchNotifications({ id: this.id }))
+    this.store$.dispatch(fetchNotifications({ id: this.userId }))
   }
 
   public closeNotificationSidenav(): void {

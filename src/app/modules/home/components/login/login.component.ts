@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { AppState } from '@/reducers';
-import { AuthenticateUserRequested } from '@/core/authentication/store/actions/authentication.actions';
 import { InvalidCharacterValidator } from '@/shared/validators/invalid-characters.validator';
+import { authenticateUserRequested } from '@/core/authentication/store/actions/authentication.actions';
 
 @Component({
   selector: 'login',
@@ -16,27 +15,13 @@ export class LoginComponent implements OnInit {
   loading: boolean = false;
   submitted: boolean = false;
   returnUrl: string;
-  constructor(private formBuilder: FormBuilder, private store: Store<AppState>, private router: Router) {}
+  constructor(private formBuilder: FormBuilder, private store: Store<AppState>) {}
 
   ngOnInit() {
     this.loginForm = this.formBuilder.group({
-      UserName: [
-        'madgunner', 
-        Validators.compose([
-          Validators.required, 
-          InvalidCharacterValidator
-        ]) 
-      ],
-      Password: [
-        'Megatron1!', 
-        Validators.compose([
-          Validators.required, 
-          InvalidCharacterValidator
-        ])
-      ]
+      UserName: ['madgunner', Validators.compose([ Validators.required, InvalidCharacterValidator ])],
+      Password: ['Megatron1!', Validators.compose([ Validators.required, InvalidCharacterValidator ])]
     });
-
-    //this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/dashboard';
   }
 
   public get f() {
@@ -54,13 +39,12 @@ export class LoginComponent implements OnInit {
       return;
     }
 
-    const user = {
-      UserName: this.f.UserName,
-      Password: this.f.Password
-    }
-
-    this.store.dispatch(new AuthenticateUserRequested({ account: user }));
-
+    this.store.dispatch(authenticateUserRequested({
+      account: {
+        UserName: this.f.UserName,
+        Password: this.f.Password
+      } 
+    }));
   }
 
   public getErrorMessage(control: string, error: string): string {

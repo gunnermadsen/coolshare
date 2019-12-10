@@ -98,8 +98,8 @@
     <div class="thumbnail-wrapper" [id]="i" (click)="getFolderContents(file)" *ngFor="let file of files; index as i; trackBy: trackByFn">
       <div class="thumbnail" [ngStyle]="{ 'background-image': getUrl(file.Name, file.Type) }">
         <div class="tn-top-row">
-          <mat-checkbox color="primary" class="ghost-button m-2" (click)="$event.stopPropagation()" (change)="setSelectionState($event, file)"></mat-checkbox>
-          <button class="ghost-button tb-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+          <mat-checkbox color="primary" class="m-2 ghost-button" (click)="$event.stopPropagation()" (change)="setSelectionState($event, file)"></mat-checkbox>
+          <button class="tb-button ghost-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu" (click)="handleClickEvent($event, i)">
             <mat-icon class="thumbnail-menu">more_vert</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -113,7 +113,7 @@
           </mat-menu>
         </div>
         <div class="tn-bottom-row">
-          <button mat-icon-button color="primary" class="ghost-button" (click)="editFavoriteStatus($event, file)">
+          <button mat-icon-button class="ghost-button" color="primary" (click)="editFavoriteStatus($event, file)">
             <div *ngIf="file.IsFavorite; then star; else starOutline"></div>
           </button>
         </div>

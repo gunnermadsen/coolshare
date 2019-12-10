@@ -1,7 +1,6 @@
 import { Component, ViewChild, Inject, PLATFORM_ID } from '@angular/core'
 import { Store, select } from '@ngrx/store'
-import { selectUser } from './core/authentication/store/selectors/authentication.selectors'
-import { LogoutUserRequested } from './core/authentication/store/actions/authentication.actions'
+import { selectUser, selectUserAuthenticationStatus } from './core/authentication/store/selectors/authentication.selectors'
 import { AppState } from './reducers/index'
 import { MatSnackBar, MatSidenav } from '@angular/material'
 
@@ -17,9 +16,9 @@ import { BreakpointObserver, BreakpointState } from '@angular/cdk/layout'
 import { takeUntil, map, tap } from 'rxjs/operators'
 import { Observable, of, Subject } from 'rxjs'
 
-import { NotificationTypes } from './modules/notifications/store/state'
-import { isPlatformBrowser } from '@angular/common'
-import { fetchNotifications } from '@/modules/notifications/store/actions/notification.actions'
+import { NotificationTypes, INotificationState } from './modules/notifications/store/state'
+import { logoutUserRequested } from './core/authentication/store/actions/authentication.actions'
+import { fetchNotifications } from './modules/notifications/store/actions/notification.actions'
 
 @Component({
   selector: 'app-root',
@@ -29,8 +28,9 @@ import { fetchNotifications } from '@/modules/notifications/store/actions/notifi
 
 export class AppComponent {
   public authState$: Observable<boolean>
-  public initials$: Observable<string>
   public notifications$: Observable<any>
+
+  public initials$: Observable<string>
   public notificationBadgeViewState$: Observable<boolean> = of(true)
   private viewState: boolean
   public isEmpty: boolean = true
@@ -38,32 +38,51 @@ export class AppComponent {
   public isSM: boolean = null
   public userId: string = ""
   public mode: string
+  private _destroy$: Subject<boolean> = new Subject<boolean>()
+
   @ViewChild('notificationSidenav', { static: true }) public notificationsSidebar: MatSidenav
 
   constructor(@Inject(PLATFORM_ID) private platformId: Object, private breakpointObserver: BreakpointObserver, private store$: Store<AppState>, private snackBar: MatSnackBar, private router: Router, private route: ActivatedRoute) {
     this.initializeNotifications()
   }
+
   ngOnInit(): void {
     
-    this.store$.pipe(select(selectUser)).subscribe((result: any) => {
-      if (result.isLoggedIn) {
+    this.authState$ = this.store$.pipe(
+      select(selectUserAuthenticationStatus),
+      tap((state: boolean) => console.log("Auth state has been set to: " + state))
+    )
 
-        if (isPlatformBrowser(this.platformId)) {
-          // Client only code.
-          this.userId = JSON.parse(localStorage.getItem('Account')).Id
+    this.notifications$ = this.store$.pipe(
+      select(notifications.selectAllNotifications),
+      map((notifications: any[]) => {
+        if (!notifications.length) {
+          return [{
+            title: 'No notifications at this time',
+            notificationType: NotificationTypes.Default
+          }]
         }
+        this.isEmpty = false
+        return notifications
+      })
+    )
 
+    this.store$.pipe(select(fromFileUploadSelectors.selectUploadViewState), takeUntil(this._destroy$)).subscribe((state: any) => this.openSnackBar(state))
+
+    this.store$.pipe(
+      select(selectUser),
+      takeUntil(this._destroy$)
+    )
+    .subscribe((result: any) => {
+      if (result.isLoggedIn) {
         this.store$.dispatch(new fromAccount.FetchAccountInfo())
-        this.store$.dispatch(fetchNotifications({ id: result.token.Id }))
+        this.store$.dispatch(fetchNotifications({ id: result.account.Id }))
       }
-      this.authState$ = of(result.isLoggedIn)
+      return result
     })
-
-    this.store$.pipe(select(fromFileUploadSelectors.selectUploadViewState)).subscribe((state: any) => this.openSnackBar(state))
 
     this.initials$ = this.store$.pipe(
       select(account.selectAccountInfo),
-      // takeUntil(this.authState$),
       map((account: any) => {
         if (Object.keys(account).length > 1) {
           return this.getInitialsFromAccountData(account)
@@ -76,8 +95,7 @@ export class AppComponent {
   }
 
   public logout(): void {
-    this.store$.dispatch(new LogoutUserRequested())
-    this.authState$ = of(false)
+    this.store$.dispatch(logoutUserRequested())
   }
 
   private openSnackBar(state: boolean): void {
@@ -108,40 +126,29 @@ export class AppComponent {
   }
 
   private observeBreakpointChanges(): void {
-    this.breakpointObserver.observe(
-      ['(max-width: 500px)', '(min-width: 600px)', '(min-width: 750px)']
-    )
-    .subscribe((result: BreakpointState) => {
-      this.isXS = result.breakpoints['(max-width: 550px)']
-      this.isSM = result.breakpoints['(min-width: 600px)']
-
-      this.mode = result.breakpoints['(min-width: 750px)'] ? 'side' : 'over'
-      
-    })
+    this.breakpointObserver
+      .observe([
+        '(max-width: 500px)', 
+        '(min-width: 600px)', 
+        '(min-width: 750px)'
+      ])
+      .pipe(
+        takeUntil(this._destroy$)
+      )
+      .subscribe((result: BreakpointState) => {
+        this.isXS = result.breakpoints['(max-width: 550px)']
+        this.isSM = result.breakpoints['(min-width: 600px)']
+        this.mode = result.breakpoints['(min-width: 750px)'] ? 'side' : 'over'
+      })
   }
 
   private initializeNotifications(): void {
     this.notificationBadgeViewState$ = this.store$.pipe(
       select(notifications.selectViewState),
-      // takeUntil(this.authState$),
+      takeUntil(this._destroy$),
       tap((result: any) => {
         this.viewState = result
         return result
-      })
-    )
-
-    this.notifications$ = this.store$.pipe(
-      select(notifications.selectAllNotifications),
-      // takeUntil(this.authState$),
-      map((state: any[]) => {
-        if (!state.length) {
-          return [{
-            title: 'No notifications at this time',
-            notificationType: NotificationTypes.Default
-          }]
-        }
-        this.isEmpty = false
-        return state
       })
     )
   }
@@ -159,7 +166,7 @@ export class AppComponent {
     this.notificationsSidebar.toggle()
 
     if (!this.viewState) {
-      this.store$.dispatch(notificationSettings.saveNotificationSettingsViewState({ id: this.userId, notificationBadgeHidden: true }))
+      this.store$.dispatch(notificationSettings.saveNotificationSettingsViewState({ notificationBadgeHidden: true }))
     }
   }
 

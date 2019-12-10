@@ -1,24 +1,19 @@
 import { NgModule, Optional, SkipSelf, ModuleWithProviders } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS, HttpClientXsrfModule }from '@angular/common/http';
-import { MaterialModule } from '../shared/material.module';
+import { HTTP_INTERCEPTORS, HttpClientXsrfModule }from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 import { URLInterceptorService } from './interceptors/jwt.interceptor.service';
 
-import { ToastrModule } from 'ngx-toastr';
-import { AuthenticationReducer } from './authentication/store/reducer/authentication.reducer';
-import { AuthenticationEffects } from './authentication/store/effects/authentication.effects';
 import { AuthGuardService } from './guards/auth.guard';
-import { SharedModule } from '@/shared/shared.module';
 import { HttpErrorInterceptor } from './interceptors/http-error.interceptor.service';
 import { reducers, metaReducers } from '@/reducers';
 import { environment } from 'environments/environment';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
-    declarations: [],
+    declarations: [
+    ],
     imports: [ 
         CommonModule,
 

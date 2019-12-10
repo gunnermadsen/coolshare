@@ -19,19 +19,18 @@ const routes: Routes = [
   {
     path: 'dashboard',
     canActivate: [AuthGuardService],
-    loadChildren: './modules/dashboard/dashboard.module#DashboardModule'
+    loadChildren: () => import('./modules/dashboard/dashboard.module').then(mod => mod.DashboardModule)
   },
   {
     path: ':userName/:shareName',
     resolve: {
       status: LinkVerificationResolver
     },
-    // component: PublicShareComponent
-    loadChildren: './modules/public-share/public-share.module#PublicShareModule'
+    loadChildren: () => import('./modules/public-share/public-share.module').then(mod => mod.PublicShareModule)
   },
   {
     path: 'account',
-    loadChildren: './modules/account/account.module#AccountModule',
+    loadChildren: () => import('./modules/account/account.module').then(mod => mod.AccountModule),
     canActivate: [AuthGuardService]
   },
   {

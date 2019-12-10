@@ -5,16 +5,17 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ToastrModule } from 'ngx-toastr';
 import { RouterModule } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
-import { UploadModule } from '@/modules/upload-file/upload.module';
 import { FileSizePipe } from './pipes/file-size.pipe';
-import { DropzoneDirective } from './directives/dropzone.directive';
+import { DropzoneDirective } from './directives/dropzone/dropzone.directive';
 import { UploadSpeedPipe } from './pipes/file-upload-speed.pipe';
+import { ShowIconControlsDirective } from './directives/show-icon-controls/show-icon-controls.directive';
 
 @NgModule({
     declarations: [
         FileSizePipe,
         UploadSpeedPipe,
-        DropzoneDirective
+        DropzoneDirective,
+        ShowIconControlsDirective
     ],
     imports: [
         CommonModule,
@@ -26,14 +27,15 @@ import { UploadSpeedPipe } from './pipes/file-upload-speed.pipe';
             positionClass: 'toast-bottom-right'
         }),
         RouterModule
-        
     ],
     exports: [
+        CommonModule,
         MaterialModule,
         ReactiveFormsModule,
         FileSizePipe,
         UploadSpeedPipe,
-        DropzoneDirective
+        DropzoneDirective,
+        ShowIconControlsDirective
     ],
     providers: [],
 })

@@ -4,7 +4,6 @@ import { Observable, of, throwError } from 'rxjs';
 import { take, map, catchError } from 'rxjs/operators';
 import { Store, select } from '@ngrx/store';
 import { AppState } from '@/reducers';
-import { VerifyLink } from '../authentication/store/actions/authentication.actions';
 import { HttpRepoService } from '../http/repo.http.service';
 import { ToastrService } from 'ngx-toastr';
 
