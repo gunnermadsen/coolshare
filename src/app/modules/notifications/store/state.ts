@@ -8,6 +8,7 @@ export enum NotificationTypes {
     FileDownloaded = 'Download',
     AddToFavorites = 'Is Favorite',
     RenameEntity = 'Rename Entity',
+    Empty = 'Empty',
     Default = 'Default'
 }
 

@@ -20,8 +20,8 @@ export class NotificationsComponent implements OnInit, OnChanges {
   public isUploadActive: boolean = false
   public userId: string
 
-  @Input()
-  public isEmpty: boolean
+  // @Input()
+  public isEmpty: boolean = true
 
   @Input()
   public notifications: any[]
@@ -33,13 +33,16 @@ export class NotificationsComponent implements OnInit, OnChanges {
 
   constructor(private store$: Store<AppState>, @Inject(PLATFORM_ID) private platformId: Object) {
     if (isPlatformBrowser(this.platformId)) {
-      this.userId = JSON.parse(localStorage.getItem('Account'))
+      this.userId = JSON.parse(localStorage.getItem('Account')).Id
     }
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
-    if (changes.notifications.currentValue.length > 1) {
+    if (changes.notifications.currentValue[0].notificationType != "Default") {
+      this.isEmpty = false
       changes.notifications.currentValue.sort((n1: INotificationState, n2: INotificationState) => new Date(n2.createdOn).getTime() - new Date(n1.createdOn).getTime())
+    } else {
+      this.isEmpty = true
     }
   }
 

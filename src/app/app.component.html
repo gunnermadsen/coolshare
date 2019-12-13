@@ -45,8 +45,8 @@
     </mat-sidenav>
   
     <!-- Notifications Sidenav -->
-    <mat-sidenav #notificationSidenav [mode]="mode" position="end">
-      <notifications [notifications]="notifications$ | async" [isEmpty]="isEmpty" (closeSidenav)="closeSidenav()">
+    <mat-sidenav #notificationSidenav [mode]="'over'" position="end">
+      <notifications [notifications]="notifications$ | async" (closeSidenav)="closeSidenav()">
       </notifications>
     </mat-sidenav>
   
