@@ -1,13 +1,15 @@
 <div class="notifications-container">
+
     <div class="notification-heading">
         <div class="heading-content">
             <h2 class="heading-title">Activity</h2>
-            <button mat-button class="close-notifications" (click)="closeNotificationSidenav()">
+            <!-- <button mat-icon-button class="close-notifications" (click)="closeNotificationSidenav()">
                 <mat-icon>close</mat-icon>
-            </button>
+            </button> -->
         </div>
         <!-- <mat-divider></mat-divider> -->
     </div>
+
     <div class="notifications">
         <div class="notification-items">
             <div [ngSwitch]="notification.notificationType" *ngFor="let notification of notifications; index as i">
@@ -122,13 +124,15 @@
                 </div>
             </div>
         </div>
-        <div class="notification-actions" *ngIf="!isEmpty">
-            <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)">
-                <mat-icon class="mr-2">clear</mat-icon>Clear
-            </button>
-            <button mat-raised-button color="primary" (click)="refreshNotifications($event)">
-                <mat-icon class="mr-2">refresh</mat-icon>Refresh
-            </button>
-        </div>
     </div>
+
+    <div class="notification-actions" *ngIf="!isEmpty">
+        <button mat-raised-button color="primary" (click)="deleteAllNotifications($event)">
+            <mat-icon class="mr-2">clear</mat-icon>Clear
+        </button>
+        <button mat-raised-button color="primary" (click)="refreshNotifications($event)">
+            <mat-icon class="mr-2">refresh</mat-icon>Refresh
+        </button>
+    </div>
+    
 </div>

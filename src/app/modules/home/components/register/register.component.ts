@@ -29,36 +29,24 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit() {
     this.registerFormGroup = this.formBuilder.group({
-      Email: [
-        'gunner.madsen@outlook.com', 
-        Validators.compose([
-          Validators.required, 
-          Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}'), 
-          InvalidCharacterValidator
-        ])
-      ],
-      UserName: [
-        '', 
-        Validators.compose([
-          Validators.required, 
-          InvalidCharacterValidator
-        ])
-      ],
-      Password: [
-        'Megatron1!', 
-        Validators.compose([
-          Validators.required,
-          InvalidCharacterValidator
-        ])
-      ],
-      RepeatPassword: [
-        'Megatron1!', 
-        Validators.compose([
-          Validators.required,
-          InvalidCharacterValidator,
-          PasswordStrengthValidator
-        ])
-      ]
+      Email: ['', Validators.compose([
+        Validators.required, 
+        Validators.pattern('[a-zA-Z0-9.-_]{1,}@[a-zA-Z.-]{2,}[.]{1}[a-zA-Z]{2,}'), 
+        InvalidCharacterValidator
+      ])],
+      UserName: ['', Validators.compose([
+        Validators.required, 
+        InvalidCharacterValidator
+      ])],
+      Password: ['Megatron1!', Validators.compose([
+        Validators.required,
+        InvalidCharacterValidator
+      ])],
+      RepeatPassword: ['Megatron1!', Validators.compose([
+        Validators.required,
+        InvalidCharacterValidator,
+        PasswordStrengthValidator
+      ])]
     }, { validators: PasswordMatchValidator });
   }
 

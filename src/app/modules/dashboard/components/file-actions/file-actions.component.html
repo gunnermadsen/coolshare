@@ -1,57 +1,90 @@
 <div *ngIf="rowSelected; then selectedActionCard; else actionCard"></div>
+<!-- 
+<div [ngSwitch]="mode">
+    <div *ngSwitchCase="0">
+        <ng-container *ngTemplateOutletContext="actionCard"></ng-container>
+    </div>
+    <div *ngSwitchCase="1">
+        <ng-container *ngTemplateOutletContext="selectedActionCard"></ng-container>
+    </div>
+</div> -->
 
 <ng-template #actionCard>
     <input type="file" multiple hidden (change)="uploadData($event)" #fileUploader>
     <input type="file" webkitdirectory (change)="uploadFolder($event)" mozdirectory hidden #folderUploader>
-    <mat-card class="mat-elevation-z2 px-0" *ngIf="mode === 0">
-        <mat-action-list>
-            <!-- <button mat-list-item class="px-3" color="primary">Create new file</button> -->
-            <button mat-list-item (click)="fileUploader.click()">
-                <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
-            </button>
-            <!-- <button mat-list-item class="px-3" >Upload folder</button> -->
-            <button mat-list-item (click)="refreshFiles()">
-                <mat-icon class="mr-2">refresh</mat-icon>Refresh
-            </button>
-            <button mat-list-item (click)="createNewFolder()">
-                <mat-icon class="mr-2">create_new_folder</mat-icon>New folder
-            </button>
-        </mat-action-list>
-    </mat-card>
 
-    <mat-toolbar class="mat-elevation-z2 m-toolbar action-toolbar" *ngIf="mode === 1">
-        <button mat-button (click)="fileUploader.click()">
-            <mat-icon class="m-icon" color="primary">cloud_upload</mat-icon> 
-            <span *ngIf="isSM">Upload Files</span>
-        </button>
-        <button mat-button (click)="folderUploader.click()">
-            <mat-icon class="m-icon" color="primary">backup</mat-icon> 
-            <span *ngIf="isSM">Upload Folder</span>
-        </button>
-        <button mat-button (click)="createNewFolder()">
-            <mat-icon class="m-icon" color="primary">create_new_folder</mat-icon>
-            <span *ngIf="isSM">New Folder</span>
-        </button>
-        <button mat-button (click)="refreshFiles()">
-            <mat-icon class="m-icon" color="primary">refresh</mat-icon>
-            <span *ngIf="isSM">Refresh</span>
-        </button>
-        <!-- <button mat-button class="list-icon" [matMenuTriggerFor]="displayMenu">
-            <mat-icon color="primary">list</mat-icon>
-        </button> -->
-    </mat-toolbar>
-
-    <mat-menu #displayMenu="matMenu">
-        <button (click)="setTableViewState($event, 0)" mat-menu-item>
-            <mat-icon class="mr-2">list</mat-icon>List
-        </button>
-        <button (click)="setTableViewState($event, 1)" mat-menu-item>
-            <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
-        </button>
-        <!-- <button (click)="setTableViewState($event, 2)" mat-menu-item>
-            <mat-icon class="mr-2 small-grid">grid_on</mat-icon>Small
-        </button> -->
-    </mat-menu>
+    <div [ngSwitch]="mode">
+        <div *ngSwitchCase="0">
+            <mat-card class="mat-elevation-z2 px-0">
+                <mat-action-list>
+                    <!-- <button mat-list-item class="px-3" color="primary">Create new file</button> -->
+                    <button mat-list-item (click)="fileUploader.click()">
+                        <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
+                    </button>
+                    <!-- <button mat-list-item class="px-3" >Upload folder</button> -->
+                    <button mat-list-item (click)="refreshFiles()">
+                        <mat-icon class="mr-2">refresh</mat-icon>Refresh
+                    </button>
+                    <button mat-list-item (click)="createNewFolder()">
+                        <mat-icon class="mr-2">create_new_folder</mat-icon>New folder
+                    </button>
+                </mat-action-list>
+            </mat-card>
+        </div>
+        <div *ngSwitchCase="1">
+            <mat-toolbar class="mat-elevation-z2 m-toolbar action-toolbar" *ngIf="mode === 1">
+                <button mat-button (click)="fileUploader.click()">
+                    <mat-icon class="m-icon" color="primary">cloud_upload</mat-icon>
+                    <span *ngIf="isSM">Upload Files</span>
+                </button>
+                <button mat-button (click)="folderUploader.click()">
+                    <mat-icon class="m-icon" color="primary">backup</mat-icon>
+                    <span *ngIf="isSM">Upload Folder</span>
+                </button>
+                <button mat-button (click)="createNewFolder()">
+                    <mat-icon class="m-icon" color="primary">create_new_folder</mat-icon>
+                    <span *ngIf="isSM">New Folder</span>
+                </button>
+                <button mat-button (click)="refreshFiles()">
+                    <mat-icon class="m-icon" color="primary">refresh</mat-icon>
+                    <span *ngIf="isSM">Refresh</span>
+                </button>
+                <!-- <button mat-button class="list-icon" [matMenuTriggerFor]="displayMenu">
+                        <mat-icon color="primary">list</mat-icon>
+                    </button> -->
+            </mat-toolbar>
+            
+            <mat-menu #displayMenu="matMenu">
+                <button (click)="setTableViewState($event, 0)" mat-menu-item>
+                    <mat-icon class="mr-2">list</mat-icon>List
+                </button>
+                <button (click)="setTableViewState($event, 1)" mat-menu-item>
+                    <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
+                </button>
+                <!-- <button (click)="setTableViewState($event, 2)" mat-menu-item>
+                        <mat-icon class="mr-2 small-grid">grid_on</mat-icon>Small
+                    </button> -->
+            </mat-menu>
+        </div>
+        <div *ngSwitchCase="2">
+            <button mat-menu-item (click)="fileUploader.click()">
+                <!-- <mat-icon class="m-icon" color="primary">cloud_upload</mat-icon> -->
+                <span>Upload Files</span>
+            </button>
+            <button mat-menu-item (click)="folderUploader.click()">
+                <!-- <mat-icon class="m-icon" color="primary">backup</mat-icon> -->
+                <span>Upload Folder</span>
+            </button>
+            <button mat-menu-item (click)="createNewFolder()">
+                <!-- <mat-icon class="m-icon" color="primary">create_new_folder</mat-icon> -->
+                <span>New Folder</span>
+            </button>
+            <button mat-menu-item (click)="refreshFiles()">
+                <!-- <mat-icon class="m-icon" color="primary">refresh</mat-icon> -->
+                <span>Refresh</span>
+            </button>
+        </div>
+    </div>
 </ng-template>
 
 <ng-template #selectedActionCard>

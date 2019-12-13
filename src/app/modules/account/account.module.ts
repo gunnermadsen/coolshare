@@ -10,8 +10,8 @@ import { AccountEffects } from './store/effects/account.effects';
 import { AccountReducer } from './store/reducer/account.reducer';
 import { PersonalInfoComponent } from './components/personal-info/personal-info.component';
 import { AdvancedSettingsComponent } from './components/advanced-settings/advanced-settings.component';
-import { PictureComponent } from './components/picture/picture.component';
-import { ImageCropperModule } from 'ngx-image-cropper';
+// import { PictureComponent } from '../../../../temp/picture/picture.component';
+// import { ImageCropperModule } from 'ngx-image-cropper';
 
 
 @NgModule({
@@ -21,7 +21,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
         SigninComponent,
         PersonalInfoComponent,
         AdvancedSettingsComponent,
-        PictureComponent
+        // PictureComponent
 
     ],
     imports: [
@@ -30,7 +30,7 @@ import { ImageCropperModule } from 'ngx-image-cropper';
         StoreModule.forFeature('Account', AccountReducer),
         EffectsModule.forFeature([AccountEffects]),
 
-        ImageCropperModule,
+        // ImageCropperModule,
 
     ],
     exports: [],

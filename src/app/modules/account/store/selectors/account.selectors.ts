@@ -20,3 +20,21 @@ export const selectAccountInfo: MemoizedSelector<object, any> = createSelector(
     selectAccountState,
     (account: any) => account
 )
+
+export const selectInitialsFromAccountInfo: MemoizedSelector<object, any> = createSelector(
+    selectAccountState,
+    (account: any) => {
+
+        if (!Object.keys(account).length) return
+
+        if (account.FirstName && account.LastName) {
+            const fullName: string[] = `${account.FirstName} ${account.LastName}`.split(" ")
+            return `${fullName[0][0]}${fullName[1][0]}`
+            
+        }
+        else {
+            return account.UserName[0]
+        }
+
+    }
+)

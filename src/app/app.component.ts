@@ -47,11 +47,10 @@ export class AppComponent {
   }
 
   ngOnInit(): void {
-    
-    this.authState$ = this.store$.pipe(
-      select(selectUserAuthenticationStatus),
-      tap((state: boolean) => console.log("Auth state has been set to: " + state))
-    )
+    this.initials$ = this.store$.pipe(select(account.selectInitialsFromAccountInfo))
+    this.authState$ = this.store$.pipe(select(selectUserAuthenticationStatus))
+
+    this.store$.pipe(select(fromFileUploadSelectors.selectUploadViewState), takeUntil(this._destroy$)).subscribe((state: any) => this.openSnackBar(state))
 
     this.notifications$ = this.store$.pipe(
       select(notifications.selectAllNotifications),
@@ -67,8 +66,6 @@ export class AppComponent {
       })
     )
 
-    this.store$.pipe(select(fromFileUploadSelectors.selectUploadViewState), takeUntil(this._destroy$)).subscribe((state: any) => this.openSnackBar(state))
-
     this.store$.pipe(
       select(selectUser),
       takeUntil(this._destroy$)
@@ -81,17 +78,7 @@ export class AppComponent {
       return result
     })
 
-    this.initials$ = this.store$.pipe(
-      select(account.selectAccountInfo),
-      map((account: any) => {
-        if (Object.keys(account).length > 1) {
-          return this.getInitialsFromAccountData(account)
-        }
-      })
-    )
-
     this.observeBreakpointChanges()
-
   }
 
   public logout(): void {
@@ -110,59 +97,30 @@ export class AppComponent {
     this.router.navigate([route], { relativeTo: this.route })
   }
 
-  private getInitialsFromAccountData(account: any): string {
-    let initials: string = ""
-
-    if (account.FirstName && account.LastName) {
-      const fullName: string[] = `${account.FirstName} ${account.LastName}`.split(" ")
-      initials = `${fullName[0][0]}${fullName[1][0]}`
-      return initials
-    }
-    else {
-      initials = account.UserName[0]
-    }
-
-    return initials
-  }
-
   private observeBreakpointChanges(): void {
-    this.breakpointObserver
-      .observe([
-        '(max-width: 500px)', 
-        '(min-width: 600px)', 
-        '(min-width: 750px)'
-      ])
-      .pipe(
-        takeUntil(this._destroy$)
-      )
-      .subscribe((result: BreakpointState) => {
-        this.isXS = result.breakpoints['(max-width: 550px)']
-        this.isSM = result.breakpoints['(min-width: 600px)']
-        this.mode = result.breakpoints['(min-width: 750px)'] ? 'side' : 'over'
-      })
+    this.breakpointObserver.observe([ '(max-width: 500px)', '(min-width: 600px)', '(min-width: 750px)' ]).pipe(takeUntil(this._destroy$)).subscribe((result: BreakpointState) => {
+      this.isXS = result.breakpoints['(max-width: 550px)']
+      this.isSM = result.breakpoints['(min-width: 600px)']
+      this.mode = result.breakpoints['(min-width: 750px)'] ? 'side' : 'over'
+    })
   }
 
   private initializeNotifications(): void {
     this.notificationBadgeViewState$ = this.store$.pipe(
       select(notifications.selectViewState),
-      takeUntil(this._destroy$),
       tap((result: any) => {
         this.viewState = result
         return result
-      })
+      }),
+      takeUntil(this._destroy$),
     )
   }
 
-  private initializeAccount(result: any): void {
-    
-
-  }
-
-  public closeSidenav($event: any): void {
+  public closeSidenav(): void {
     this.notificationsSidebar.close()
   }
 
-  public setNotificationViewState(event: MouseEvent): void {
+  public setNotificationViewState(): void {
     this.notificationsSidebar.toggle()
 
     if (!this.viewState) {

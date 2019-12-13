@@ -12,19 +12,11 @@
   <button *ngIf="rowSelected" mat-menu-item (click)="deleteItem(1, row)">Delete</button>
 </mat-menu>
 
+<div class="repository-container">
 
-
-<div class="container-fluid mt-3">
-  <div class="row" *ngIf="displayMode === 0">
-    <div class="col mb-3">
-      <!-- <div class="example-loading-shade" *ngIf="isLoadingResults">
-        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-      </div> -->
-      <mat-card class="mat-elevation-z2 path-card">
-        <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
-      </mat-card>
-    </div>
-  </div>
+  <mat-card *ngIf="displayMode === 0" class="mat-elevation-z2 path-card">
+    <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
+  </mat-card>
 
   <div *ngIf="isXS">
     <file-actions 
@@ -37,39 +29,19 @@
     ></file-actions>
   </div>
   
-  <div class="row repository-wrapper">
-    <div class="col-lg-10 col-md-10 col-sm-12 col-12">
-      <div class="repository-container mat-elevation-z2">
-        
-        <div [ngSwitch]="displayMode">
-          <div *ngSwitchCase="0">
-            <ng-container *ngTemplateOutlet="list"></ng-container>
-          </div>
-          <div *ngSwitchCase="1">
-            <ng-container *ngTemplateOutlet="grid"></ng-container>
-          </div>
-        </div>
+  <div class="repository-data mat-elevation-z2">
+    <div [ngSwitch]="displayMode">
+      <div *ngSwitchCase="0">
+        <ng-container *ngTemplateOutlet="list"></ng-container>
       </div>
-    </div>
-    <!-- right side column: Appears when the viewport size is medium or large -->
-
-    <div class="col-lg-2 col-md-2 col-sm-12 col-12 pl-0" *ngIf="!isXS">
-      <file-actions 
-        [mode]="0" 
-        [cwd]="cwd" 
-        [rowSelected]="rowSelected" 
-        [selection]="selection" 
-        [userId]="userId" 
-        [userName]="(userName$ | async)"
-      ></file-actions>
+      <div *ngSwitchCase="1">
+        <ng-container *ngTemplateOutlet="grid"></ng-container>
+      </div>
     </div>
   </div>
 </div>
 
-
-
 <!-- Grid View -->
-
 <ng-template #grid>
   
   <div class="grid-header">
@@ -135,7 +107,7 @@
 <ng-template #list>
   <div dropzone (onFileDropped)="uploadData(files)">
 
-    <table mat-table [dataSource]="dataSource" class="example-table" matSort>
+    <table mat-table [dataSource]="dataSource" matSort>
       <!-- Checkbox Column -->
       <ng-container matColumnDef="select">
         <th mat-header-cell *matHeaderCellDef>
