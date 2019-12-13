@@ -147,10 +147,39 @@ p.list-info {
 /* Suggestions Section Styles */
 
 .suggestions {
+  display: flex;
+  flex-direction: row;
   overflow-x: scroll;
   margin: 10px;
 }
 
+.suggestion {
+  padding: 5px;
+  margin: 10px;
+  width: 140px;
+}
+
+.suggestion-thumbnail {
+  object-fit: contain;
+  background-size: cover;
+  background-position: center;
+
+  width: 140px;
+  height: 140px;
+
+  margin: auto;
+}
+
+.suggestion-title {
+  width: 100%;
+}
+
+.suggestion-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0 5px;
+}
 
 /* END Suggestions Section Styles */
 

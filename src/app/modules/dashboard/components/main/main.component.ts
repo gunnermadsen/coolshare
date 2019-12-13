@@ -78,8 +78,6 @@ export class MainComponent implements OnInit, OnDestroy {
         return recents
       })
     )
-
-    
   }
 
   public editFavoriteStatus(entity: any): void {
@@ -92,17 +90,29 @@ export class MainComponent implements OnInit, OnDestroy {
     this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
-  public setResource(name: string, type: string): string {
+  public setResource(name: string, type: string, mode?: number): string {
     // const id = JSON.parse(localStorage.getItem('Account')).Id
     switch (type) {
       case "File": {
         const extension = name.split('.')
-        return `${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png`
+        let url = `${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png`
+        if (mode) {
+          return `url(${url})`
+        }
+        return url
       } 
       case "Folder": {
-        return `${this.server}/assets/icons/folder-24.png`
+        const url = `${this.server}/assets/icons/folder-24.png`
+        if (mode) {
+          return `url(${url})`
+        }
+        return url
       }
     }
+  }
+
+  public trackByFn<V, I>(value: V, index: I): V | I {
+    return value
   }
 
   public ngOnDestroy(): void {
