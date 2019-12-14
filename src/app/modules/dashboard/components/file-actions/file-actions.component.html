@@ -84,6 +84,23 @@
                 <span>Refresh</span>
             </button>
         </div>
+        <div *ngSwitchCase="3">
+            <mat-card class="mat-elevation-z2 px-0">
+                <mat-action-list>
+                    <!-- <button mat-list-item class="px-3" color="primary">Create new file</button> -->
+                    <button mat-list-item (click)="fileUploader.click()">
+                        <mat-icon class="mr-2">cloud_upload</mat-icon> Upload files
+                    </button>
+                    <!-- <button mat-list-item class="px-3" >Upload folder</button> -->
+                    <button mat-list-item (click)="refreshFiles()">
+                        <mat-icon class="mr-2">refresh</mat-icon>Refresh
+                    </button>
+                    <button mat-list-item (click)="createNewFolder()">
+                        <mat-icon class="mr-2">create_new_folder</mat-icon>New folder
+                    </button>
+                </mat-action-list>
+            </mat-card>
+        </div>
     </div>
 </ng-template>
 

@@ -158,20 +158,21 @@ export class RepositoryComponent implements OnInit, OnDestroy {
       takeUntil(this.destroy$),
     )
     .subscribe((data: any) => {
-      if (data[0].length && data[1].cwd) {
+      if (data[1].cwd) {
         this.files = data[0]
         this.setCurrentDirectoryContents(data[1].cwd)
         this.isLoadingResults = false;
-      } 
+      }
     });
   }
 
   public setFavoriteState(entity: any): void {
-    const payload: Update<any> = {
-      id: entity.Id,
-      changes: { IsFavorite: !entity.IsFavorite }
-    }
-    this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
+    // const payload: Update<any> = {
+    //   id: entity.Id,
+    //   changes: { IsFavorite: !entity.IsFavorite }
+    // }
+    // this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
+    this.fileActionsComponent.setFavoriteState(entity)
   }
 
   public renameEntity(entity: any): void {
@@ -231,8 +232,8 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     } 
     else {
       this.dataSource = new MatTableDataSource(files)
-      this.dataSource.paginator = this.paginator
-      this.dataSource.sort = this.sort
+      // this.dataSource.paginator = this.paginator
+      // this.dataSource.sort = this.sort
     }
     
   }

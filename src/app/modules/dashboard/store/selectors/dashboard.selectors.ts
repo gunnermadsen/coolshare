@@ -21,13 +21,20 @@ export const getFavorites: MemoizedSelector<object, any> = createSelector(
 export const getRecents: MemoizedSelector<object, any> = createSelector(
     selectRepositoryState,
     (filesystem: any) => {
-        return getEntities(filesystem.Content.entities).sort((a: any, b: any) => new Date(a.CreatedOn).getTime() - new Date(b.CreatedOn).getTime())
+        return getEntities(filesystem.Content.entities).sort(
+            (a: any, b: any) => 
+                new Date(a.CreatedOn).getTime() - new Date(b.CreatedOn).getTime()
+        )
+        // .filter(
+        //     (file: any) => 
+        //         new Date(file.CreatedOn) <= new Date(Date.now() - 500000000)
+        // )
     }
 )
 
 export const getSuggestions: MemoizedSelector<object, any> = createSelector(
     selectRepositoryState,
     (filesystem: any) => {
-        return getEntities(filesystem.Content.entities).filter((file: any) => new Date(file.CreatedOn) <= new Date(Date.now() - 500000000))
+        return getEntities(filesystem.Content.entities)//.filter((file: any) => new Date(file.CreatedOn) <= new Date(Date.now() - 500000000))
     }
 )

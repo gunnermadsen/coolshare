@@ -51,17 +51,16 @@ body {
 }
 
 .favorite:hover, .recent:hover {
-
-  cursor: pointer;
-
-  .ghost-toggle {
-    display: inline-block;
-  }
-
   .settings {
     border: 1px solid blue;
   }
+}
 
+.favorite:hover, .recent:hover, .suggestion:hover {
+  cursor: pointer;
+  .ghost-toggle {
+    display: inline-block;
+  }
 }
 
 /* Material List Styles */
@@ -168,6 +167,22 @@ p.list-info {
   height: 140px;
 
   margin: auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.thumbnail-top-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.thumbnail-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .suggestion-title {
@@ -209,7 +224,7 @@ p.list-info {
   right: 10px;
 }
 
-.mat-mini-fab {
+.mat-button-wrapper {
   padding: 0 !important;
 }
 

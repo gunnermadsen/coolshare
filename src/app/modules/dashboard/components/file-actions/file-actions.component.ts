@@ -31,17 +31,22 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   public isSM: boolean = null
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
-  constructor(private store$: Store<AppState>, public dialog: MatDialog, private breakpointObserver: BreakpointObserver) {    
-    this.breakpointObserver.observe(
-      ['(min-width: 475px)', '(min-width: 550px)', '(min-width: 600px)', '(min-width: 750px)']
-    )
+  constructor(private store$: Store<AppState>, public dialog: MatDialog, private breakpointObserver: BreakpointObserver) {}
+
+  ngOnInit() {
+    this.breakpointObserver.observe([
+      '(min-width: 475px)', 
+      '(min-width: 550px)', 
+      '(min-width: 600px)', 
+      '(min-width: 750px)'
+    ])
     .pipe(
       takeUntil(this.destroy$)
     )
-    .subscribe((state: BreakpointState) => this.isSM = state.breakpoints['(min-width: 550px)'])
+    .subscribe(
+      (state: BreakpointState) => this.isSM = state.breakpoints['(min-width: 550px)']
+    )
   }
-
-  ngOnInit() { }
 
   public uploadData(event: any): void {
 
@@ -130,17 +135,22 @@ export class FileActionsComponent implements OnInit, OnDestroy {
       ids: ids
     }
 
-    if (mode === 0) {
-      this.store$.dispatch(filesystem.deleteFolderEntity(result))
-    } 
-    else {
-      this.store$.dispatch(filesystem.deleteFolderEntity(result))
+    this.store$.dispatch(filesystem.deleteFolderEntity(result))
+
+    if (this.mode === 0) {
+      this.selection.clear()
+      this.rowSelected = false
     }
-
-    this.selection.clear()
-    this.rowSelected = false
-
   }
+
+  public setFavoriteState(entity: any): void {
+    const payload: Update<any> = {
+      id: entity.Id,
+      changes: { IsFavorite: !entity.IsFavorite }
+    }
+    this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
+  }
+
 
   public downloadAction(name: string): void {
     this.store$.dispatch(filesystem.downloadEntity({ path: this.cwd, name: name, userId: this.userId }))

@@ -9,6 +9,7 @@ export interface IFile {
     ThumbnailPath: string
     IsFavorite: boolean
     IsShared: boolean
+    IsEmpty?: boolean
     ShareData: any
     MetaData: any
     CreatedOn: Date

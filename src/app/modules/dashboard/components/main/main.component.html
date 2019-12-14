@@ -3,13 +3,13 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #actionMenu="matMenu" xPosition="before">
-    <file-actions [rowSelected]="false" [mode]="2" [userId]="userId" [userName]="(userName$ | async)"></file-actions>
+    <file-actions [rowSelected]="false" [mode]="2" [userId]="userId" [userName]="(userName$ | async)" [cwd]="cwd"></file-actions>
   </mat-menu>
 </div>
 
-<div class="container-fluid mt-3">
+<div class="container-fluid">
   <div class="row mb-3">
-    <div class="col-lg-10 col-md-9 col-sm-12 col-12">
+    <div class="col-lg-10 col-md-9 col-sm-12 col-12 mt-3">
       <mat-accordion class="example-headers-align" [multi]="true">
         <mat-expansion-panel [expanded]="true">
           <mat-expansion-panel-header>
@@ -19,9 +19,18 @@
 
           <div class="suggestions">
             <div *ngFor="let suggestion of (suggestions$ | async); index as i; trackBy: trackByFn">
-              <div class="suggestion">
+              <div *ngIf="!isSuggestions">{{ suggestion.Name }}</div>
+              <div *ngIf="isSuggestions" class="suggestion">
                 <div class="suggestion-thumbnail" [ngStyle]="{ 'background-image': setResource(suggestion.Name, suggestion.Type, 3) }">
-                  
+                  <div class="thumbnail-top-row">
+                    <mat-checkbox class="ghost-toggle"></mat-checkbox>
+                    <ng-container *ngTemplateOutlet="fileMenu; context: { file: suggestion }"></ng-container>
+                  </div>
+                  <div class="thumbnail-bottom-row">
+                    <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(suggestion)">
+                      <div *ngIf="suggestion.IsFavorite; then star; else starOutline"></div>
+                    </button>
+                  </div>
                 </div>
                 <div class="suggestion-title">
                   <p class="suggestion-name">{{ suggestion.Name }}</p>
@@ -42,14 +51,14 @@
             <div *ngFor="let favorite of (favorites$ | async); index as i">
               <div *ngIf="!isFavorites" class="favorite">{{ favorite.Name }}</div>
               <div *ngIf="isFavorites" class="favorite">
-                <img class="favorite-icon" [src]="setResource(favorite.Name, favorite.Type)" (error)="this.src = '/assets/icons/file-13.png'">
+                <img class="favorite-icon" [src]="setResource(favorite.Name, favorite.Type)">
                 <h3 class="favorite-title">{{ favorite.Name }}</h3>
                 <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(favorite)">
                   <mat-icon class="favorite-star">star</mat-icon>
                 </button>
-                <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
+                <ng-container *ngTemplateOutlet="fileMenu; context: { file: favorite }"></ng-container>
               </div>
-              <mat-divider *ngIf="(favorites$ | async).length - 1 != i"></mat-divider>
+              <!-- <mat-divider *ngIf="(favorites$ | async).length - 1 != i"></mat-divider> -->
             </div>
           </div>
         </mat-expansion-panel>
@@ -74,9 +83,9 @@
                 <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(recent)">
                   <div *ngIf="recent.IsFavorite; then star; else starOutline"></div>
                 </button>
-                <ng-container [ngTemplateOutlet]="fileMenu"></ng-container>
+                <ng-container *ngTemplateOutlet="fileMenu; context: { file: recent }"></ng-container>
               </div>
-              <mat-divider *ngIf="(recents$ | async).length - 1 != i"></mat-divider>
+              <!-- <mat-divider *ngIf="(recents$ | async).length - 1 != i"></mat-divider> -->
             </div>
           </div>
 
@@ -85,14 +94,7 @@
       </mat-accordion>
     </div>
     <div class="col-lg-2 col-md-3 col-sm-12 col-12 mb-3 pl-0 file-actions" *ngIf="!isXS">
-      <file-actions
-        [mode]="0"
-        [cwd]="cwd"
-        [rowSelected]="rowSelected"
-        [selection]="selection"
-        [userId]="userId"
-        [userName]="(userName$ | async)"
-      ></file-actions>
+      <file-actions [mode]="3" [cwd]="cwd" [userId]="userId" [userName]="(userName$ | async)"></file-actions>
     </div>
   </div>
 </div>
@@ -106,22 +108,16 @@
 </ng-template>
 
 
-<ng-template #fileMenu>
-  <button class="settings" mat-icon-button [matMenuTriggerFor]="menu" (click)="$event.stopPropagation()">
+<ng-template #fileMenu let-file="file">
+  <button class="settings ghost-toggle" mat-icon-button [matMenuTriggerFor]="fileActionMenu" (click)="$event.stopPropagation()">
     <mat-icon>more_vert</mat-icon>
   </button>
-  <mat-menu #menu="matMenu" xPosition="before">
-    <button mat-menu-item>
-      <mat-icon>dialpad</mat-icon>
-      <span>Redial</span>
-    </button>
-    <button mat-menu-item>
-      <mat-icon>voicemail</mat-icon>
-      <span>Check voice mail</span>
-    </button>
-    <button mat-menu-item>
-      <mat-icon>notifications_off</mat-icon>
-      <span>Disable alerts</span>
-    </button>
+  <mat-menu #fileActionMenu="matMenu">
+    <button mat-menu-item (click)="setFavoriteState(file)">Star</button>
+    <button mat-menu-item (click)="downloadItem(file.Name)" download>Download</button>
+    <button mat-menu-item>Rename</button>
+    <button mat-menu-item>Move</button>
+    <button mat-menu-item>Copy</button>
+    <button mat-menu-item (click)="deleteItem(0, file)">Delete</button>
   </mat-menu>
 </ng-template>
