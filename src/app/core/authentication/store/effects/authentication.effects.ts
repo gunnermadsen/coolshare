@@ -82,7 +82,9 @@ export class AuthenticationEffects implements OnInitEffects {
 
     public authenticationUnsuccessful$: Observable<void> = createEffect(() => this.actions$.pipe(
         ofType(account.authenticateUserUnsuccessful),
-        tap((action: any) => this.toastrService.error(action.payload.error))
+        tap((payload: any) => {
+            return this.toastrService.error(payload.error)
+        })
     ), { dispatch: false })
 
     public authenticationSuccessful$: Observable<void> = createEffect(() => this.actions$.pipe(

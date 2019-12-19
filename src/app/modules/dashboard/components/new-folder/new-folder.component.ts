@@ -1,8 +1,14 @@
 import { Component, OnInit, Inject, isDevMode, OnDestroy } from '@angular/core'
-import { FormGroup, FormBuilder, FormArray, AbstractControl } from '@angular/forms'
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material'
+import { FormGroup, FormBuilder, FormArray, AbstractControl, Validators } from '@angular/forms'
+import { MatDialogRef, MAT_DIALOG_DATA, MatRadioChange } from '@angular/material'
 import { take, takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs'
+
+enum Permission {
+  READONLY = "READONLY",
+  READWRITE = "READWRITE",
+  FULLACCESS = "FULLACCESS"
+}
 
 @Component({
   selector: 'new-folder',
@@ -17,10 +23,15 @@ export class NewFolderComponent implements OnInit, OnDestroy {
   public shareName: string
   public mode: number = 0
   public permissions: any[] = []
+  public submitted: boolean = false
   private destroy$: Subject<boolean> = new Subject<boolean>()
 
   public get inviteeControls(): any {
     return this.newFolderForm.controls['Invitees'].value
+  }
+
+  public get c() {
+    return this.newFolderForm.controls
   }
 
   public get inviteeCount(): number {
@@ -40,9 +51,9 @@ export class NewFolderComponent implements OnInit, OnDestroy {
     this.reactToControlChanges(this.newFolderForm.controls['FolderName'])
 
     this.permissions = [
-      { type: "Read Only", subtitle: "Invitees are limited to viewing files" }, 
-      { type: "Read and Write", subtitle: "Invitees can view and modify files" },
-      { type: "Full Access", subtitle: "Invitees have complete control over all files" }
+      { mode: Permission.READONLY, type: "Read Only", subtitle: "Invitees are limited to viewing files" }, 
+      { mode: Permission.READWRITE, type: "Read and Write", subtitle: "Invitees can view and modify files" },
+      { mode: Permission.FULLACCESS, type: "Full Access", subtitle: "Invitees have complete control over all files, and access rights" }
     ]
   }
 
@@ -53,7 +64,15 @@ export class NewFolderComponent implements OnInit, OnDestroy {
   }
 
   public saveAndClose(): void {
+
+    this.submitted = true
+
     this.newFolderForm.get('ShareName').setValue(this.shareName)
+
+    if (!this.newFolderForm.valid) {
+      return 
+    }
+
     this.dialogRef.close(this.form)
   }
 
@@ -77,13 +96,29 @@ export class NewFolderComponent implements OnInit, OnDestroy {
     return index
   }
 
+  public setPermissionState(event: MatRadioChange): void {
+    let mode: string
+    switch (event.value) {
+      case 0:
+        mode = Permission.READONLY
+        break
+      case 1:
+        mode = Permission.READWRITE
+        break
+      case 2:
+        mode = Permission.FULLACCESS
+        break
+    }
+    this.newFolderForm.get('Permissions').setValue(mode)
+  }
+
   private initializeNewFolderForm(): FormGroup {
     return this.formBuilder.group({
-      FolderName: [''],
+      FolderName: ['', Validators.required ],
       ShareName: [''],
       Type: ['Folder'],
       Accessibility: [0],
-      Permissions: [0],
+      Permissions: [Permission.READONLY],
       Invitees: this.formBuilder.array([
         this.initializeInvitees('')
       ]),

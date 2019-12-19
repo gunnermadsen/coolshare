@@ -51,18 +51,14 @@ export class FileSystemEffects {
 
     public createFolder$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.createFolder),
-        tap((payload: any) => {
-            this.generateNotification(payload, 0)
-            return payload
-        }),
         mergeMap((payload: any) => {
             return this.repoService.createFolder(payload).pipe(
-                map(() => {
-                    return filesystem.readEntityContents({ folder: payload.path, id: payload.userId  })
-                }),
-                tap(() => {
-                    this.toastrService.success("Your folder was created successfully!")
-                }),
+                map(() => filesystem.readEntityContents({ folder: payload.path, id: payload.userId })),
+                
+                tap(() => this.toastrService.success("Your folder was created successfully!")),
+
+                tap(() => this.generateNotification(payload, 0)),
+
                 catchError(error => throwError(error))
             )
         })

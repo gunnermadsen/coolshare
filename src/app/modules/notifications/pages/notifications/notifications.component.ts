@@ -33,7 +33,10 @@ export class NotificationsComponent implements OnInit, OnChanges {
 
   constructor(private store$: Store<AppState>, @Inject(PLATFORM_ID) private platformId: Object) {
     if (isPlatformBrowser(this.platformId)) {
-      this.userId = JSON.parse(localStorage.getItem('Account')).Id
+      const account = JSON.parse(localStorage.getItem('Account'))
+      if (account) {
+        this.userId = account.Id
+      }
     }
   }
 

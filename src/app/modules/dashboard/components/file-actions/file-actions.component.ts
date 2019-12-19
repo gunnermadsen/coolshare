@@ -87,7 +87,8 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     let that = this
 
     config.width = '475px'
-    config.maxHeight = '1000px'
+    config.height = 'auto'
+    config.maxHeight = '1200px'
     
     config.data = {
       userName: this.userName
@@ -97,12 +98,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
       if (result) {
-        that.store$.dispatch(filesystem.createFolder({ 
-          userId: that.userId, 
-          path: that.cwd, 
-          data: result, 
-          userName: that.userName 
-        }))
+        that.store$.dispatch(filesystem.createFolder({ userId: that.userId, path: that.cwd, data: result, userName: that.userName }))
       }
     })
   }
