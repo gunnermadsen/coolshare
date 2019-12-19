@@ -16,6 +16,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
 import { AppState } from '@/reducers';
 import { FileSystemSettingsReducer } from './store/reducer/settings.reducer';
 import { RenameEntityComponent } from './components/rename-entity/rename-entity.component';
+import { EntityInfoComponent } from './components/entity-info/entity-info.component';
 
 
 export const FileSystemReducerMap: ActionReducerMap<AppState> = {
@@ -31,6 +32,7 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
         NewFolderComponent,
         FileActionsComponent,
         RenameEntityComponent,
+        EntityInfoComponent
         
     ],
     imports: [

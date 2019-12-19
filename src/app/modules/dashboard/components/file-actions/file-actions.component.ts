@@ -94,13 +94,17 @@ export class FileActionsComponent implements OnInit, OnDestroy {
       userName: this.userName
     }
 
-    const dialogRef = this.dialog.open(NewFolderComponent, config)
-
-    dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => {
-      if (result) {
-        that.store$.dispatch(filesystem.createFolder({ userId: that.userId, path: that.cwd, data: result, userName: that.userName }))
-      }
-    })
+    this.dialog
+      .open(NewFolderComponent, config)
+      .afterClosed()
+      .pipe(
+        take(1)
+      )
+      .subscribe((result: any) => {
+        if (result) {
+          that.store$.dispatch(filesystem.createFolder({ userId: that.userId, path: that.cwd, data: result, userName: that.userName }))
+        }
+      })
   }
 
   public deleteAction(mode: number, value?: any): void {

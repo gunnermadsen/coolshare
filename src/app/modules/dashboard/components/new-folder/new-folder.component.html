@@ -92,7 +92,7 @@
                             <div class="settings-permissions">
                                 <mat-list>
                                     <mat-radio-group color="primary" formControlName="Permissions" (change)="setPermissionState($event)">
-                                        <mat-radio-button class="permission" *ngFor="let permission of permissions; index as i" [value]="permission.mode">
+                                        <mat-radio-button class="permission" *ngFor="let permission of permissions; index as i">
                                             <mat-list-item>
                                                 <h4 mat-line>{{ permission.type }}</h4>
                                                 <p mat-line>{{ permission.subtitle }}</p>

@@ -20,6 +20,7 @@ import { FileActionsComponent } from '../file-actions/file-actions.component';
 import * as filesystem from '../../store/actions/filesystem.actions'; 
 import * as account from '@/modules/account/store/selectors/account.selectors';
 import * as settingsSelector from '../../store/selectors/settings.selectors';
+import { EntityInfoComponent } from '../entity-info/entity-info.component';
 
 @Component({
   selector: 'repository',
@@ -36,7 +37,6 @@ export class RepositoryComponent implements OnInit, OnDestroy {
   public resultsLength: number
   public path: string[] = []
   public cwd: string
-  public userName$: Observable<string>
   public files$: Observable<any>
   public isLoadingResults = true;
   public fileList: FileList;
@@ -62,7 +62,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     if (this.mode === 0) {
       const user = JSON.parse(localStorage.getItem('Account'));
       this.userId = user.Id;
-      this.userName$ = this.store$.pipe(select(account.selectUserName))
+      this.userName = user.UserName
     }
 
     this.initializeBreakpoints()
@@ -279,6 +279,20 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     const dialogRef = this.dialog.open(UploadDetailsComponent, config)
 
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
+  }
+
+  public showInfoDialog(name: string): void {
+    const config = new MatDialogConfig()
+
+    config.width = '520px'
+    config.height = '550px'
+
+    config.data = {
+      cwd: this.cwd,
+      id: this.userId
+    }
+
+    this.dialog.open(EntityInfoComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
   public editFavoriteStatus(event: MouseEvent, entity: any): void {
