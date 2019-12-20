@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Inject } from '@angular/core';
+import { MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
   selector: 'entity-info',
@@ -7,9 +8,13 @@ import { Component, OnInit } from '@angular/core';
 })
 export class EntityInfoComponent implements OnInit {
 
-  constructor() { }
+  public entity: any
+  constructor(@Inject(MAT_DIALOG_DATA) private data: any) {
+    this.entity = this.data
+  }
 
   ngOnInit() {
+
   }
 
 }

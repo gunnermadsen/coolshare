@@ -12,6 +12,8 @@ import * as path from 'path'
 import * as fsSelectors from '../../store/selectors/dashboard.selectors';
 import { IFile } from '@/shared/models/file.model'
 import { FileActionsComponent } from '../file-actions/file-actions.component';
+import { MatDialogConfig, MatDialog } from '@angular/material'
+import { EntityInfoComponent } from '../entity-info/entity-info.component'
 
 @Component({
   selector: 'app-main',
@@ -35,7 +37,7 @@ export class MainComponent implements OnInit, OnDestroy {
   @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent
 
 
-  constructor(@Inject(PLATFORM_ID) private platformId: Object,private store$: Store<AppState>, private breakpointObserver: BreakpointObserver) {
+  constructor(@Inject(PLATFORM_ID) private platformId: Object, private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     if (isPlatformBrowser(this.platformId)) {
       const account = JSON.parse(localStorage.getItem('Account'))
       this.userId = account.Id
@@ -131,7 +133,14 @@ export class MainComponent implements OnInit, OnDestroy {
   }
 
   public getEntityInfo(entity: any): void {
-    
+    const config = new MatDialogConfig()
+
+    config.width = '520px'
+    config.height = '550px'
+
+    config.data = entity
+
+    this.dialog.open(EntityInfoComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
   public trackByFn<V, I>(value: V, index: I): V | I {

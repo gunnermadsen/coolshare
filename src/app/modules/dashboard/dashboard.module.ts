@@ -54,7 +54,8 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
     ],
     entryComponents: [
         NewFolderComponent,
-        RenameEntityComponent
+        RenameEntityComponent,
+        EntityInfoComponent
         // UploadDetailsComponent
     ],
     providers: [],
