@@ -26,11 +26,11 @@
                     <mat-checkbox class="ghost-toggle"></mat-checkbox>
                     <ng-container *ngTemplateOutlet="fileMenu; context: { file: suggestion }"></ng-container>
                   </div>
-                  <div class="thumbnail-bottom-row">
+                  <!-- <div class="thumbnail-bottom-row">
                     <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(suggestion)">
                       <div *ngIf="suggestion.IsFavorite; then star; else starOutline"></div>
                     </button>
-                  </div>
+                  </div> -->
                 </div>
                 <div class="suggestion-title">
                   <p class="suggestion-name">{{ suggestion.Name }}</p>
@@ -100,11 +100,11 @@
 </div>
 
 <ng-template #star>
-  <mat-icon class="favorite-star">star</mat-icon>
+  <mat-icon [inline]="true" class="favorite-star">star</mat-icon>
 </ng-template>
 
 <ng-template #starOutline>
-  <mat-icon class="favorite-star">star_border</mat-icon>
+  <mat-icon [inline]="true" class="favorite-star">star_border</mat-icon>
 </ng-template>
 
 
@@ -115,9 +115,10 @@
   <mat-menu #fileActionMenu="matMenu">
     <button mat-menu-item (click)="setFavoriteState(file)">Star</button>
     <button mat-menu-item (click)="downloadItem(file.Name)" download>Download</button>
-    <button mat-menu-item>Rename</button>
+    <button mat-menu-item (click)="renameEntity(file)">Rename</button>
     <button mat-menu-item>Move</button>
     <button mat-menu-item>Copy</button>
+    <button mat-menu-item (click)="getEntityInfo(file)">Info</button>
     <button mat-menu-item (click)="deleteItem(0, file)">Delete</button>
   </mat-menu>
 </ng-template>

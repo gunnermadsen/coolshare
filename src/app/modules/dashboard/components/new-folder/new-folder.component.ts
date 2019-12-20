@@ -67,11 +67,13 @@ export class NewFolderComponent implements OnInit, OnDestroy {
 
     this.submitted = true
 
-    this.newFolderForm.get('ShareName').setValue(this.shareName)
-
     if (!this.newFolderForm.valid) {
       return 
     }
+
+    this.setPermissionState(this.c['Permissions'].value)
+
+    this.newFolderForm.get('ShareName').setValue(this.shareName)
 
     this.dialogRef.close(this.form)
   }
@@ -96,9 +98,9 @@ export class NewFolderComponent implements OnInit, OnDestroy {
     return index
   }
 
-  public setPermissionState(event: MatRadioChange): void {
+  public setPermissionState(value: number): void {
     let mode: string
-    switch (event.value) {
+    switch (value) {
       case 0:
         mode = Permission.READONLY
         break
@@ -118,7 +120,7 @@ export class NewFolderComponent implements OnInit, OnDestroy {
       ShareName: [''],
       Type: ['Folder'],
       Accessibility: [0],
-      Permissions: [Permission.READONLY],
+      Permissions: [0],
       Invitees: this.formBuilder.array([
         this.initializeInvitees('')
       ]),

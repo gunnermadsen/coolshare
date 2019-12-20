@@ -1,5 +1,7 @@
 /* Material Expansion Panel Styles */
 
+@default-color: rgba(63, 81, 181, 0.228);
+
 .example-headers-align .mat-expansion-panel-header-title,
 .example-headers-align .mat-expansion-panel-header-description {
   flex-basis: 0;
@@ -24,6 +26,18 @@
 
 /* General Styles */
 
+@media only screen and (max-width: 750px) {
+  .ghost-toggle {
+    display: inline-block;
+  }
+}
+
+@media only screen and (min-width: 749px) {
+  .ghost-toggle {
+    display: inline-block;
+  }
+}
+
 .default-message {
   padding-left: 20px;
 }
@@ -42,17 +56,13 @@ body {
   font-size: 30px; 
 }
 
-.ghost-toggle {
-  display: none;
-}
-
 .settings {
   margin-left: auto;
 }
 
 .favorite:hover, .recent:hover {
   .settings {
-    border: 1px solid blue;
+    border: 1px solid @default-color;
   }
 }
 
@@ -61,6 +71,8 @@ body {
   .ghost-toggle {
     display: inline-block;
   }
+  background-color: @default-color;
+  border-radius: 15px;
 }
 
 /* Material List Styles */
@@ -79,6 +91,7 @@ body {
 .favorites {
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
 }
 
 .favorite-toggle {
@@ -98,7 +111,7 @@ body {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 8px 0 8px 8px;
+  padding: 8px;
 }
 
 /* END Favorites Section Styles */
@@ -110,13 +123,14 @@ body {
 .recents {
   display: flex;
   flex-direction: column;
+  margin-top: 10px;
 }
 
 .recent {
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 8px 0 8px 8px;
+  padding: 8px;
 }
 
 .recent-icon {
@@ -153,9 +167,9 @@ p.list-info {
 }
 
 .suggestion {
-  padding: 5px;
-  margin: 10px;
-  width: 140px;
+  padding: 8px;
+  // margin: 10px;
+  width: 170px;
 }
 
 .suggestion-thumbnail {
@@ -173,20 +187,19 @@ p.list-info {
   justify-content: space-between;
 }
 
-.thumbnail-top-row {
+.thumbnail-top-row, .thumbnail-bottom-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.thumbnail-bottom-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  width: 165px;
+  padding-right: 15px;
 }
 
 .suggestion-title {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .suggestion-name {

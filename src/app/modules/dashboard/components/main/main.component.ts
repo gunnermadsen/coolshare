@@ -126,6 +126,14 @@ export class MainComponent implements OnInit, OnDestroy {
     this.fileActionsComponent.deleteAction(mode, file)
   }
 
+  public renameEntity(entity: any): void {
+    this.fileActionsComponent.renameAction(entity)
+  }
+
+  public getEntityInfo(entity: any): void {
+    
+  }
+
   public trackByFn<V, I>(value: V, index: I): V | I {
     return value
   }
