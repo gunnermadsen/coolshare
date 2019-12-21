@@ -135,10 +135,13 @@ export class MainComponent implements OnInit, OnDestroy {
   public getEntityInfo(entity: any): void {
     const config = new MatDialogConfig()
 
-    config.width = '520px'
-    config.height = '550px'
+    config.width = '500px'
+    config.height = 'auto'
 
-    config.data = entity
+    config.data = {
+      entity: entity,
+      userName: this.userName
+    }
 
     this.dialog.open(EntityInfoComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }

@@ -3,12 +3,7 @@ import { FormGroup, FormBuilder, FormArray, AbstractControl, Validators } from '
 import { MatDialogRef, MAT_DIALOG_DATA, MatRadioChange } from '@angular/material'
 import { take, takeUntil } from 'rxjs/operators'
 import { Subject } from 'rxjs'
-
-enum Permission {
-  READONLY = "READONLY",
-  READWRITE = "READWRITE",
-  FULLACCESS = "FULLACCESS"
-}
+import { Permission } from '@/shared/models/permissions.enum'
 
 @Component({
   selector: 'new-folder',

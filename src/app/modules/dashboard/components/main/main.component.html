@@ -3,7 +3,7 @@
     <mat-icon>more_vert</mat-icon>
   </button>
   <mat-menu #actionMenu="matMenu" xPosition="before">
-    <file-actions [rowSelected]="false" [mode]="2" [userId]="userId" [userName]="(userName$ | async)" [cwd]="cwd"></file-actions>
+    <file-actions [rowSelected]="false" [mode]="2" [userId]="userId" [userName]="userName" [cwd]="cwd"></file-actions>
   </mat-menu>
 </div>
 

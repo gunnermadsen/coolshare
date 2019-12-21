@@ -102,7 +102,7 @@ export class FileActionsComponent implements OnInit, OnDestroy {
       )
       .subscribe((result: any) => {
         if (result) {
-          that.store$.dispatch(filesystem.createFolder({ userId: that.userId, path: that.cwd, data: result, userName: that.userName }))
+          that.store$.dispatch(filesystem.createFolder({ userId: that.userId, path: that.cwd, data: result }))
         }
       })
   }

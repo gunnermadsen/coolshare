@@ -24,7 +24,7 @@ const routes: Routes = [
   {
     path: ':userName/:shareName',
     resolve: {
-      status: LinkVerificationResolver
+      result: LinkVerificationResolver
     },
     loadChildren: () => import('./modules/public-share/public-share.module').then(mod => mod.PublicShareModule)
   },

@@ -2,7 +2,7 @@ import { createAction, props } from '@ngrx/store';
 import { Update } from '@ngrx/entity';
 
 export const createEntity = createAction('[Save File] File Save Requested', props<{ folder: any, id: string }>())
-export const createFolder = createAction('[Create Folder] Create Folder Requested', props<{ userId: string, path: string, data: any, userName: string }>())
+export const createFolder = createAction('[Create Folder] Create Folder Requested', props<{ userId: string, path: string, data: any }>())
 export const uploadFile = createAction('[File Upload] Upload File to Repo', props<{ userId: string, path: string, data: any }>())
 export const readEntityContents = createAction('[Get Folder Contents] Folder Contents Requested', props<{ folder: any, id: string }>())
 export const saveRetrievedFolderContents = createAction('[Saved Contents] Saved Retrieved Folder Contents', props<{ contents: any }>())
