@@ -1,116 +1,145 @@
+<!-- <div *ngIf="(entities.length >= 1); then entityInfo; else default"></div> -->
 
-<div class="entity-container">
-    
-    <div class="entity-title">
-        <h2>{{ entity.Name }}</h2>
-        <mat-divider></mat-divider>
+<div [ngSwitch]="entities.length">
+    <div *ngSwitchCase="0">
+        <ng-container *ngTemplateOutlet="default"></ng-container>
     </div>
-
-
-    <mat-accordion class="example-headers-align" [multi]="true">
-        <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    General
-                </mat-panel-title>
-                <!-- <mat-panel-description>
-                    Type your name and age
-                    <mat-icon>account_circle</mat-icon>
-                </mat-panel-description> -->
-            </mat-expansion-panel-header>
-
-            <mat-divider></mat-divider>
-
-            <div class="entity-container inner">
-                
-                <div class="entity-info">
-                    <p>Kind:</p>
-                    <p>{{ extension }}</p>
-                </div>
-                <div class="entity-info">
-                    <p>Size:</p>
-                    <p>{{ entity.Size | fileSize}}</p>
-                </div>
-                <div class="entity-info">
-                    <p>Created:</p>
-                    <p>{{ entity.CreatedOn | date : "medium" }}</p>
-                </div>
-                <div class="entity-info">
-                    <p>Edited:</p>
-                    <p>{{ entity.EditedOn | date : "medium" }}</p>
-                </div>
-            </div>
-            
-        </mat-expansion-panel>
-    
-        <mat-expansion-panel [expanded]="true">
-            <mat-expansion-panel-header>
-                <mat-panel-title>
-                    Sharing & Permissions
-                </mat-panel-title>
-                <!-- <mat-panel-description>
-                    Type the country name
-                    <mat-icon>map</mat-icon>
-                </mat-panel-description> -->
-            </mat-expansion-panel-header>
-
-            <mat-divider></mat-divider>
-
-            <div class="entity-container inner">
-            
-                <div class="entity-info">
-                    <p>Owner:</p>
-                    <p>{{ permissions.owner }}</p>
-                </div>
-                <div class="entity-info">
-                    <p>Is Shared:</p>
-                    <p>{{ entity.IsShared ? "Yes" : "No" }}</p>
-                </div>
-                <div class="entity">
-                    <p>Members:</p>
-                    <mat-divider></mat-divider>
-                    <!-- <div class="invitees">
-                        <p class="invitee" *ngFor="let invitee of invitees">{{ invitee }}</p>
-                    </div> -->
-                    <table mat-table [dataSource]="dataSource$ | async">
-
-                        <!-- Name Column -->
-                        <ng-container matColumnDef="name">
-                            <th mat-header-cell *matHeaderCellDef>Name</th>
-                            <td mat-cell *matCellDef="let entity"> {{ entity.name }} </td>
-                        </ng-container>
-                    
-                        <!-- Permission Column -->
-                        <ng-container matColumnDef="permission">
-                            <th mat-header-cell *matHeaderCellDef>Permission</th>
-                            <td mat-cell *matCellDef="let entity">
-                                {{ entity.access }}
-                                <!-- <mat-form-field>
-                                    <mat-select>
-                                        <mat-option *ngFor="let permission of permissionOptions; index as i" [value]="getPermissionForUser(entity.name)">
-                                            {{ permission }}
-                                        </mat-option>
-                                    </mat-select>
-                                </mat-form-field> -->
-                            </td>
-                        </ng-container>
-                    
-                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-                    </table>
-                </div>
-            </div>
-    
-            <!-- <mat-action-row>
-                <button mat-button color="warn" (click)="prevStep()">Previous</button>
-                <button mat-button color="primary" (click)="nextStep()">Next</button>
-            </mat-action-row> -->
-        </mat-expansion-panel>
-    
-    </mat-accordion>
-
-    <div mat-dialog-actions>
-        <button color="primary" mat-raised-button (click)="closeDialog()">Close <mat-icon>close</mat-icon></button>
-        <!-- <button mat-raised-button  cdkFocusInitial>Ok</button> -->
+    <div *ngSwitchCase="1">
+        <ng-container *ngTemplateOutlet="entityInfo"></ng-container>
     </div>
 </div>
+
+<ng-template #entityInfo>
+
+    <div class="entity-container">
+
+        <div class="entity-title">
+            <h2>{{ entity.Name }}</h2>
+            <mat-divider></mat-divider>
+        </div>
+
+        <mat-accordion class="example-headers-align" [multi]="true">
+
+            <mat-expansion-panel [expanded]="true" class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>Preview</mat-panel-title>
+                </mat-expansion-panel-header>
+            
+                <mat-divider></mat-divider>
+            
+                <div class="entity-container inner entity-preview">
+                    <img width="200" height="200" [src]="getImageFromPath()" />
+                </div>
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="true" class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        General
+                    </mat-panel-title>
+                    <!-- <mat-panel-description>
+                        Type your name and age
+                        <mat-icon>account_circle</mat-icon>
+                    </mat-panel-description> -->
+                </mat-expansion-panel-header>
+
+                <mat-divider></mat-divider>
+
+                <div class="entity-container inner">
+
+                    <div class="entity-info">
+                        <p>Kind:</p>
+                        <p>{{ extension }}</p>
+                    </div>
+                    <div class="entity-info">
+                        <p>Size:</p>
+                        <p>{{ entity.Size | fileSize}}</p>
+                    </div>
+                    <div class="entity-info">
+                        <p>Created:</p>
+                        <p>{{ entity.CreatedOn | date : "medium" }}</p>
+                    </div>
+                    <div class="entity-info">
+                        <p>Edited:</p>
+                        <p>{{ entity.EditedOn | date : "medium" }}</p>
+                    </div>
+                </div>
+
+            </mat-expansion-panel>
+
+            <mat-expansion-panel [expanded]="true" class="mat-elevation-z0">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        Sharing & Permissions
+                    </mat-panel-title>
+                    <!-- <mat-panel-description>
+                        Type the country name
+                        <mat-icon>map</mat-icon>
+                    </mat-panel-description> -->
+                </mat-expansion-panel-header>
+
+                <mat-divider></mat-divider>
+
+                <div class="entity-container inner">
+
+                    <div class="entity-info">
+                        <p>Owner:</p>
+                        <p>{{ permissions.owner }}</p>
+                    </div>
+                    <div class="entity-info">
+                        <p>Is Shared:</p>
+                        <p>{{ entity.IsShared ? "Yes" : "No" }}</p>
+                    </div>
+                    <div class="entity" *ngIf="entity.IsShared">
+                        <p>Members:</p>
+                        <!-- <mat-divider></mat-divider> -->
+                        <!-- <div class="invitees">
+                            <p class="invitee" *ngFor="let invitee of invitees">{{ invitee }}</p>
+                        </div> -->
+                        <table mat-table [dataSource]="dataSource$ | async" >
+
+                            <!-- Name Column -->
+                            <ng-container matColumnDef="name">
+                                <th mat-header-cell *matHeaderCellDef>Name</th>
+                                <td mat-cell *matCellDef="let row"> {{ row.name }} </td>
+                            </ng-container>
+
+                            <!-- Permission Column -->
+                            <ng-container matColumnDef="permission">
+                                <th mat-header-cell *matHeaderCellDef>Privilege</th>
+                                <td mat-cell *matCellDef="let row">
+                                    {{ row.access }}
+                                    <!-- <mat-form-field>
+                                        <mat-select>
+                                            <mat-option *ngFor="let permission of permissionOptions; index as i" [value]="getPermissionForUser(entity.name)">
+                                                {{ permission }}
+                                            </mat-option>
+                                        </mat-select>
+                                    </mat-form-field> -->
+                                </td>
+                            </ng-container>
+
+                            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- <mat-action-row>
+                    <button mat-button color="warn" (click)="prevStep()">Previous</button>
+                    <button mat-button color="primary" (click)="nextStep()">Next</button>
+                </mat-action-row> -->
+            </mat-expansion-panel>
+
+        </mat-accordion>
+
+
+    </div>
+</ng-template>
+
+
+<ng-template #default>
+    <div class="entity-container default">
+        <p class="default-font">Select a file or folder to view its details</p>
+    </div>
+</ng-template>

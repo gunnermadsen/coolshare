@@ -13,7 +13,7 @@ import * as fsSelectors from '../../store/selectors/dashboard.selectors';
 import { IFile } from '@/shared/models/file.model'
 import { FileActionsComponent } from '../file-actions/file-actions.component';
 import { MatDialogConfig, MatDialog } from '@angular/material'
-import { EntityInfoComponent } from '../entity-info/entity-info.component'
+import { EntityInfoDialogComponent } from '../entity-info-dialog/entity-info-dialog.component'
 
 @Component({
   selector: 'app-main',
@@ -95,7 +95,7 @@ export class MainComponent implements OnInit, OnDestroy {
     this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
-  public setResource(name: string, type: string, mode?: number): string {
+  public setResource(name: string, type: string, isShared: boolean, mode?: number): string {
     // const id = JSON.parse(localStorage.getItem('Account')).Id
     switch (type) {
       case "File": {
@@ -107,7 +107,7 @@ export class MainComponent implements OnInit, OnDestroy {
         return url
       } 
       case "Folder": {
-        const url = `${this.server}/assets/icons/folder-24.png`
+        const url = `${this.server}/assets/${isShared ? 'share-folder' : 'folder-24'}.png`
         if (mode) {
           return `url(${url})`
         }
@@ -143,7 +143,7 @@ export class MainComponent implements OnInit, OnDestroy {
       userName: this.userName
     }
 
-    this.dialog.open(EntityInfoComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
+    this.dialog.open(EntityInfoDialogComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
   public trackByFn<V, I>(value: V, index: I): V | I {

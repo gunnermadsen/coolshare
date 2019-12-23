@@ -17,7 +17,9 @@ import { AppState } from '@/reducers';
 import { FileSystemSettingsReducer } from './store/reducer/settings.reducer';
 import { RenameEntityComponent } from './components/rename-entity/rename-entity.component';
 import { EntityInfoComponent } from './components/entity-info/entity-info.component';
-
+import { EntityInfoDialogComponent } from './components/entity-info-dialog/entity-info-dialog.component';
+import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
+import { GridEntityDirective } from '@/shared/directives/grid-entity/grid-entity.directive';
 
 export const FileSystemReducerMap: ActionReducerMap<AppState> = {
     Content: FileSystemReducer,
@@ -32,8 +34,12 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
         NewFolderComponent,
         FileActionsComponent,
         RenameEntityComponent,
-        EntityInfoComponent
-        
+        EntityInfoComponent,
+        EntityInfoDialogComponent,
+        BreadcrumbsComponent,
+
+        GridEntityDirective
+
     ],
     imports: [
         SharedModule,
@@ -55,7 +61,7 @@ export const FileSystemReducerMap: ActionReducerMap<AppState> = {
     entryComponents: [
         NewFolderComponent,
         RenameEntityComponent,
-        EntityInfoComponent
+        EntityInfoDialogComponent
         // UploadDetailsComponent
     ],
     providers: [],

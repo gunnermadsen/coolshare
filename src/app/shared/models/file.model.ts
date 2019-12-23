@@ -11,7 +11,7 @@ export interface IFile {
     IsShared: boolean
     IsEmpty?: boolean
     ShareData: any
-    MetaData: any
+    Meta: any
     CreatedOn: Date
     EditedOn: Date
 

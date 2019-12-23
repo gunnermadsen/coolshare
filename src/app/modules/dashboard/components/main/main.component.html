@@ -21,7 +21,7 @@
             <div *ngFor="let suggestion of (suggestions$ | async); index as i; trackBy: trackByFn">
               <div *ngIf="!isSuggestions">{{ suggestion.Name }}</div>
               <div *ngIf="isSuggestions" class="suggestion">
-                <div class="suggestion-thumbnail" [ngStyle]="{ 'background-image': setResource(suggestion.Name, suggestion.Type, 3) }">
+                <div class="suggestion-thumbnail" [ngStyle]="{ 'background-image': setResource(suggestion.Name, suggestion.Type, suggestion.IsShared, 3) }">
                   <div class="thumbnail-top-row">
                     <mat-checkbox class="ghost-toggle"></mat-checkbox>
                     <ng-container *ngTemplateOutlet="fileMenu; context: { file: suggestion }"></ng-container>
@@ -51,7 +51,7 @@
             <div *ngFor="let favorite of (favorites$ | async); index as i">
               <div *ngIf="!isFavorites" class="favorite">{{ favorite.Name }}</div>
               <div *ngIf="isFavorites" class="favorite">
-                <img class="favorite-icon" [src]="setResource(favorite.Name, favorite.Type)">
+                <img class="favorite-icon" [src]="setResource(favorite.Name, favorite.Type, favorite.IsShared)">
                 <h3 class="favorite-title">{{ favorite.Name }}</h3>
                 <button mat-icon-button color="primary" class="ghost-toggle" (click)="editFavoriteStatus(favorite)">
                   <mat-icon class="favorite-star">star</mat-icon>
@@ -74,7 +74,7 @@
             <div *ngFor="let recent of (recents$ | async); index as i">
               <div *ngIf="!isRecents" class="recent">{{ recent.Name }}</div>
               <div *ngIf="isRecents" class="recent">
-                <img class="recent-icon" [src]="setResource(recent.Name, recent.Type)">
+                <img class="recent-icon" [src]="setResource(recent.Name, recent.Type, recent.IsShared)">
                 <ul class="recent-list">
                   <li><h3 class="">{{ recent.Name }}</h3></li>
                   <li><p class="list-info">/Home{{ recent.Path }}</p></li>

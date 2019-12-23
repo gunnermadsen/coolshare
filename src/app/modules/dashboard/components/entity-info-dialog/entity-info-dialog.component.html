@@ -1,0 +1,11 @@
+<div class="dialog-wrapper">
+    
+    <div mat-dialog-content>
+        <entity-info [userName]="userName" [entities]="entities"></entity-info>
+    </div>
+    <div mat-dialog-actions>
+        <button color="primary" mat-raised-button (click)="closeDialog()">Close <mat-icon>close</mat-icon></button>
+        <!-- <button mat-raised-button  cdkFocusInitial>Ok</button> -->
+    </div>
+    
+</div>

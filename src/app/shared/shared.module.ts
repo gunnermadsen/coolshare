@@ -10,6 +10,7 @@ import { DropzoneDirective } from './directives/dropzone/dropzone.directive';
 import { UploadSpeedPipe } from './pipes/file-upload-speed.pipe';
 import { ShowIconControlsDirective } from './directives/show-icon-controls/show-icon-controls.directive';
 import { DefaultImageDirective } from './directives/default-image/default-image.directive';
+import { ViewModeDirective } from './directives/view-mode/view-mode.directive';
 
 @NgModule({
     declarations: [
@@ -17,7 +18,8 @@ import { DefaultImageDirective } from './directives/default-image/default-image.
         UploadSpeedPipe,
         DropzoneDirective,
         ShowIconControlsDirective,
-        DefaultImageDirective
+        DefaultImageDirective,
+        ViewModeDirective,
         
     ],
     imports: [
@@ -39,7 +41,8 @@ import { DefaultImageDirective } from './directives/default-image/default-image.
         UploadSpeedPipe,
         DropzoneDirective,
         ShowIconControlsDirective,
-        DefaultImageDirective
+        DefaultImageDirective,
+        ViewModeDirective,
 
     ],
     providers: [],

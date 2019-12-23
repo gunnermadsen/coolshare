@@ -20,7 +20,9 @@ import { FileActionsComponent } from '../file-actions/file-actions.component';
 import * as filesystem from '../../store/actions/filesystem.actions'; 
 import * as account from '@/modules/account/store/selectors/account.selectors';
 import * as settingsSelector from '../../store/selectors/settings.selectors';
-import { EntityInfoComponent } from '../entity-info/entity-info.component';
+import { EntityInfoDialogComponent } from '../entity-info-dialog/entity-info-dialog.component';
+import { IFile } from '@/shared/models/file.model';
+import { FormControl } from '@angular/forms';
 
 @Component({
   selector: 'repository',
@@ -28,7 +30,8 @@ import { EntityInfoComponent } from '../entity-info/entity-info.component';
   styleUrls: ['./repository.component.less']
 })
 export class RepositoryComponent implements OnInit, OnDestroy {
-  public dataSource: MatTableDataSource<IContents>
+  public dataSource: MatTableDataSource<IFile>
+  public repositorySearch: FormControl = new FormControl()
   public displayMode: number = 0
   public displayedColumns: string[] = []
   public isXS: boolean = true
@@ -37,11 +40,12 @@ export class RepositoryComponent implements OnInit, OnDestroy {
   public resultsLength: number
   public path: string[] = []
   public cwd: string
-  public files$: Observable<any>
+  public files$: Observable<IFile[]>
+  public selectedEntity$: Observable<IFile>
   public isLoadingResults = true;
   public fileList: FileList;
-  public files: any[] = [];
-  public selection: SelectionModel<any>;
+  public files: IFile[] = [];
+  public selection: SelectionModel<IFile>;
   private server: string;
   private destroy$: Subject<boolean> = new Subject<boolean>()
   @ViewChild(MatPaginator, { static: true }) public paginator: MatPaginator
@@ -68,6 +72,8 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.initializeBreakpoints()
 
     this.initializeTableData();
+
+    this.watchForSearch()
   }
 
   public getUrl(name: string, type: string): string {
@@ -83,11 +89,22 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     }
   }
 
+  private watchForSearch(): void {
+    this.repositorySearch.valueChanges.pipe(
+      map((value: string) => new RegExp(value, 'gi')),
+      takeUntil(this.destroy$),
+    )
+    .subscribe((regex: RegExp) => {
+      const files = this.files.filter((file: IFile) => file.Name.match(regex))
+      this.dataSource = new MatTableDataSource(files)
+    })
+  }
+
   public trackByFn<V, I>(value: V, index: I): V | I {
     return value
   }
 
-  public isAllSelected() {
+  public isAllSelected(): boolean {
     if (!this.isLoadingResults) {
       const numSelected = this.selection.selected.length;
       const numRows = this.dataSource.data.length;
@@ -95,7 +112,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setSelectionState(event: any, row: any): void {
+  public setSelectionState(event: any, row: IFile): void {
     // event.stopPropagation();
     this.selection.toggle(row);
     if (this.selection.selected.length > 0) {
@@ -143,6 +160,11 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     return `${this.selection.isSelected(row) ? 'deselect' : 'select'} row ${row.index + 1}`
   }
 
+  public setEntitySelectionState(event: MouseEvent, entity: IFile, mode: string, gridEntity?: any): void {
+    this.selection.toggle(entity)
+    this.rowSelected = !this.rowSelected
+  }
+
   public initializeTableData() {
     this.store$.pipe(
       select(getRepoData),
@@ -166,7 +188,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  public setFavoriteState(entity: any): void {
+  public setFavoriteState(entity: IFile): void {
     // const payload: Update<any> = {
     //   id: entity.Id,
     //   changes: { IsFavorite: !entity.IsFavorite }
@@ -175,11 +197,11 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.fileActionsComponent.setFavoriteState(entity)
   }
 
-  public renameEntity(entity: any): void {
+  public renameEntity(entity: IFile): void {
     this.fileActionsComponent.renameAction(entity)
   }
 
-  public deleteItem(index: number, row: any): void {
+  public deleteItem(index: number, row: IFile): void {
     this.fileActionsComponent.deleteAction(index, row);
     this.rowSelected = false;
   }
@@ -192,15 +214,18 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.fileActionsComponent.createNewFolder();
   }
 
-  public getFolderContents(row: any): void {
+  public getFolderContents(event: MouseEvent, entity: any): void {
 
-    if (row.Type === 'File') {
+    event.stopPropagation()
+    event.preventDefault()
+
+    if (entity.Type === 'File') {
       return;
     }
 
-    this.generatePath(row.Path)
+    this.generatePath(entity.Path)
 
-    this.setCurrentDirectoryContents(row.Path)
+    this.setCurrentDirectoryContents(entity.Path)
 
   }
 
@@ -238,7 +263,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     
   }
 
-  public navigateToNode(index: number): void {
+  public navigateToNode(event: MouseEvent, index: number): void {
 
     let path = this.path;
 
@@ -252,16 +277,17 @@ export class RepositoryComponent implements OnInit, OnDestroy {
       path.splice(index, path.length - index)
     }
 
-    let payload = {
+    let entity = {
       Path: index === 0 ? '/' : `/${path.toString().replace(/,/g, '/')}`,
       Type: 'Folder'
     }
 
-    this.getFolderContents(payload)
+    this.getFolderContents(event, entity)
 
   }
 
   public setTableViewState(event: MouseEvent, mode: number): void {
+    // this.selection.clear();
     this.displayMode = mode;
   }
 
@@ -281,7 +307,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     dialogRef.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
-  public showInfoDialog(name: string): void {
+  public showInfoDialog(entity: IFile): void {
     const config = new MatDialogConfig()
 
     config.width = '520px'
@@ -289,13 +315,15 @@ export class RepositoryComponent implements OnInit, OnDestroy {
 
     config.data = {
       cwd: this.cwd,
-      id: this.userId
+      id: this.userId,
+      entities: [entity],
+      userName: this.userName
     }
 
-    this.dialog.open(EntityInfoComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
+    this.dialog.open(EntityInfoDialogComponent, config) //.afterClosed().pipe(take(1)).subscribe((result: any) => console.log(result))
   }
 
-  public editFavoriteStatus(event: MouseEvent, entity: any): void {
+  public editFavoriteStatus(event: MouseEvent, entity: IFile): void {
 
     event.stopPropagation()
 
@@ -309,6 +337,10 @@ export class RepositoryComponent implements OnInit, OnDestroy {
 
   public downloadItem(name: string): void {
     this.fileActionsComponent.downloadAction(name)
+  }
+
+  public refreshFileView(): void {
+    this.fileActionsComponent.refreshFiles()
   }
 
   public ngOnDestroy(): void {
