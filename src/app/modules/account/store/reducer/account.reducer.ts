@@ -6,19 +6,17 @@ export const initialAccountState: AccountState = {}
 
 const reducer = createReducer(
     initialAccountState, 
-    on(AccountActions.saveProfileInfoAction, (state: AccountState, { profile }) => {
-        return profile
-    }),
+    on(AccountActions.saveProfileInfoAction, (state: AccountState, { profile }) => profile),
     on(AccountActions.updateProfileAction, (state: AccountState, { profile }) => {
         return {
             ...profile
         }
     }),
-    on(AccountActions.updateProfilePictureAction, (state: AccountState, { profile }) => {
+    on(AccountActions.updateProfilePictureAction, (state: AccountState, { picture }) => {
         return {
             account: {
                 ...state,
-               picture: profile.picture
+               picture: picture
             }
         }
     })

@@ -61,7 +61,7 @@ export class PictureComponent implements OnInit, OnDestroy {
 
   public saveImage() {
     const image = this.accountPictureForm.controls['Avatar'].value;
-    this.store$.dispatch(new account.UpdatePictureAction({ picture: image }));
+    this.store$.dispatch(account.updateProfilePictureAction({ picture: null, id: null }));
     this.fileSet = false;
     this.croppedImage = null;
   }
