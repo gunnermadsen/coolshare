@@ -18,20 +18,20 @@
   <button *ngIf="rowSelected" mat-menu-item (click)="deleteItem(1, row)">Delete</button>
 </mat-menu>
 
-<div class="repository-container"> <!-- viewMode [mode]="displayMode" -->
+<div class="repo__container" viewMode [mode]="displayMode">
 
-  <mat-card *ngIf="displayMode === 0" class="mat-elevation-z2 path-card repository-breadcrumbs">
+  <mat-card *ngIf="displayMode === 0" class="mat-elevation-z2 path-card repo__container-breadcrumbs">
     <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
   </mat-card>
 
-  <mat-card class="mat-elevation-z2 repository-search">
+  <mat-card class="mat-elevation-z2 repo__container-search">
     <mat-form-field appearance="outline">
       <mat-label>Search for a file</mat-label>
       <input matInput [formControl]="repositorySearch" />
     </mat-form-field>
   </mat-card>
 
-  <div class="repository-actions">
+  <div class="repo__container-actions" *ngIf="isXS">
     <file-actions 
       [mode]="1" 
       [cwd]="cwd" 
@@ -42,7 +42,7 @@
     ></file-actions>
   </div>
   
-  <div class="repository-data mat-elevation-z2">
+  <div class="repo__container-data mat-elevation-z2">
     <div [ngSwitch]="displayMode">
       <div *ngSwitchCase="0">
         <ng-container *ngTemplateOutlet="list"></ng-container>
@@ -53,7 +53,7 @@
     </div>
   </div>
 
-  <div class="repository-sidebar">
+  <div class="repo__container-sidebar">
 
     <file-actions 
       [mode]="0" 
@@ -65,7 +65,7 @@
     ></file-actions>
 
     <mat-card class="sidebar-card">
-      <entity-info [userName]="userName" [entities]="selection.selected"></entity-info>
+      <entity-info [userName]="userName" [entities]="selection.selected" [userId]="userId"></entity-info>
     </mat-card>
 
   </div>
@@ -73,60 +73,68 @@
 
 <!-- Grid View -->
 <ng-template #grid>
+  <div class="grid__container">
+    <div class="grid__container-header">
+      <div class="folder-path" *ngIf="displayMode === 1">
+        <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
+      </div>
+      <div class="header-toggle">
+        <button mat-icon-button class="header-btn" [matMenuTriggerFor]="displayMenu"><mat-icon>list</mat-icon></button>
+        <mat-menu #displayMenu="matMenu">
+          <button (click)="setTableViewState($event, 0)" mat-menu-item>
+            <mat-icon class="mr-2">list</mat-icon>List
+          </button>
+          <button (click)="setTableViewState($event, 1)" mat-menu-item>
+            <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
+          </button>
+        </mat-menu>
+      </div>
+    </div>
   
-  <div class="grid-header">
-    <div *ngIf="displayMode === 1" class="folder-path">
-      <ng-container *ngTemplateOutlet="breadCrumbs; context: { path: path, mode: mode }"></ng-container>
-    </div>
-    <div class="view-mode-toggle">
-      <button mat-icon-button class="grid-view-btn" [matMenuTriggerFor]="displayMenu"><mat-icon>list</mat-icon></button>
-      <mat-menu #displayMenu="matMenu">
-        <button (click)="setTableViewState($event, 0)" mat-menu-item>
-          <mat-icon class="mr-2">list</mat-icon>List
-        </button>
-        <button (click)="setTableViewState($event, 1)" mat-menu-item>
-          <mat-icon class="mr-2 large-grid">grid_on</mat-icon>Large
-        </button>
-      </mat-menu>
-    </div>
-  </div>
+    <mat-divider></mat-divider>
+  
+    <div class="grid__container-body" *ngIf="!isFolderEmpty">
+      <div class="loading-shade" *ngIf="isLoadingResults">
+        <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+      </div>
+      <div class="thumbnails" 
+        gridEntity 
+        [isSelected]="rowSelected" 
+        [id]="i" 
+        (click)="setEntitySelectionState($event, file, 'grid', gridentity)" 
+        *ngFor="let file of files; index as i; trackBy: trackByFn">
 
-  <mat-divider></mat-divider>
-
-  <div class="grid-body" *ngIf="!isFolderEmpty">
-    <div class="loading-shade" *ngIf="isLoadingResults">
-      <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
-    </div>
-    <div gridEntity [isSelected]="rowSelected" class="thumbnail-wrapper" (click)="setEntitySelectionState($event, file, 'grid', gridentity)" [id]="i" *ngFor="let file of files; index as i; trackBy: trackByFn">
-      <div class="thumbnail" [ngStyle]="{ 'background-image': getUrl(file.Name, file.Type) }">
-        <div class="tn-top-row">
-          <mat-checkbox color="primary" class="m-2 ghost-button" [checked]="selection.isSelected(file)" (click)="$event.stopPropagation()" (change)="setSelectionState($event, file)"></mat-checkbox>
-          <button class="tb-button ghost-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu" (click)="handleClickEvent($event, i)">
-            <mat-icon class="thumbnail-menu">more_vert</mat-icon>
-          </button>
-          <mat-menu #menu="matMenu">
-            <button mat-menu-item>Share</button>
-            <button mat-menu-item (click)="downloadItem(file.Name)" download>Download</button>
-            <button mat-menu-item (click)="setFavoriteState(file)">Star</button>
-            <button mat-menu-item (click)="renameEntity(file)">Rename</button>
-            <button mat-menu-item>Move</button>
-            <button mat-menu-item>Copy</button>
-            <button mat-menu-item (click)="deleteItem(0, file)">Delete</button>
-          </mat-menu>
+        <div class="thumbnail"> <!-- [ngStyle]="{ 'background-image': getUrl(file.Name, file.Type) }" -->
+          <div class="thumbnail__top-row">
+            <mat-checkbox color="primary" class="m-2 ghost-button" [checked]="selection.isSelected(file)" (click)="$event.stopPropagation()" (change)="setSelectionState($event, file)"></mat-checkbox>
+            <button class="row-button ghost-button" mat-icon-button color="accent" [matMenuTriggerFor]="menu" (click)="handleClickEvent($event, i)">
+              <mat-icon class="thumbnail-menu">more_vert</mat-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <button mat-menu-item>Share</button>
+              <button mat-menu-item (click)="downloadItem(file.Name, file.Type)" download>Download</button>
+              <button mat-menu-item (click)="setFavoriteState(file)">Star</button>
+              <button mat-menu-item (click)="renameEntity(file)">Rename</button>
+              <button mat-menu-item>Move</button>
+              <button mat-menu-item>Copy</button>
+              <button mat-menu-item (click)="deleteItem(0, file)">Delete</button>
+            </mat-menu>
+          </div>
+          <img class="thumbnail__img" [src]="getUrl(file.Name, file.Type, file.IsShared)" [filename]="file.Name" />
+          <div class="thumbnail__bottom-row">
+            <button mat-icon-button class="ghost-button" color="primary" (click)="editFavoriteStatus($event, file)">
+              <div *ngIf="file.IsFavorite; then star; else starOutline"></div>
+            </button>
+          </div>
         </div>
-        <div class="tn-bottom-row">
-          <button mat-icon-button class="ghost-button" color="primary" (click)="editFavoriteStatus($event, file)">
-            <div *ngIf="file.IsFavorite; then star; else starOutline"></div>
-          </button>
+        <div class="thumbnail__title">
+          <p class="thumbnail__title-name" (click)="getFolderContents($event, file)">{{ file.Name }}</p>
         </div>
       </div>
-      <div class="tn-title" >
-        <p class="tn-name" (click)="getFolderContents($event, file)">{{ file.Name }}</p>
-      </div>
     </div>
-  </div>
-  <div class="empty-folder" *ngIf="isFolderEmpty">
-    <h4 class="empty-folder-title">Upload files, or create a new folder to get started!</h4>
+    <div class="empty-folder" *ngIf="isFolderEmpty">
+      <h4 class="empty-folder-title">Upload files, or create a new folder to get started!</h4>
+    </div>
   </div>
 </ng-template>
 
@@ -211,7 +219,7 @@
           <mat-menu #menu="matMenu">
             <button mat-menu-item>Share</button>
             <button mat-menu-item (click)="showInfoDialog(row)" *ngIf="isXS">Info</button>
-            <button mat-menu-item (click)="downloadItem(row.Name)" download>Download</button>
+            <button mat-menu-item (click)="downloadItem(row.Name, row.Type)" download>Download</button>
             <button mat-menu-item (click)="setFavoriteState(row)">Star</button>
             <button mat-menu-item (click)="renameEntity(row)">Rename</button>
             <button mat-menu-item>Move</button>

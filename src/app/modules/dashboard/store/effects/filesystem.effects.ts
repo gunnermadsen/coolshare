@@ -66,24 +66,15 @@ export class FileSystemEffects {
 
     public deleteEntity$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.deleteFolderEntity),
-        tap((payload: any) => {
-            this.generateNotification(payload, 1)
-            return payload
-        }),
-        map((payload: any) => {
-            return { 
-                path: payload.path, 
-                id: payload.userId, 
-                entities: payload.entities 
-            }
-        }),
-        mergeMap((payload: any) => {
+        exhaustMap((payload: any) => {
 
             return this.repoService.delete(payload).pipe(
 
                 tap(() => this.toastrService.success(`${payload.entities[0].name} has been deleted`)),
 
-                map(() => filesystem.readEntityContents({ folder: payload.path, id: payload.id })),
+                map(() => filesystem.readEntityContents({ folder: payload.path, id: payload.userId })),
+                
+                tap(() => this.generateNotification(payload, 1)),
 
                 catchError(error => {
                     this.toastrService.error(error)
@@ -95,25 +86,16 @@ export class FileSystemEffects {
 
     public deleteEntities$: Observable<Action> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.deleteFolderEntities),
-        tap((payload: any) => {
-            this.generateNotification(payload, 1)
-            return payload
-        }),
-        map((payload: any) => {
-            return {
-                path: payload.path,
-                id: payload.userId,
-                entities: payload.entities
-            }
-        }),
         mergeMap((payload: any) => {
 
             return this.repoService.delete(payload).pipe(
 
                 tap(() => this.toastrService.success(`${payload.entities[0].name} and ${payload.entities.length - 1} other files has been deleted`)),
 
-                map(() => filesystem.readEntityContents({ folder: payload.path, id: payload.id })),
+                map(() => filesystem.readEntityContents({ folder: payload.path, id: payload.userId })),
                 
+                tap(() => this.generateNotification(payload, 1)),
+
                 catchError(error => {
                     this.toastrService.error(error)
                     return throwError(error)
@@ -124,22 +106,24 @@ export class FileSystemEffects {
 
     public downloadEntity$: Observable<Blob> = createEffect(() =>  this.actions$.pipe(
         ofType(filesystem.downloadEntity),
-        tap((payload: any) => {
-            this.generateNotification(payload, 2)
-            return payload
-        }),
         exhaustMap((payload: any) => {
             return this.repoService.download(payload).pipe(
                 tap((response: Blob) => {
 
                     const type = mime.getType(name)
 
-                    let blob = new Blob([response], { type: type })
+                    let blob = new Blob([response], { type: response.type })
 
                     fileSaver.saveAs(blob, payload.name)
 
                 }),
-                catchError((error) => throwError(error))
+
+                tap(() => this.generateNotification(payload, 2)),
+
+                catchError((error) => {
+                    this.toastrService.error("An error occured when trying download the item you requested")
+                    return throwError(error)
+                })
             )
         })
     ), { dispatch: false })
@@ -147,14 +131,12 @@ export class FileSystemEffects {
     
     public modifyFavoriteStatus$: Observable<void> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.updateFavoriteStatus),
-        tap((payload: any) => {
-            this.generateNotification(payload, 3)
-            return payload
-        }),
         exhaustMap((payload: any) => {
             return this.repoService.updateFavoriteState(payload).pipe(
  
                 tap(() => this.toastrService.success("File added to favorites")), 
+
+                tap(() => this.generateNotification(payload, 3)),
 
                 catchError((error: any) => {
                     this.toastrService.error(error)
@@ -167,19 +149,14 @@ export class FileSystemEffects {
 
     public renameEntity$: Observable<void> = createEffect(() => this.actions$.pipe(
         ofType(filesystem.renameEntity),
-        tap((payload: any) => {
-            this.generateNotification(payload.body, 4)
-            return payload
-        }),
-
         map((payload: any) => payload.body),
-
         exhaustMap((payload: any) => {
             return this.repoService.renameEntity(payload).pipe(
 
                 tap(() => this.toastrService.success(`${payload.entity.oldName} has been renamed to ${payload.entity.newName}`)),
 
                 // map(() => new filesystem.RetrieveFolderContents({ folder: payload.path, id: payload.userId })),
+                tap(() => this.generateNotification(payload, 4)),
 
                 catchError((error: any) => {
                     this.toastrService.error(error)

@@ -7,7 +7,7 @@ let production: boolean = false
 export const environment = {
   production: false,
   hmr: false,
-  localRepo: production ? 'https://portfolioapis.herokuapp.com' : 'http://localhost:3000'
+  localRepo: production ? 'https://portfolioapis.herokuapp.com' : 'http://localhost:3000' //'http://172.16.166.133:3000'
 }
 
 /*

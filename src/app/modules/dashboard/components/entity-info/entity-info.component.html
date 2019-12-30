@@ -28,7 +28,7 @@
                 <mat-divider></mat-divider>
             
                 <div class="entity-container inner entity-preview">
-                    <img width="200" height="200" [src]="getImageFromPath()" />
+                    <img class="entity__container-img" [src]="getImageFromPath()" [filename]="entity.Name" />
                 </div>
             </mat-expansion-panel>
 

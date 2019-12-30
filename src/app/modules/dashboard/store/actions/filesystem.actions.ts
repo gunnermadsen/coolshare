@@ -11,6 +11,6 @@ export const deleteFolderEntities = createAction('[Delete Items] Delete Items Fr
 export const deleteFolderEntity = createAction('[Delete Item] Delete Item From Store', props<{ id: string }>())
 export const updateFavoriteStatus = createAction('[Modify Item] Modify Favorite State', props<{ entity: Update<any>, userId: string }>())
 export const addToFavorites = createAction('[Star Item] Add To Favorites', props<{ entity: Update<any>, userId: string }>())
-export const downloadEntity = createAction('[Download Item] Download Item From Folder', props<{ path: string, name: string, userId: string }>())
+export const downloadEntity = createAction('[Download Item] Download Item From Folder', props<{ path: string, name: string, userId: string, entityType: string }>())
 export const downloadEntityCancel = createAction('[Download Item] Download Item Cancelled', props<{ id: string, path: string, name: string }>())
 export const renameEntity = createAction('[Filesystem API] Rename Entity', props<{ entity: Update<any>, body: any }>())

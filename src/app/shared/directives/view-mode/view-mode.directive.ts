@@ -14,10 +14,10 @@ export class ViewModeDirective implements OnChanges {
   ngOnChanges(changes: SimpleChanges) {
     switch (changes.mode.currentValue) {
       case 0:
-        this.renderer.setStyle(this.element.nativeElement, 'grid-template-rows', '60px auto')
+        this.renderer.removeStyle(this.element.nativeElement, 'grid-template-rows')
         break 
       case 1:
-        this.renderer.removeStyle(this.element.nativeElement, 'grid-template-rows')
+        this.renderer.setStyle(this.element.nativeElement, 'grid-template-rows', '60px auto')
         break 
     }
   }

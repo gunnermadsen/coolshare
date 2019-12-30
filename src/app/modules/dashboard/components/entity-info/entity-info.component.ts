@@ -9,7 +9,7 @@ import { IFile } from '@/shared/models/file.model';
 @Component({
   selector: 'entity-info',
   templateUrl: './entity-info.component.html',
-  styleUrls: ['./entity-info.component.less']
+  styleUrls: ['./entity-info.component.scss']
 })
 export class EntityInfoComponent implements OnChanges, OnInit {
 
@@ -22,6 +22,9 @@ export class EntityInfoComponent implements OnChanges, OnInit {
   @Input()
   public isSelected: boolean = false
 
+  @Input()
+  public userId: string
+
   // public isShared: boolean = false
   public displayedColumns: string[] = ['name', 'permission']
 
@@ -33,13 +36,13 @@ export class EntityInfoComponent implements OnChanges, OnInit {
   private server: string
 
   constructor() {
-    this.server = isDevMode() ? 'http://localhost:4200' : 'https://coolshare.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
 
   }
 
   ngOnChanges(changes: SimpleChanges) {
 
-    if (this.entities.length === 1) {
+    if (this.entities.length === 1 && this.userId) {
       this.entity = this.entities[0]
       this.extension = this.getFileType(this.entity.Name, this.entity.Type)
       this.permissions = this.configurePermissionData(this.entity.Meta)
@@ -98,23 +101,29 @@ export class EntityInfoComponent implements OnChanges, OnInit {
     }
   }
 
-  public getImageFromPath(mode: number = null): string {
+  public getImageFromPath(mode: number = null, ): string {
     // '/assets/' + entity.Icon
     const entity = this.entity
     switch (entity.Type) {
       case "File": {
-        const extension = entity.Name.split('.')
-        let url = `${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png`
-        if (mode) {
-          return `url(${url}), url(${this.server}/assets/icons/file-13.png)`
-        }
+        const fileName = this.entity.Name.split('.')
+        const extension = fileName[fileName.length - 1]
+
+        fileName.splice(fileName.length - 1, 1)
+
+        const regex = new RegExp(' ', 'gi')
+
+        let url = `${this.server}/${this.userId}/${fileName.toString().replace(',', '.').replace(regex, '%20')}.png`
+        // if (mode) {
+        //   return `url(${url}), url(${this.server}/${this.userId}/icons/file-13.png)`
+        // }
         return url
       }
       case "Folder": {
-        const url = `${this.server}/assets/${entity.IsShared ? 'share-folder' : 'folder'}.png`
-        if (mode) {
-          return `url(${url})`
-        }
+        const url = `${this.server}/${entity.IsShared ? 'share-folder' : 'folder'}.png`
+        // if (mode) {
+        //   return `url(${url})`
+        // }
         return url
       }
     }

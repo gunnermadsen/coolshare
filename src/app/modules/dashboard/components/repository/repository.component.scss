@@ -1,0 +1,118 @@
+/* Structure */
+
+
+
+.table-container {
+  overflow: auto;
+  height: 86vh;
+
+  table {
+    width: 100%;
+
+    th, td {
+      overflow: hidden;
+      width: auto;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .mat-column-createdDate {
+      width: 120px;
+    }
+
+    .mat-column-select {
+      width: 50px;
+      padding: 32px 17px !important;
+    }
+
+    .mat-column-name {
+      max-width: 150px;
+    }
+
+    .mat-column-action {
+      width: 60px !important;
+      padding-right: 10px !important;
+      flex: 0 0 30px;
+    }
+
+    .mat-column-members {
+      width: 100px !important;
+    }
+  }
+}
+
+
+
+
+
+mat-form-field {
+  width: 100%;
+}
+
+::ng-deep .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  margin: 0 !important;
+}
+
+.loading-shade {
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 15px;
+}
+
+/* Table Column Widths */
+
+.mat-column-action, .mat-column-createdDate, .mat-column-members {
+  text-align: right;
+}
+
+/* Breadcrumb (Folder Hierarchy View) Styles */
+
+.breadcrumb {
+  background-color: transparent !important;
+  padding: 5px;
+}
+
+a.folder-node:hover {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+a.folder-node {
+  color: blue;
+}
+
+
+.mat-row {
+  height: 75px !important;
+  
+}
+
+.mat-row:hover {
+  cursor: pointer;
+
+  td.mat-cell.mat-column-name,
+  td.mat-cell.mat-column-createdDate,
+  td.mat-cell.mat-column-members
+  {
+    color: blue;
+  }
+}
+
+.mat-menu-item {
+  height: 40px;
+}
+
+mat-checkbox ::ng-deep .mat-checkbox-inner-container {
+  width: 22px;
+  height: 22px;
+  background-color: white;
+}

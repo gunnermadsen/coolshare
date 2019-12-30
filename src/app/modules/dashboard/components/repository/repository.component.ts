@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, OnDestroy, isDevMode, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, OnDestroy, isDevMode } from '@angular/core';
 import { BreakpointState, BreakpointObserver } from '@angular/cdk/layout';
 import { MatPaginator, MatSort, MatTableDataSource, MatDialog, MatDialogConfig } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -11,8 +11,6 @@ import { getRepoData } from '../../store/selectors/dashboard.selectors';
 
 import { Observable, of as observableOf, Subject, of } from 'rxjs';
 import { catchError, tap, take, takeUntil, withLatestFrom, map, delay } from 'rxjs/operators';
-
-import { IContents } from '@/shared/models/contents.model';
 
 import { UploadDetailsComponent } from '../upload-details/upload-details.component';
 import { FileActionsComponent } from '../file-actions/file-actions.component';
@@ -27,7 +25,11 @@ import { FormControl } from '@angular/forms';
 @Component({
   selector: 'repository',
   templateUrl: './repository.component.html',
-  styleUrls: ['./repository.component.less']
+  styleUrls: [
+    './repository.component.scss',
+    './repository.grid.component.scss',
+    './repository.layout.component.scss'
+  ]
 })
 export class RepositoryComponent implements OnInit, OnDestroy {
   public dataSource: MatTableDataSource<IFile>
@@ -57,7 +59,7 @@ export class RepositoryComponent implements OnInit, OnDestroy {
 
   constructor(private store$: Store<AppState>, private breakpointObserver: BreakpointObserver, public dialog: MatDialog) {
     this.selection = new SelectionModel<any>(true, []);
-    this.server = isDevMode() ? 'http://localhost:4200' : 'https://coolshare.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
     this.displayedColumns = [ 'select', 'name', 'action' ]
   }
 
@@ -76,15 +78,22 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.watchForSearch()
   }
 
-  public getUrl(name: string, type: string): string {
+  public getUrl(name: string, type: string, isShared: boolean): string {
     switch (type) {
       case "File": {
-        const extension = name.split('.')
-        return `url('${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png'), 
-                url('${this.server}/assets/icons/file-13.png')`
+        const filename = name.split('.')
+        const extension = filename[filename.length - 1]
+        filename.splice(filename.length - 1, 1)
+
+        const regex = new RegExp(' ', 'gi')
+
+        const url = `${this.server}/${this.userId}/${filename.toString().replace(',', '.').replace(regex, '%20')}.png`
+                // url('${this.server}/assets/icons/file-13.png')`
+        return url
       }
       case "Folder": {
-        return `url('${this.server}/assets/icons/folder-24.png')`
+        const url = `${this.server}/${isShared ? 'share-folder' : 'folder'}.png`
+        return url
       }
     }
   }
@@ -335,8 +344,8 @@ export class RepositoryComponent implements OnInit, OnDestroy {
     this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
-  public downloadItem(name: string): void {
-    this.fileActionsComponent.downloadAction(name)
+  public downloadItem(name: string, type: string): void {
+    this.fileActionsComponent.downloadAction(name, type)
   }
 
   public refreshFileView(): void {

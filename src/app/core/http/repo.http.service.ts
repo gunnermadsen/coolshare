@@ -41,13 +41,23 @@ export class HttpRepoService {
         return this.http.post<any>('/api/repo/delete', payload)
     }
 
-    public download(payload: { userId: string, path: string, name: string }): Observable<any> {
+    public download(payload: { userId: string, path: string, name: string, entityType: string }): Observable<any> {
 
         // let query = this.generateQueryUri(payload);
         const headers = new HttpHeaders({ 'Content-Type' : 'application/json', 'Accept' : '*/*'});
-        const params = new HttpParams().set('resource', payload.name).set('path', payload.path).set('id', payload.userId)
+        const params = new HttpParams()
+            .set('resource', payload.name)
+            .set('path', payload.path)
+            .set('id', payload.userId)
+            .set('type', payload.entityType)
 
-        return this.http.get(`/api/repo/download`, { headers: headers, params: params, responseType: 'blob' as 'json' })
+        const options = { 
+            headers: headers, 
+            params: params, 
+            responseType: 'blob' as 'json'
+        }
+
+        return this.http.get(`/api/repo/download`, options)
     }
 
     public verifyLink(linkDetails: any): Observable<any> {

@@ -10,7 +10,7 @@
       "prefix": "",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "less"
+          "style": "scss"
         }
       },
       "architect": {

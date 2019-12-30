@@ -1,6 +1,6 @@
 /* Material Expansion Panel Styles */
 
-@default-color: rgba(63, 81, 181, 0.228);
+
 
 .example-headers-align .mat-expansion-panel-header-title,
 .example-headers-align .mat-expansion-panel-header-description {
@@ -40,20 +40,6 @@
   }
 }
 
-.default-message {
-  padding-left: 20px;
-}
-
-
-html {
-  height: 100%;
-}
-
-body {
-  max-height: 100%;
-  overflow-y: hidden;
-}
-
 .favorite-star {
   font-size: 30px; 
 }
@@ -62,20 +48,11 @@ body {
   margin-left: auto;
 }
 
-.favorite:hover, .recent:hover {
-  .settings {
-    border: 1px solid @default-color;
-  }
+.mat-checkbox {
+  margin: 10px;
 }
 
-.favorite:hover, .recent:hover, .suggestion:hover {
-  cursor: pointer;
-  .ghost-toggle {
-    display: inline-block;
-  }
-  background-color: @default-color;
-  border-radius: 15px;
-}
+
 
 /* Material List Styles */
 
@@ -88,131 +65,7 @@ body {
 /* END Material List Styles */
 
 
-/* Favorites Section Styles */
 
-.favorites {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-}
-
-.favorite-toggle {
-  display: none;
-}
-
-.favorite-icon {
-  height: 50px;
-  max-width: 80px;
-}
-
-.favorite-title {
-  margin: 10px 5px 10px 15px;
-}
-
-.favorite {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px;
-}
-
-/* END Favorites Section Styles */
-
-
-
-/* Recents Section Styles */
-
-.recents {
-  display: flex;
-  flex-direction: column;
-  margin-top: 10px;
-}
-
-.recent {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  padding: 8px;
-}
-
-.recent-icon {
-  height: 50px;
-  max-width: 80px;
-}
-
-.recent-list {
-  list-style-type: none;
-  padding-left: 10px;
-  // margin-bottom: 0;
-  // margin-left: 10px;
-  // margin-right: 10px;
-
-  margin: 0 10px;
-}
-
-p.list-info {
-  margin-bottom: 0;
-}
-
-/* END Recents Section Styles */
-
-
-
-
-/* Suggestions Section Styles */
-
-.suggestions {
-  display: flex;
-  flex-direction: row;
-  overflow-x: scroll;
-  // margin: 10px;
-  padding: 10px;
-}
-
-.suggestion {
-  padding: 8px;
-  // margin: 10px;
-  width: 170px;
-}
-
-.suggestion-thumbnail {
-  object-fit: contain;
-  background-size: cover;
-  background-position: center;
-
-  width: 140px;
-  height: 140px;
-
-  margin: auto;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.thumbnail-top-row, .thumbnail-bottom-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 165px;
-  padding-right: 15px;
-}
-
-.suggestion-title {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.suggestion-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin: 0 5px;
-}
-
-/* END Suggestions Section Styles */
 
 
 
@@ -243,5 +96,7 @@ p.list-info {
 .mat-button-wrapper {
   padding: 0 !important;
 }
+
+
 
 /* End File Actions */

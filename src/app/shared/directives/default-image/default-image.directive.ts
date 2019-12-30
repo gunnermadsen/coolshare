@@ -8,17 +8,22 @@ import { Directive, Input, isDevMode } from '@angular/core';
   }
 })
 export class DefaultImageDirective {
-  @Input() src: string;
-  public defaultImg: string = '/assets/icons/file-13.png';
+  @Input() 
+  public src: string;
+
+  @Input() 
+  public filename: string
+  public defaultImg: string = '/icons/default.svg';
   private server: string
 
   constructor() {
-    this.server = isDevMode() ? 'http://localhost:4200' : 'https://coolshare.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
   }
   public onError() {
-    this.src = `${this.server}${this.defaultImg}`
+    const extension = this.filename.split('.').pop() || 'default'
+    this.src = `${this.server}/icons/${extension}.svg`
   }
-  public checkPath(src) {
+  public checkPath(src: string) {
     return src ? src : `${this.server}${this.defaultImg}`
   }
 }

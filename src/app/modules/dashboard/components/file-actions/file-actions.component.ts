@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef } from '@angular/core'
+import { Component, OnInit, Input, OnDestroy, ViewChild, ElementRef, OnChanges, SimpleChanges } from '@angular/core'
 import { AppState } from '@/reducers'
 import { Store } from '@ngrx/store'
 import * as fromFileUploadActions from '@/modules/upload-file/store/actions/upload.actions.ts'
@@ -19,7 +19,7 @@ import { Update } from '@ngrx/entity'
   templateUrl: './file-actions.component.html',
   styleUrls: ['./file-actions.component.less']
 })
-export class FileActionsComponent implements OnInit, OnDestroy {
+export class FileActionsComponent implements OnChanges, OnInit, OnDestroy {
 
   @Input() public userId: string
   @Input() public mode: number
@@ -46,6 +46,10 @@ export class FileActionsComponent implements OnInit, OnDestroy {
     .subscribe(
       (state: BreakpointState) => this.isSM = state.breakpoints['(min-width: 550px)']
     )
+  }
+  
+  ngOnChanges(changes: SimpleChanges) {
+    console.log(changes)
   }
 
   public uploadData(event: any): void {
@@ -152,8 +156,8 @@ export class FileActionsComponent implements OnInit, OnDestroy {
   }
 
 
-  public downloadAction(name: string): void {
-    this.store$.dispatch(filesystem.downloadEntity({ path: this.cwd, name: name, userId: this.userId }))
+  public downloadAction(name: string, type: string): void {
+    this.store$.dispatch(filesystem.downloadEntity({ path: this.cwd, name: name, userId: this.userId, entityType: type }))
   }
 
   public renameAction(entity: any): void {

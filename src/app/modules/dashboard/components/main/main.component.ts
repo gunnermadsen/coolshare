@@ -18,7 +18,10 @@ import { EntityInfoDialogComponent } from '../entity-info-dialog/entity-info-dia
 @Component({
   selector: 'app-main',
   templateUrl: './main.component.html',
-  styleUrls: ['./main.component.less']
+  styleUrls: [
+    './main.component.less',
+    './main.layout.component.scss'
+  ]
 })
 export class MainComponent implements OnInit, OnDestroy {
   public userId: string
@@ -45,7 +48,7 @@ export class MainComponent implements OnInit, OnDestroy {
       this.cwd = '/'
     }
 
-    this.server = isDevMode() ? 'http://localhost:4200' : 'https://coolshare.herokuapp.com'
+    this.server = isDevMode() ? 'http://localhost:3000' : 'https://portfolioapis.herokuapp.com'
   }
 
   ngOnInit() {
@@ -95,22 +98,29 @@ export class MainComponent implements OnInit, OnDestroy {
     this.store$.dispatch(filesystem.updateFavoriteStatus({ entity: payload, userId: this.userId }))
   }
 
-  public setResource(name: string, type: string, isShared: boolean, mode?: number): string {
+  public setResource(name: string, type: string, isShared: boolean): string {
     // const id = JSON.parse(localStorage.getItem('Account')).Id
     switch (type) {
       case "File": {
-        const extension = name.split('.')
-        let url = `${this.server}/assets/icons/${extension[extension.length - 1].toLowerCase()}.png`
-        if (mode) {
-          return `url(${url}), url(${this.server}/assets/icons/file-13.png)`
-        }
+        const fileName = name.split('.')
+        const extension = fileName[fileName.length - 1]
+
+        fileName.splice(fileName.length - 1, 1)
+
+        const regex = new RegExp(' ', 'gi')
+        
+        let url = `${this.server}/${this.userId}/${fileName.toString().replace(',', '.').replace(regex, '%20')}.png`
+
+        // if (mode === 'div') {
+        //   return `url(${url}), url(${this.server}/icons/${extension}.svg)`
+        // }
         return url
       } 
       case "Folder": {
-        const url = `${this.server}/assets/${isShared ? 'share-folder' : 'folder-24'}.png`
-        if (mode) {
-          return `url(${url})`
-        }
+        const url = `${this.server}/${isShared ? 'share-folder' : 'folder'}.png`
+        // if (mode === 'div') {
+        //   return `url(${url})`
+        // }
         return url
       }
     }
@@ -120,8 +130,8 @@ export class MainComponent implements OnInit, OnDestroy {
     this.fileActionsComponent.setFavoriteState(entity)
   }
   
-  public downloadItem(name: string): void {
-    this.fileActionsComponent.downloadAction(name)
+  public downloadItem(name: string, type: string): void {
+    this.fileActionsComponent.downloadAction(name, type)
   }
 
   public deleteItem(mode: number, file: IFile): void {
