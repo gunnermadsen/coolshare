@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'profile',
   templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.less']
+  styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit, OnDestroy {
 
@@ -116,7 +116,7 @@ export class ProfileComponent implements OnInit, OnDestroy {
       ProfilePicture: this.form.ProfilePicture.value
     }
     
-    this.store$.dispatch(new AccountActions.UpdateProfileAction({ profile: profile, id: this.id }));
+    this.store$.dispatch(AccountActions.updateProfileAction({ profile: profile, id: this.id }));
   }
 
 

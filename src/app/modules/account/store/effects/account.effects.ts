@@ -12,7 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 export class AccountEffects {
 
     public updateProfile$: Observable<Action> = createEffect(() => this.actions$.pipe(
-        ofType(fromAccountActions.AccountActionTypes.UpdateProfile),
+        ofType(fromAccountActions.updateProfileAction),
         exhaustMap((action: any) => {
             return this.accountService.updateProfile(action.payload.profile, action.payload.id).pipe(
                 tap((payload: any) => {
@@ -26,7 +26,7 @@ export class AccountEffects {
     ), { dispatch: false })
 
     public updatePicture$: Observable<Action> = createEffect(() => this.actions$.pipe(
-        ofType(fromAccountActions.AccountActionTypes.UpdatePicture),
+        ofType(fromAccountActions.updateProfilePictureAction),
         exhaustMap((action: any) => {
             return this.accountService.updatePicture(action.payload.picture).pipe(
                 tap((payload: any) => {
@@ -41,11 +41,11 @@ export class AccountEffects {
     ), { dispatch: false })
 
     public getAccountInfo$: Observable<Action> = createEffect(() => this.actions$.pipe(
-        ofType(fromAccountActions.AccountActionTypes.FetchAccountInfo),
+        ofType(fromAccountActions.fetchProfileInfoAction),
         exhaustMap((action: any) => {
             return this.accountService.fetchAccountInfo().pipe(
                 map((payload: any) => {
-                    return new fromAccountActions.SaveAccountInfo(payload.account);
+                    return fromAccountActions.saveProfileInfoAction({ profile: payload.account });
                 }),
                 catchError((error: any) => throwError(error))
             )

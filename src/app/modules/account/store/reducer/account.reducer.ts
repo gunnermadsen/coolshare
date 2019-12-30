@@ -1,29 +1,29 @@
-import { AccountActions, AccountActionTypes } from '../actions/account.actions';
-import { initialAuthenticationState } from '@/core/authentication/store/reducer/authentication.reducer';
-
+import { createReducer, on, Action } from '@ngrx/store';
+import * as AccountActions from '../actions/account.actions'
 export interface AccountState {}
 
 export const initialAccountState: AccountState = {}
 
-export function AccountReducer(state = initialAccountState, action: AccountActions): AccountState {
-    switch (action.type) {
-        case AccountActionTypes.SaveAccountInfo:
-            return action.payload;
-
-        case AccountActionTypes.UpdateProfile:
-            return {
-                ...action.payload.profile
+const reducer = createReducer(
+    initialAccountState, 
+    on(AccountActions.saveProfileInfoAction, (state: AccountState, { profile }) => {
+        return profile
+    }),
+    on(AccountActions.updateProfileAction, (state: AccountState, { profile }) => {
+        return {
+            ...profile
+        }
+    }),
+    on(AccountActions.updateProfilePictureAction, (state: AccountState, { profile }) => {
+        return {
+            account: {
+                ...state,
+               picture: profile.picture
             }
+        }
+    })
+)
 
-        case AccountActionTypes.UpdatePicture:
-            return {
-                account: {
-                    ...state,
-                    ...action.payload.picture
-                }
-            }
-
-        default:
-            return state;
-    }
+export function AccountReducer(state: AccountState | undefined, action: Action) {
+    return reducer(state, action)
 }

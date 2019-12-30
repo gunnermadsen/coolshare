@@ -1,50 +1,11 @@
-import { Action } from '@ngrx/store';
+import { createAction, props } from '@ngrx/store';
 
 /**
  * For each action type in an action group, make a simple
  * enum object for all of this group's action types.
  */
-export enum AccountActionTypes {
-    UpdateProfile = '[Account API] Update Profile',
-    UpdatePicture = '[Account API] Update Picture',
-    FetchAccountInfo = '[Account API] Fetch Account Info',
-    SaveAccountInfo = '[Account Store] Save Account Info'
-};
-
-/**
- * Every action is comprised of at least a type and an optional
- * payload. Expressing actions as classes enables powerful 
- * type checking in reducer functions.
- */
-export class UpdateProfileAction implements Action {
-    readonly type = AccountActionTypes.UpdateProfile;
-
-    constructor(public payload: { profile: any, id: string }) { }
-}
-
-export class UpdatePictureAction implements Action {
-    readonly type = AccountActionTypes.UpdatePicture;
-
-    constructor(public payload: { picture: any }) { }
-}
-
-export class FetchAccountInfo implements Action {
-    readonly type = AccountActionTypes.FetchAccountInfo;
-}
-
-export class SaveAccountInfo implements Action {
-    readonly type = AccountActionTypes.SaveAccountInfo;
-
-    constructor(public payload: any) { }
-}
-
-/**
- * Export a type alias of all actions in this action group
- * so that reducers can easily compose action types
- */
-
-export type AccountActions
-    = UpdateProfileAction
-    | UpdatePictureAction
-    | FetchAccountInfo
-    | SaveAccountInfo;
+export const fetchProfileInfoAction = createAction('[Account API] Fetch Account Info', props<{ id: string }>())
+export const updateProfileAction = createAction('[Account API] Update Profile', props<{ id: string, profile: any }>())
+export const updatePasswordAction = createAction('[Account API] Fetch Account Info', props<{ id: string, profile: { password: string } }>())
+export const updateProfilePictureAction = createAction('[Account API] Update Picture', props<{ id: string, profile: { picture: string } }>())
+export const saveProfileInfoAction = createAction('[Account API] Save Account Info', props<{ profile: any }>())

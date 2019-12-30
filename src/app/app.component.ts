@@ -72,7 +72,7 @@ export class AppComponent {
     )
     .subscribe((result: any) => {
       if (result.isLoggedIn) {
-        this.store$.dispatch(new fromAccount.FetchAccountInfo())
+        this.store$.dispatch(fromAccount.fetchProfileInfoAction({ id: this.userId }))
         this.store$.dispatch(fetchNotifications({ id: result.account.Id }))
       }
       return result

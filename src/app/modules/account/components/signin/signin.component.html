@@ -1,35 +1,23 @@
 <form [formGroup]="signinForm">
-    <div class="container-fluid">
+    <div class="c-signin">
 
-        <div class="row mt-2">
-            <div class="col px-0">
-        
-                <mat-form-field appearance="outline">
-                    <mat-label>Old Password</mat-label>
-                    <input matInput formControlName="OldPassword">
-                </mat-form-field>
-        
-            </div>
+        <div class="c-signin__body">
+            <mat-form-field appearance="outline">
+                <mat-label>Old Password</mat-label>
+                <input matInput formControlName="OldPassword">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>New Password</mat-label>
+                <input matInput formControlName="NewPassword">
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <mat-label>Confirm Password</mat-label>
+                <input matInput formControlName="ConfirmPassword">
+            </mat-form-field>
         </div>
-        <div class="row mt-2">
-            <div class="col px-0">
-        
-                <mat-form-field appearance="outline">
-                    <mat-label>New Password</mat-label>
-                    <input matInput formControlName="NewPassword">
-                </mat-form-field>
-        
-            </div>
-        </div>
-        <div class="row mt-2">
-            <div class="col px-0">
-        
-                <mat-form-field appearance="outline">
-                    <mat-label>Confirm Password</mat-label>
-                    <input matInput formControlName="ConfirmPassword">
-                </mat-form-field>
-        
-            </div>
+        <div class="c-signin__footer">
+            <button mat-raised-button color="primary" class="">Save</button>
+            <button mat-raised-button>Cancel</button>
         </div>
     </div>
 </form>
