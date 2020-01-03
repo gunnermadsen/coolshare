@@ -117,7 +117,9 @@ export class MainComponent implements OnInit, OnDestroy {
         return url
       } 
       case "Folder": {
-        const url = `${this.server}/${isShared ? 'share-folder' : 'folder'}.png`
+        // for now -- until the thumbnail generator on the server is working and the new code 
+        // can be deployed-- lets define a static resource for obtaining the image
+        const url = `https://coolshare.herokuapp.com/assets/${isShared ? 'share-folder' : 'folder'}.png`
         // if (mode === 'div') {
         //   return `url(${url})`
         // }
