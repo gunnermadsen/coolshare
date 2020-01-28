@@ -56,6 +56,10 @@ app.get('*', (req, res) => {
   res.render('index', { req });
 });
 
+app.get(':userName/:shareName', (req, res) => {
+  res.render('index', { req })
+})
+
 // Start up the Node server
 app.listen(PORT, () => {
   console.log(`Node Express server listening on http://localhost:${PORT}`);

@@ -14,6 +14,7 @@ import { IFile } from '@/shared/models/file.model'
 import { FileActionsComponent } from '../file-actions/file-actions.component';
 import { MatDialogConfig, MatDialog } from '@angular/material'
 import { EntityInfoDialogComponent } from '../entity-info-dialog/entity-info-dialog.component'
+import { SelectionModel } from '@angular/cdk/collections'
 
 @Component({
   selector: 'app-main',
@@ -36,6 +37,7 @@ export class MainComponent implements OnInit, OnDestroy {
   public isFavorites: boolean = false
   public isRecents: boolean = false
   private server: string
+  public selection: SelectionModel<any> = new SelectionModel<any>(true, [])
   private destroy$: Subject<boolean> = new Subject<boolean>()
   @ViewChild(FileActionsComponent, { static: false }) public fileActionsComponent: FileActionsComponent
 

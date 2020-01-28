@@ -2,6 +2,11 @@ $component-padding: 8px;
 $section-margin-top: 10px;
 $default-color: rgba(63, 81, 181, 0.228);
 
+.favorites, .recents {
+    margin: 10px;
+}
+
+
 %flexColumn {
     display: flex;
     flex-direction: column;
@@ -102,7 +107,7 @@ $default-color: rgba(63, 81, 181, 0.228);
 /* Favorites Section Styles */
 .favorites {
     @extend %flexColumn;
-    margin-top: $section-margin-top;
+    margin: $section-margin-top;
 }
 
 .favorite {
@@ -131,7 +136,7 @@ $default-color: rgba(63, 81, 181, 0.228);
 /* Recents Section Styles */
 .recents {
     @extend %flexColumn;
-    margin-top: $section-margin-top;
+    margin: $section-margin-top;
 }
 
 .recent {

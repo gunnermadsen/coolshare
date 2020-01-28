@@ -15,6 +15,7 @@
           <mat-expansion-panel-header>
             <mat-panel-title>Suggestions</mat-panel-title>
           </mat-expansion-panel-header>
+          
           <mat-divider></mat-divider>
 
           <div class="suggestions">
@@ -96,6 +97,9 @@
     </div>
     <div class="col-lg-2 col-md-3 col-sm-12 col-12 mb-3 pl-0 file-actions" *ngIf="!isXS">
       <file-actions [mode]="3" [cwd]="cwd" [userId]="userId" [userName]="userName"></file-actions>
+      <mat-card class="sidebar-card">
+        <entity-info [userName]="userName" [entities]="selection.selected" [userId]="userId"></entity-info>
+      </mat-card>
     </div>
   </div>
 </div>
