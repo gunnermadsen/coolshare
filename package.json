@@ -63,7 +63,7 @@
     "material-design-icons": "^3.0.1",
     "mime": "^2.4.4",
     "mime-types": "^2.1.25",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "moment-locales-webpack-plugin": "^1.1.2",
     "ngrx-store-freeze": "^0.2.4",
     "ngx-filesaver": "^8.1.0",
